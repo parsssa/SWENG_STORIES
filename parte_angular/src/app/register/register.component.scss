@@ -1,0 +1,39 @@
+.container {
+    display:flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    position: relative;
+
+    background-image: url('/assets/sfondoSfocato.jpg'); /* Imposta l'immagine come sfondo */
+    background-size: cover; /* Fai in modo che l'immagine copra l'intero sfondo */
+    background-position: center; /* Posiziona l'immagine al centro */    
+
+    
+  }
+
+  .registerImageContainer {
+    position:absolute;
+    flex-grow: 1;
+  }
+  
+  .registerContent {
+    position: relative;
+  }
+
+  
+  mat-card {
+    max-width: 500px;
+    width: 100%;
+  }
+  
+  mat-form-field {
+    padding-top: 2%;
+    width: 100%;
+  }
+  
+  .button-row {
+    display: flex;
+    justify-content: center;
+    margin-top: 16px;
+  }

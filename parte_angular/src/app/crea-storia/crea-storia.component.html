@@ -1,0 +1,50 @@
+<div class="container">
+    <div class="mainToggle">
+        <div class="toolbarTitolo">
+            <mat-toolbar>
+                <mat-toolbar-row>
+                    <h1> Benvenuto nel Crea Storia </h1>
+                </mat-toolbar-row>
+            </mat-toolbar>
+        </div>
+        <mat-accordion>
+            <div class="primoPannello">
+                <mat-expansion-panel (opened)="panelOpenState = true" (closed)="panelOpenState = false">
+                    <mat-expansion-panel-header>
+                        <mat-panel-title>
+                            Regolamento
+                        </mat-panel-title>
+                        <mat-panel-description>
+                            {{panelOpenState ? 'Ben fatto !' : 'Leggi prima di iniziare !'}}
+                        </mat-panel-description>
+                    </mat-expansion-panel-header>
+                    <p>Puoi solo creare storie indovinello o storie con diramazione.</p>
+                </mat-expansion-panel>
+            </div>
+            
+            <div class="secondoPannello">
+                <mat-expansion-panel (opened)="panelOpenState = true" (closed)="panelOpenState = false">
+                    <mat-expansion-panel-header>
+                        <mat-panel-title>
+                            Pulsante Creazione Storia
+                        </mat-panel-title>
+                        <mat-panel-description>
+                            {{panelOpenState ? 'Stai creando la storia....' : 'Dai sfogo alla tua creatività !'}}
+                        </mat-panel-description>
+                    </mat-expansion-panel-header>
+                    <div class="temp"> <h1>  </h1></div>
+    
+                    <mat-form-field>
+                        <mat-label>Select</mat-label>
+                        <mat-select>
+                            <mat-option value="one">First option</mat-option>
+                            <mat-option value="two">Second option</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </mat-expansion-panel>
+            </div>
+
+        </mat-accordion>
+
+    </div>
+</div>

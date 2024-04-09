@@ -1,0 +1,64 @@
+// Definisci i colori primari e di sfondo
+$primary-color: #dcd1cb00; // Aggiornato con il nuovo colore
+$background-color: #f5f5f5;
+
+// Stile della navbar
+.mat-toolbar {
+  background-color: $primary-color;
+  color: white;
+  border-radius: 40px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 5px 20px;
+  margin-bottom: 1%;
+
+  .mat-toolbar-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+
+
+    .navbarButtons{
+      font-weight: lighter;
+      color: black;
+      margin-right: 10px;
+    }
+    .navbarButtons:hover{
+      font-weight:bold;
+      background-color:rgba(105, 197, 247, 0.417);
+    }
+
+
+    .navbar-logo{
+      height: 90px; // Altezza del logo; regolala in base alle tue esigenze
+      width: auto; // Mantiene le proporzioni del logo
+      margin-right: 10px; // Distanza tra il logo e il titolo "SwengStories"
+    }
+
+    .brand {
+      text-decoration: none;
+      color: white;
+      font-weight: bold;
+    }
+
+    .left-aligned-buttons {
+      display: flex;
+      align-items: center;
+
+      .mat-button {
+        margin-right: 10px; // Distanza tra i pulsanti
+      }
+    }
+
+    .spacer {
+      flex: 1 1 auto;
+    }
+
+  }
+}
+
+
+
+
+
+

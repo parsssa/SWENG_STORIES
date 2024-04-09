@@ -1,0 +1,38 @@
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    position: relative;
+    background-image: url('/assets/sfondoSfocato.jpg'); /* Aggiungi l'URL dell'immagine per il login */
+    background-size: cover;
+    background-position: center;
+  }
+  
+  .loginImageContainer {
+    position: absolute;
+    flex-grow: 1;
+    
+  }
+  
+  .loginContent {
+    position: relative;
+    z-index: 2;
+  }
+  
+  mat-card {
+    max-width: 500px;
+    width: 100%;
+  }
+  
+  mat-form-field {
+    padding-top: 2%;
+    width: 100%;
+  }
+  
+  .button-row {
+    display: flex;
+    justify-content: center;
+    margin-top: 16px;
+  }
+  

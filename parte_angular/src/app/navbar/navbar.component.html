@@ -1,0 +1,18 @@
+<mat-toolbar color="primary" class="custom-toolbar">
+  <mat-toolbar-row>
+    <img src="assets/logoStories.png" class="navbar-logo">
+    <a mat-raised-button routerLink="/" class="navbarButtons" >SwengStories</a>
+    <div class="left-aligned-buttons">
+      <ng-container *ngIf="isLoggedIn; else loginRegister">
+        <a mat-raised-button (click)="logout()" class="navbarButtons" [@fade]>Logout</a>
+        <a mat-raised-button routerLink="/creaStoria" class="navbarButtons">Crea Storia</a>
+        
+      </ng-container>
+      <ng-template #loginRegister>
+        <a mat-raised-button routerLink="/login" class="navbarButtons">Login</a>
+        <a mat-raised-button routerLink="/register" class="navbarButtons">Register</a>
+      </ng-template>
+    </div>
+    <span class="spacer"></span>
+  </mat-toolbar-row>
+</mat-toolbar>
