@@ -52,6 +52,19 @@
 			<version>3.11.2</version> <!-- Versione attuale di Mockito -->
 			<scope>test</scope>
 		</dependency>
+
+		<!-- Dipendenza per l'autenticazione -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-security</artifactId>
+		</dependency>
+		
+		<dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt</artifactId>
+			<version>0.9.1</version>
+		</dependency>
+		
 		
 	</dependencies>
 
