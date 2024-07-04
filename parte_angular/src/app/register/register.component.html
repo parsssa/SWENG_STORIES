@@ -1,3 +1,4 @@
+<!--register.component.html-->
 <div class="container">
   <div class="registerImageContainer">
     <div class="registerContent">
@@ -7,6 +8,7 @@
         </mat-card-header>
         <mat-card-content>
           <div *ngIf="errorMessage" class="alert alert-danger">{{ errorMessage }}</div>
+          <div *ngIf="successMessage" class="alert alert-success">{{ successMessage }}</div>
           <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
             <mat-form-field appearance="outline">
               <mat-label>Username</mat-label>
@@ -22,9 +24,18 @@
                 Password è obbligatoria
               </mat-error>
             </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>Conferma Password</mat-label>
+              <input matInput type="password" formControlName="confirmPassword" required>
+              <mat-error *ngIf="registerForm.get('confirmPassword')?.hasError('required')">
+                Conferma Password è obbligatoria
+              </mat-error>
+              <mat-error *ngIf="registerForm.hasError('mismatch')">
+                Le password non corrispondono
+              </mat-error>
+            </mat-form-field>
             <div class="button-row">
-              <button mat-raised-button color="primary" type="submit"
-                [disabled]="registerForm.invalid">Registrati</button>
+              <button mat-raised-button color="primary" type="submit" [disabled]="registerForm.invalid">Registrati</button>
             </div>
           </form>
         </mat-card-content>

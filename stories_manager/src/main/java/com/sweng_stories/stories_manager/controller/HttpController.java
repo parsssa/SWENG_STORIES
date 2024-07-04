@@ -65,8 +65,13 @@ public class HttpController {
     }
 
     @PostMapping("/utenti")
-    public Utente createUtente(@RequestBody Utente utente) {
-        return mongoDbController.createUtente(utente);
+    public ResponseEntity<?> createUtente(@RequestBody Utente utente) {
+        Utente existingUtente = mongoDbController.getUtenteByUsername(utente.getUsername());
+        if (existingUtente != null) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Username già esistente");
+        }
+        Utente newUtente = mongoDbController.createUtente(utente);
+        return ResponseEntity.status(HttpStatus.CREATED).body(newUtente);
     }
 
     @PutMapping("/utenti/{username}")

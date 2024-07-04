@@ -1,5 +1,4 @@
 // register.component.ts
-
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ApiService } from '../api.service';
@@ -11,7 +10,8 @@ import { Router } from '@angular/router';
   styleUrls: ['./register.component.scss']
 })
 export class RegisterComponent implements OnInit {
-  errorMessage: string = ''; // Inizializza errorMessage con una stringa vuota
+  errorMessage: string = '';
+  successMessage: string = '';
   registerForm: FormGroup;
 
   constructor(
@@ -21,33 +21,38 @@ export class RegisterComponent implements OnInit {
   ) {
     this.registerForm = this.formBuilder.group({
       username: ['', Validators.required],
-      password: ['', Validators.required]
-    });
+      password: ['', Validators.required],
+      confirmPassword: ['', Validators.required]
+    }, { validator: this.passwordMatchValidator });
   }
 
   ngOnInit() {}
 
+  passwordMatchValidator(formGroup: FormGroup) {
+    return formGroup.get('password')?.value === formGroup.get('confirmPassword')?.value
+      ? null : { 'mismatch': true };
+  }
+
   onSubmit() {
     if (this.registerForm.valid) {
       const formData = this.registerForm.value;
-      this.apiService.createUtente(formData).subscribe(
+      this.apiService.createUtente({ username: formData.username, password: formData.password }).subscribe(
         response => {
           console.log('Registrazione riuscita:', response);
-          this.router.navigate(['/login']);
+          this.successMessage = 'Registrazione avvenuta con successo. Reindirizzamento al login...';
+          setTimeout(() => {
+            this.router.navigate(['/login']);
+          }, 2000); // 2 secondi di ritardo
         },
         error => {
           console.error('Errore durante la registrazione:', error);
-          if (error.error && error.error.message) {
-            // Se l'API restituisce un messaggio di errore personalizzato
-            this.errorMessage = error.error.message;
+          if (error.status === 409) { // HTTP 409 Conflict
+            this.errorMessage = 'Username già esistente. Si prega di effettuare il login.';
           } else {
-            // Se l'API non restituisce un messaggio di errore personalizzato,
-            // visualizza un messaggio di errore generico
-            this.errorMessage = 'Si è verificato un errore durante la registrazione. Riprova più tardi.';
+            this.errorMessage = error.error.message || 'Si è verificato un errore durante la registrazione. Riprova più tardi.';
           }
         }
       );
     }
   }
-  
 }
