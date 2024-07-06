@@ -20,6 +20,8 @@ import { MatExpansionModule } from '@angular/material/expansion';
 import { MatAccordion } from '@angular/material/expansion';
 import { MatSelect, MatSelectModule } from '@angular/material/select';
 import { MatOption } from '@angular/material/select';
+import { FormsModule} from '@angular/forms';
+
 
 
 
@@ -38,6 +40,7 @@ import { MatOption } from '@angular/material/select';
   imports: [
     BrowserModule,
     AppRoutingModule,
+    FormsModule,
     BrowserAnimationsModule,
     HttpClientModule, // Aggiungi HttpClientModule qui
     MatToolbarModule,

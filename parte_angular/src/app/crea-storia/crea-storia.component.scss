@@ -1,79 +1,17 @@
-// PER LA TOOLBAR
-$primary-color: #6f452e00;
-$background-color: #822828;
-
-
-
-.container {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr); // Colonna unica flessibile
-    height: 15vh;
-    margin: 0 auto; // Centra il pannello all'interno del grid
-    text-align: center;
-}
-
-::ng-deep .mat-expansion-panel-header {
-    font-size: 1.5rem; // Aumenta la dimensione del font
-    height: 1000px; // Aumenta l'altezza del pannello
-    min-height: 150px; // Imposta una altezza minima per il pannello
-    width: 1000px;
-    min-width: 20px;
-    // Aggiungi altri stili qui come necessario
-}
-
-::ng-deep .mat-expansion-panel-header mat-panel-title {
-    font-size: 1.4rem; // Dimensione del font per il titolo
-    // Aggiungi altri stili per il titolo se necessario
-}
-
-::ng-deep .mat-expansion-panel-header mat-panel-description {
-    font-size: 1.4rem; // Dimensione del font per la descrizione
-    // Aggiungi altri stili per la descrizione se necessario
-}
-
-
-// NON FUNZIONANTE ATTUALMENTE
-::ng-deep .mat-toolbar {
-    color: rgb(228, 255, 22);
-    border-radius: 40px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    padding: 5px 20px;
-    margin-bottom: 1%;
-
-    .mat-toolbar-row {
-        //background-color: aqua;
-        border-radius: 40px;
-        display: flex;
-        justify-content: center;
-    }
-}
-
-
-
-
-.toolbarTitolo h1 {
-    font-size: 2.5rem;
-    /* Dimensione del carattere per l'h1 */
-    color: #333;
-    /* Colore del testo */
-    margin-bottom: 10px;
-    margin-top: 8px;
-    /* Margine inferiore per separare dal sottotitolo */
-    font-weight: bold;
-    font-family: fantasy;
-}
-
-.primoPannello {
-    width: 100%;
-    max-width: 1000px; // Larghezza massima del pannello principale
-    margin: 0 auto; // Centra il pannello all'interno del grid
-    margin-bottom: 10px;
+.story-card {
+    max-width: 800px;
+    margin: 20px auto;
     padding: 20px;
-
-}
-
-.secondoPannello {
-    width: 100%; // Larghezza al 100% per occupare l'intero spazio
-    max-width: 1000px;
-    margin: 0 auto; // Centra il pannello all'interno del grid
-}
+  }
+  
+  .full-width {
+    width: 100%;
+    margin-bottom: 15px;
+  }
+  
+  .button-group {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+  }
+  
