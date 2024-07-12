@@ -1,0 +1,113 @@
+// Stili generali per mat-card
+mat-card {
+    margin: 20px;
+    padding: 20px;
+    background-color: #f8f9fa;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  
+    &.inventory-card {
+      margin-top: 10px;
+    }
+  
+    mat-card-title {
+      font-size: 1.5em;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+  
+    mat-card-content {
+      font-size: 1.1em;
+      line-height: 1.6;
+  
+      p {
+        margin-bottom: 20px;
+      }
+  
+      mat-form-field {
+        width: 100%;
+        margin-bottom: 15px;
+  
+        mat-label {
+          font-size: 1.2em;
+        }
+  
+        input {
+          font-size: 1em;
+        }
+      }
+  
+      button {
+        margin-top: 10px;
+        margin-right: 10px;
+        font-size: 1em;
+  
+        &.primary-button {
+          background-color: #3f51b5;
+          color: white;
+  
+          &:hover {
+            background-color: #303f9f;
+          }
+        }
+      }
+  
+      ul {
+        list-style-type: none;
+        padding: 0;
+  
+        li {
+          background: #e0e0e0;
+          margin: 5px 0;
+          padding: 10px;
+          border-radius: 4px;
+        }
+      }
+    }
+  }
+  
+  // Stili per mat-form-field specifici per il riddles
+  mat-form-field {
+    width: 100%;
+  
+    mat-label {
+      font-size: 1.2em;
+    }
+  
+    input {
+      font-size: 1em;
+    }
+  }
+  
+  // Stili per i bottoni delle scelte
+  .choice-button {
+    display: inline-block;
+    margin: 5px 0;
+  
+    button {
+      width: 100%;
+      font-size: 1em;
+    }
+  }
+  
+  // Stili per l'inventario
+  .inventory-card {
+    mat-card-title {
+      font-size: 1.3em;
+      margin-bottom: 10px;
+    }
+  
+    mat-card-content {
+      ul {
+        padding: 0;
+        list-style: none;
+  
+        li {
+          background-color: #e0e0e0;
+          margin: 5px 0;
+          padding: 10px;
+          border-radius: 4px;
+        }
+      }
+    }
+  }
+  

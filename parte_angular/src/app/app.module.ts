@@ -11,22 +11,14 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatCardModule } from '@angular/material/card';
-import { HttpClientModule, HttpClient } from '@angular/common/http'; // Importa HttpClientModule e HttpClient
+import { HttpClientModule } from '@angular/common/http'; // Importa HttpClientModule
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
-import { ReactiveFormsModule } from '@angular/forms';
+import { ReactiveFormsModule, FormsModule } from '@angular/forms'; // Combina ReactiveFormsModule e FormsModule
 import { CreaStoriaComponent } from './crea-storia/crea-storia.component';
 import { MatExpansionModule } from '@angular/material/expansion';
-import { MatAccordion } from '@angular/material/expansion';
-import { MatSelect, MatSelectModule } from '@angular/material/select';
-import { MatOption } from '@angular/material/select';
-import { FormsModule} from '@angular/forms';
-
-
-
-
-
-
+import { MatSelectModule } from '@angular/material/select'; // Importa MatSelectModule
+import { GiocaStoriaComponent } from './gioca-storia/gioca-storia.component'; // Assicurati di importare il nome corretto
 
 @NgModule({
   declarations: [
@@ -35,28 +27,26 @@ import { FormsModule} from '@angular/forms';
     NavbarComponent,
     LoginComponent,
     RegisterComponent,
-    CreaStoriaComponent
+    CreaStoriaComponent,
+    GiocaStoriaComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     FormsModule,
     BrowserAnimationsModule,
-    HttpClientModule, // Aggiungi HttpClientModule qui
+    HttpClientModule,
     MatToolbarModule,
     MatButtonModule,
     MatIconModule,
     MatCardModule,
-    MatInputModule, 
+    MatInputModule,
     MatFormFieldModule,
     ReactiveFormsModule,
     MatExpansionModule,
-    MatAccordion,
-    MatSelect,
-    MatOption
-
+    MatSelectModule
   ],
-  providers: [], // Aggiungi il servizio ApiService ai provider
+  providers: [],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

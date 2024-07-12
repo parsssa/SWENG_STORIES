@@ -24,10 +24,13 @@ export class NavbarComponent {
     this.isLoggedIn = this.checkAuthStatus();
   }
 
+
   creaStoria() {
     // Logica per la creazione della storia
     console.log("Funzione creaStoria chiamata.");
   }
+
+  
 
   logout(): void {
     // Simula la logica di logout

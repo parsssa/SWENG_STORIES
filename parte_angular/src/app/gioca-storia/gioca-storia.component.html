@@ -1,0 +1,26 @@
+<mat-card *ngIf="currentScenario">
+  <mat-card-title>{{ currentScenario.title }}</mat-card-title>
+  <mat-card-content>
+    <p>{{ currentScenario.description }}</p>
+    <div *ngIf="currentScenario.riddle">
+      <mat-form-field>
+        <mat-label>Indovinello</mat-label>
+        <input matInput [(ngModel)]="riddleAnswer">
+      </mat-form-field>
+      <button mat-raised-button color="primary" (click)="makeDecision({ answer: riddleAnswer })">Rispondi</button>
+    </div>
+    <div *ngIf="currentScenario.choices">
+      <button mat-raised-button *ngFor="let choice of currentScenario.choices" (click)="makeDecision(choice)">
+        {{ choice.text }}
+      </button>
+    </div>
+  </mat-card-content>
+</mat-card>
+<mat-card class="inventory-card">
+  <mat-card-title>Inventario</mat-card-title>
+  <mat-card-content>
+    <ul>
+      <li *ngFor="let item of inventory">{{ item.name }}</li>
+    </ul>
+  </mat-card-content>
+</mat-card>
