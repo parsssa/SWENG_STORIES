@@ -1,0 +1,46 @@
+<mat-card>
+    <mat-card-title>Gestione Storie</mat-card-title>
+    <mat-card-content>
+      <mat-form-field appearance="fill">
+        <mat-label>Cerca storie</mat-label>
+        <input matInput [(ngModel)]="searchTerm" placeholder="Inserisci il titolo della storia">
+      </mat-form-field>
+  
+      <h3>Storie disponibili</h3>
+      <mat-list>
+        <mat-list-item *ngFor="let story of searchStories()">
+          {{story.title}}
+          <button mat-icon-button (click)="editStory(story)">
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button mat-icon-button (click)="viewFirstScenario(story)">
+            <mat-icon>visibility</mat-icon>
+          </button>
+        </mat-list-item>
+      </mat-list>
+  
+      <div *ngIf="editingStory">
+        <h3>Modifica Storia</h3>
+        <mat-form-field appearance="fill">
+          <mat-label>Titolo</mat-label>
+          <input matInput [(ngModel)]="editingStory.title">
+        </mat-form-field>
+        <mat-form-field appearance="fill">
+          <mat-label>Primo Scenario</mat-label>
+          <textarea matInput [(ngModel)]="editingStory.firstScenario"></textarea>
+        </mat-form-field>
+        <button mat-raised-button color="primary" (click)="saveStoryChanges()">Salva</button>
+        <button mat-button (click)="cancelEdit()">Annulla</button>
+      </div>
+  
+      <h3>Giochi Salvati</h3>
+      <mat-list>
+        <mat-list-item *ngFor="let savedGame of savedGames">
+          Storia {{savedGame.storyId}} - Scenario {{savedGame.currentScenarioId}}
+          <button mat-icon-button (click)="deleteSavedGame(savedGame)">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </mat-list-item>
+      </mat-list>
+    </mat-card-content>
+  </mat-card>

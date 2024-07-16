@@ -5,6 +5,7 @@ import { LoginComponent } from './login/login.component';
 import { RegisterComponent } from './register/register.component';
 import { CreaStoriaComponent } from './crea-storia/crea-storia.component';
 import { GiocaStoriaComponent } from './gioca-storia/gioca-storia.component';
+import { GestioneScenarioComponent } from './gestione-scenario/gestione-scenario.component';
 
 const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -12,6 +13,8 @@ const routes: Routes = [
   { path: 'register', component: RegisterComponent },
   { path: 'creaStoria', component: CreaStoriaComponent},
   { path: 'giocaStoria', component: GiocaStoriaComponent},
+  { path: 'gestioneScenario', component: GestioneScenarioComponent},
+
 
   // Altre rotte qui...
   { path: '**', redirectTo: '' } // Rotta wildcard
