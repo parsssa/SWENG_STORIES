@@ -1,31 +1,50 @@
-<mat-card *ngIf="currentScenario">
+<mat-card class="play-story-card" *ngIf="currentScenario">
   <mat-card-title>{{ currentScenario.title }}</mat-card-title>
   <mat-card-content>
-    <p>{{ currentScenario.description }}</p>
-    <div *ngIf="currentScenario.riddle">
-      <mat-form-field>
-        <mat-label>Indovinello</mat-label>
-        <input matInput [(ngModel)]="riddleAnswer">
-      </mat-form-field>
-      <button mat-raised-button color="primary" (click)="makeDecision({ answer: riddleAnswer })">Rispondi</button>
+    <div>
+      <p>{{ currentScenario.description }}</p>
     </div>
-    <div *ngIf="currentScenario.choices">
-      <button mat-raised-button *ngFor="let choice of currentScenario.choices" (click)="makeDecision(choice)">
-        {{ choice.text }}
-      </button>
-      <!-- COMMENTONE -->
 
-      <!-- COMMENTONE -->
+    <div *ngIf="currentScenario.riddle">
+      <mat-form-field appearance="fill" class="full-width">
+        <mat-label>Indovinello</mat-label>
+        <input matInput placeholder="Rispondi all'indovinello" [(ngModel)]="userRiddleAnswer">
+      </mat-form-field>
+      <button mat-raised-button color="primary" (click)="submitRiddle()">Invia Risposta</button>
+    </div>
 
+    <div *ngIf="!currentScenario.riddle && currentScenario.choices">
+      <h3>Le tue scelte</h3>
+      <div *ngFor="let choice of currentScenario.choices">
+        <button mat-raised-button 
+                color="accent" 
+                (click)="makeChoice(choice)" 
+                [disabled]="!canMakeChoice(choice)">
+          {{ choice.text }}
+        </button>
+      </div>
+    </div>
 
+    <div *ngIf="currentScenario.itemsToCollect && currentScenario.itemsToCollect.length > 0">
+      <h3>Strumenti da raccogliere</h3>
+      <div *ngFor="let item of currentScenario.itemsToCollect">
+        <button mat-raised-button color="warn" (click)="collectItem(item)">
+          Raccogli {{ item }}
+        </button>
+      </div>
     </div>
   </mat-card-content>
 </mat-card>
-<mat-card class="inventory-card">
+
+<mat-card class="inventory-card" *ngIf="inventory.length > 0">
   <mat-card-title>Inventario</mat-card-title>
   <mat-card-content>
-    <ul>
-      <li *ngFor="let item of inventory">{{ item.name }}</li>
-    </ul>
+    <div>
+      <mat-chip-list>
+        <mat-chip *ngFor="let item of inventory" color="primary" selected>
+          {{ item }}
+        </mat-chip>
+      </mat-chip-list>
+    </div>
   </mat-card-content>
 </mat-card>

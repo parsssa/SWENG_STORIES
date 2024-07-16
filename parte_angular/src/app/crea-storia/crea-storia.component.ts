@@ -1,47 +1,70 @@
-import { Component } from '@angular/core';
-import { FormArray, FormBuilder, FormGroup } from '@angular/forms';
+import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-crea-storia',
   templateUrl: './crea-storia.component.html',
   styleUrls: ['./crea-storia.component.scss']
 })
-export class CreaStoriaComponent {
+export class CreaStoriaComponent implements OnInit {
   storyForm: FormGroup;
 
   constructor(private fb: FormBuilder) {
     this.storyForm = this.fb.group({
-      title: [''],
-      description: [''],
-      start: [''],
-      alternatives: this.fb.array([
-        this.fb.control('')
-      ]),
+      title: ['', Validators.required],
+      description: ['', Validators.required],
+      start: ['', Validators.required],
+      alternatives: this.fb.array([]),
+      endings: this.fb.array([]),
       riddle: [''],
+      riddleType: ['text'],
       inventory: ['']
     });
   }
 
-  get alternatives() {
+  ngOnInit(): void {
+    this.addAlternative(); // Aggiungi una prima alternativa per default
+    this.addEnding(); // Aggiungi un primo finale per default
+  }
+
+  get alternatives(): FormArray {
     return this.storyForm.get('alternatives') as FormArray;
   }
 
-  addAlternative() {
-    this.alternatives.push(this.fb.control(''));
+  get endings(): FormArray {
+    return this.storyForm.get('endings') as FormArray;
   }
 
-  resetForm() {
+  addAlternative(): void {
+    const alternative = this.fb.group({
+      text: ['', Validators.required],
+      type: ['without-items', Validators.required],
+      items: ['']
+    });
+    this.alternatives.push(alternative);
+  }
+
+  addEnding(): void {
+    const ending = this.fb.control('', Validators.required);
+    this.endings.push(ending);
+  }
+
+  onSubmit(): void {
+    if (this.storyForm.valid) {
+      console.log('Story Form Value:', this.storyForm.value);
+      // Qui puoi aggiungere la logica per inviare i dati al server
+    }
+  }
+
+  resetForm(): void {
     this.storyForm.reset();
-    while (this.alternatives.length !== 0) {
+    while (this.alternatives.length) {
       this.alternatives.removeAt(0);
     }
-    this.addAlternative();
-  }
-
-  onSubmit() {
-    if (this.storyForm.valid) {
-      console.log('Form Submitted!', this.storyForm.value);
-      // Aggiungi qui la logica per gestire l'invio del modulo, ad esempio una chiamata API
+    while (this.endings.length) {
+      this.endings.removeAt(0);
     }
+    this.addAlternative();
+    this.addEnding();
   }
 }
