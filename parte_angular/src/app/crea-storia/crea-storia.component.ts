@@ -1,5 +1,9 @@
+// crea-storia.component.ts
+
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
+import { ApiService } from '../api.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-crea-storia',
@@ -9,7 +13,7 @@ import { FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
 export class CreaStoriaComponent implements OnInit {
   storyForm: FormGroup;
 
-  constructor(private fb: FormBuilder) {
+  constructor(private fb: FormBuilder, private apiService: ApiService, private router: Router) {
     this.storyForm = this.fb.group({
       title: ['', Validators.required],
       description: ['', Validators.required],
@@ -51,8 +55,16 @@ export class CreaStoriaComponent implements OnInit {
 
   onSubmit(): void {
     if (this.storyForm.valid) {
-      console.log('Story Form Value:', this.storyForm.value);
-      // Qui puoi aggiungere la logica per inviare i dati al server
+      const storyData = this.storyForm.value;
+      this.apiService.createStoria(storyData).subscribe(
+        response => {
+          // Naviga alla lista delle storie o a un'altra pagina di conferma
+          this.router.navigate(['/storie']);
+        },
+        error => {
+          console.error('Errore nella creazione della storia:', error);
+        }
+      );
     }
   }
 

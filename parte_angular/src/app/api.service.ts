@@ -37,11 +37,9 @@ export class ApiService {
     return this.http.get(`${this.baseUrl}/utenti`);
   }
 
-  // Aggiungi questo metodo per il login
   loginUtente(credentials: { username: string; password: string; }): Observable<any> {
     return this.http.post(`${this.baseUrl}/login`, credentials);
   }
-
 
   getUtenteByUsername(username: string): Observable<any> {
     return this.http.get(`${this.baseUrl}/utenti/${username}`);
@@ -58,6 +56,4 @@ export class ApiService {
   deleteUtente(username: string): Observable<any> {
     return this.http.delete(`${this.baseUrl}/utenti/${username}`);
   }
-
-  // Aggiungi altri metodi per interagire con le altre entità del backend
 }

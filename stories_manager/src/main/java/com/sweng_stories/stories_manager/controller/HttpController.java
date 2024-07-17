@@ -6,8 +6,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import com.sweng_stories.stories_manager.domain.Storia;
-import com.sweng_stories.stories_manager.domain.Utente;
+import com.sweng_stories.stories_manager.domain.*;
+
 
 import java.util.List;
 
@@ -17,7 +17,7 @@ import java.util.List;
 public class HttpController {
 
     @Autowired
-    private MongoDbController mongoDbController; // Cambio di istanza da JsonController a MongoDbController
+    private MongoDbController mongoDbController;
 
     @GetMapping("/storie")
     public List<Storia> getAllStorie() {
@@ -25,23 +25,37 @@ public class HttpController {
     }
 
     @GetMapping("/storie/{id}")
-    public Storia getStoriaById(@PathVariable Long id) {
-        return mongoDbController.getStoriaById(id);
+    public ResponseEntity<Storia> getStoriaById(@PathVariable Long id) {
+        Storia storia = mongoDbController.getStoriaById(id);
+        if (storia != null) {
+            return ResponseEntity.ok(storia);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @PostMapping("/storie")
-    public Storia createStoria(@RequestBody Storia storia) {
-        return mongoDbController.createStoria(storia);
+    public ResponseEntity<Storia> createStoria(@RequestBody Storia storia) {
+        if (storia == null) {
+            return ResponseEntity.badRequest().build();
+        }
+        Storia nuovaStoria = mongoDbController.createStoria(storia);
+        return ResponseEntity.status(HttpStatus.CREATED).body(nuovaStoria);
     }
 
     @PutMapping("/storie/{id}")
-    public Storia updateStoria(@PathVariable Long id, @RequestBody Storia storia) {
-        return mongoDbController.updateStoria(id, storia);
+    public ResponseEntity<Storia> updateStoria(@PathVariable Long id, @RequestBody Storia storia) {
+        if (storia == null || !id.equals(storia.getId())) {
+            return ResponseEntity.badRequest().build();
+        }
+        Storia storiaAggiornata = mongoDbController.updateStoria(id, storia);
+        return ResponseEntity.ok(storiaAggiornata);
     }
 
     @DeleteMapping("/storie/{id}")
-    public void deleteStoria(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteStoria(@PathVariable Long id) {
         mongoDbController.deleteStoria(id);
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/utenti")
@@ -60,8 +74,13 @@ public class HttpController {
     }
 
     @GetMapping("/utenti/{username}")
-    public Utente getUtenteByUsername(@PathVariable String username) {
-        return mongoDbController.getUtenteByUsername(username);
+    public ResponseEntity<Utente> getUtenteByUsername(@PathVariable String username) {
+        Utente utente = mongoDbController.getUtenteByUsername(username);
+        if (utente != null) {
+            return ResponseEntity.ok(utente);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @PostMapping("/utenti")
@@ -75,12 +94,17 @@ public class HttpController {
     }
 
     @PutMapping("/utenti/{username}")
-    public Utente updateUtente(@PathVariable String username, @RequestBody Utente utente) {
-        return mongoDbController.updateUtente(username, utente);
+    public ResponseEntity<Utente> updateUtente(@PathVariable String username, @RequestBody Utente utente) {
+        if (utente == null || !username.equals(utente.getUsername())) {
+            return ResponseEntity.badRequest().build();
+        }
+        Utente utenteAggiornato = mongoDbController.updateUtente(username, utente);
+        return ResponseEntity.ok(utenteAggiornato);
     }
 
     @DeleteMapping("/utenti/{username}")
-    public void deleteUtente(@PathVariable String username) {
+    public ResponseEntity<Void> deleteUtente(@PathVariable String username) {
         mongoDbController.deleteUtente(username);
+        return ResponseEntity.noContent().build();
     }
 }

@@ -1,17 +1,27 @@
+// IndovinelloNumerico.java
 package com.sweng_stories.stories_manager.domain;
 
 public class IndovinelloNumerico extends Indovinello {
-    public IndovinelloNumerico(Long id, String descrizione) {
+    private Integer rispostaCorretta;
+
+    public IndovinelloNumerico(Long id, String descrizione, Integer rispostaCorretta) {
         super(id, descrizione);
-        //TODO Auto-generated constructor stub
+        this.rispostaCorretta = rispostaCorretta;
     }
 
-    private int rispostaCorretta;
+    public Integer getRispostaCorretta() {
+        return rispostaCorretta;
+    }
 
-    // Costruttori, getter e setter
+    public void setRispostaCorretta(Integer rispostaCorretta) {
+        this.rispostaCorretta = rispostaCorretta;
+    }
 
     @Override
     public boolean verificaRisultato(Object risposta) {
-        return risposta instanceof Integer && (int) risposta == rispostaCorretta;
+        if (risposta instanceof Integer) {
+            return risposta.equals(this.rispostaCorretta);
+        }
+        return false;
     }
 }

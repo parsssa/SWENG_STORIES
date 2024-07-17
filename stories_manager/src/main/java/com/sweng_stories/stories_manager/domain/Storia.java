@@ -1,4 +1,3 @@
-// Storia.java
 package com.sweng_stories.stories_manager.domain;
 
 import java.util.ArrayList;
@@ -12,13 +11,14 @@ public class Storia {
     private String contenuto;
     private List<Scenario> finali;
     private List<Scenario> scenari;
+    private Indovinello indovinello;
+    private Inventario inventario;
 
     public Storia() {
         this.finali = new ArrayList<>();
         this.scenari = new ArrayList<>();
     }
-    
-    // Costruttore con parametri
+
     public Storia(Long id, String titolo, String descrizione, Scenario inizio) {
         this.id = id;
         this.titolo = titolo;
@@ -26,21 +26,18 @@ public class Storia {
         this.inizio = inizio;
         this.finali = new ArrayList<>();
         this.scenari = new ArrayList<>();
-        this.scenari.add(inizio); // Aggiungi lo scenario iniziale alla lista degli scenari
+        this.scenari.add(inizio);
     }
-    
-    // Metodo per aggiungere uno scenario alla lista degli scenari della storia
+
     public void aggiungiScenario(Scenario scenario) {
         this.scenari.add(scenario);
     }
 
-    // Metodo per aggiungere uno scenario finale alla lista dei finali della storia
     public void aggiungiFinale(Scenario finale) {
         this.finali.add(finale);
     }
 
-
-    // Getter e setter per tutte le proprietà
+    // Getter e setter
     public Long getId() {
         return id;
     }
@@ -89,11 +86,27 @@ public class Storia {
         this.scenari = scenari;
     }
 
-    public String getContenuto(){
+    public String getContenuto() {
         return contenuto;
     }
 
-    public void setContenuto(String contenutoInserimento){
-        contenuto= contenutoInserimento;
+    public void setContenuto(String contenuto) {
+        this.contenuto = contenuto;
+    }
+
+    public Indovinello getIndovinello() {
+        return indovinello;
+    }
+
+    public void setIndovinello(Indovinello indovinello) {
+        this.indovinello = indovinello;
+    }
+
+    public Inventario getInventario() {
+        return inventario;
+    }
+
+    public void setInventario(Inventario inventario) {
+        this.inventario = inventario;
     }
 }
