@@ -26,8 +26,8 @@ public class MongoDbController {
     private final MongoCollection<Document> oggettiCollection;
 
     public MongoDbController(@Value("${spring.data.mongodb.host}") String mongoHost,
-                             @Value("${spring.data.mongodb.port}") int mongoPort,
-                             @Value("${spring.data.mongodb.database}") String databaseName) {
+            @Value("${spring.data.mongodb.port}") int mongoPort,
+            @Value("${spring.data.mongodb.database}") String databaseName) {
 
         String connectionString = String.format("mongodb://%s:%d", mongoHost, mongoPort);
 
@@ -224,73 +224,77 @@ public class MongoDbController {
         deleteIndovinelliAndOggettiForScenario(id);
     }
 
-    // Metodi per gli indovinelli
-    public List<Indovinello> getIndovinelliByScenarioId(Long scenarioId) {
-        List<Indovinello> indovinelli = new ArrayList<>();
-        Document query = new Document("scenarioId", scenarioId);
-        indovinelliCollection.find(query).forEach(document -> {
-            String tipo = document.getString("tipo");
-            Long id = document.getLong("id");
-            String descrizione = document.getString("descrizione");
-            Object rispostaCorretta = document.get("rispostaCorretta");
+    // Metodi per Indovinello
+public List<Indovinello> getIndovinelliByScenarioId(Long scenarioId) {
+    List<Indovinello> indovinelli = new ArrayList<>();
+    Document query = new Document("scenarioId", scenarioId);
+    indovinelliCollection.find(query).forEach(document -> {
+        String tipo = document.getString("tipo");
+        Long id = document.getLong("id");
+        String descrizione = document.getString("descrizione");
+        Object rispostaCorretta = document.get("rispostaCorretta");
+        Object altraInformazione = document.get("altraInformazione"); // Assumi che questo campo esista
+        Long scenarioIdDoc = document.getLong("scenarioId"); // Assumi che questo campo esista
 
-            Indovinello indovinello = IndovinelloFactory.createIndovinello(tipo, id, descrizione, rispostaCorretta);
-            // Add other fields if necessary
-            indovinelli.add(indovinello);
-        });
-        return indovinelli;
+        Indovinello indovinello = IndovinelloFactory.createIndovinello(tipo, id, descrizione, (String) rispostaCorretta, altraInformazione, scenarioIdDoc);
+        // Aggiungi altri campi se necessario
+        indovinelli.add(indovinello);
+    });
+    return indovinelli;
+}
+
+public Indovinello getIndovinelloById(Long id) {
+    Document query = new Document("id", id);
+    Document result = indovinelliCollection.find(query).first();
+    if (result != null) {
+        String tipo = result.getString("tipo");
+        Long idResult = result.getLong("id");
+        String descrizione = result.getString("descrizione");
+        Object rispostaCorretta = result.get("rispostaCorretta");
+        Object altraInformazione = result.get("altraInformazione"); // Assumi che questo campo esista
+        Long scenarioIdDoc = result.getLong("scenarioId"); // Assumi che questo campo esista
+
+        return IndovinelloFactory.createIndovinello(tipo, idResult, descrizione, (String) rispostaCorretta, altraInformazione, scenarioIdDoc);
     }
+    return null;
+}
 
-    public Indovinello getIndovinelloById(Long id) {
-        Document query = new Document("id", id);
-        Document result = indovinelliCollection.find(query).first();
-        if (result != null) {
-            String tipo = result.getString("tipo");
-            Long idResult = result.getLong("id");
-            String descrizione = result.getString("descrizione");
-            Object rispostaCorretta = result.get("rispostaCorretta");
+public Indovinello createIndovinello(Indovinello nuovoIndovinello) {
+    Document document = new Document("id", nuovoIndovinello.getId())
+            .append("descrizione", nuovoIndovinello.getDescrizione());
 
-            return IndovinelloFactory.createIndovinello(tipo, idResult, descrizione, rispostaCorretta);
-        }
-        return null;
+    if (nuovoIndovinello instanceof IndovinelloTestuale) {
+        document.append("tipo", "testuale")
+                .append("rispostaCorretta", ((IndovinelloTestuale) nuovoIndovinello).getRispostaCorretta());
+    } else if (nuovoIndovinello instanceof IndovinelloNumerico) {
+        document.append("tipo", "numerico")
+                .append("rispostaCorretta", ((IndovinelloNumerico) nuovoIndovinello).getRispostaCorretta());
     }
+    // Aggiungi altri campi se necessario
+    indovinelliCollection.insertOne(document);
+    return nuovoIndovinello;
+}
 
-    public Indovinello createIndovinello(Indovinello nuovoIndovinello) {
-        Document document = new Document("id", nuovoIndovinello.getId())
-                .append("descrizione", nuovoIndovinello.getDescrizione());
+public Indovinello updateIndovinello(Long id, Indovinello indovinelloAggiornato) {
+    Document query = new Document("id", id);
+    Document update = new Document("$set", new Document("descrizione", indovinelloAggiornato.getDescrizione()));
 
-        if (nuovoIndovinello instanceof IndovinelloTestuale) {
-            document.append("tipo", "testuale")
-                    .append("rispostaCorretta", ((IndovinelloTestuale) nuovoIndovinello).getRispostaCorretta());
-        } else if (nuovoIndovinello instanceof IndovinelloNumerico) {
-            document.append("tipo", "numerico")
-                    .append("rispostaCorretta", ((IndovinelloNumerico) nuovoIndovinello).getRispostaCorretta());
-        }
-        // Add other fields if necessary
-        indovinelliCollection.insertOne(document);
-        return nuovoIndovinello;
+    if (indovinelloAggiornato instanceof IndovinelloTestuale) {
+        update.append("$set", new Document("tipo", "testuale")
+                .append("rispostaCorretta", ((IndovinelloTestuale) indovinelloAggiornato).getRispostaCorretta()));
+    } else if (indovinelloAggiornato instanceof IndovinelloNumerico) {
+        update.append("$set", new Document("tipo", "numerico")
+                .append("rispostaCorretta", ((IndovinelloNumerico) indovinelloAggiornato).getRispostaCorretta()));
     }
+    // Aggiungi altri campi se necessario
+    indovinelliCollection.updateOne(query, update);
+    return indovinelloAggiornato;
+}
 
-    public Indovinello updateIndovinello(Long id, Indovinello indovinelloAggiornato) {
-        Document query = new Document("id", id);
-        Document update = new Document("$set", new Document("descrizione", indovinelloAggiornato.getDescrizione()));
-        
-        if (indovinelloAggiornato instanceof IndovinelloTestuale) {
-            update.append("$set", new Document("tipo", "testuale")
-                    .append("rispostaCorretta", ((IndovinelloTestuale) indovinelloAggiornato).getRispostaCorretta()));
-        } else if (indovinelloAggiornato instanceof IndovinelloNumerico) {
-            update.append("$set", new Document("tipo", "numerico")
-                    .append("rispostaCorretta", ((IndovinelloNumerico) indovinelloAggiornato).getRispostaCorretta()));
-        }
-        // Add other fields if necessary
-        indovinelliCollection.updateOne(query, update);
-        return indovinelloAggiornato;
-    }
-
-    public void deleteIndovinello(Long id) {
-        Document query = new Document("id", id);
-        indovinelliCollection.deleteOne(query);
-    }
+public void deleteIndovinello(Long id) {
+    Document query = new Document("id", id);
+    indovinelliCollection.deleteOne(query);
+}
 
     // Metodi per gli oggetti
     public List<Oggetto> getOggettiByScenarioId(Long scenarioId) {
@@ -372,7 +376,7 @@ public class MongoDbController {
         // Rimuovere indovinelli e oggetti esistenti
         indovinelliCollection.deleteMany(new Document("scenarioId", scenarioId));
         oggettiCollection.deleteMany(new Document("scenarioId", scenarioId));
-        
+
         // Salvare gli aggiornamenti
         saveIndovinelliAndOggettiForScenario(scenario);
     }

@@ -1,23 +1,23 @@
-// Oggetto.java
 package com.sweng_stories.stories_manager.domain;
 
 public class Oggetto {
     private Long id;
     private String nome;
     private String descrizione;
+    private Long scenarioId;  // Aggiungi questo campo
 
-    // Costruttore vuoto
+    // Costruttori
     public Oggetto() {
     }
 
-    // Costruttore parametrico
-    public Oggetto(Long id, String nome, String descrizione) {
+    public Oggetto(Long id, String nome, String descrizione, Long scenarioId) {
         this.id = id;
         this.nome = nome;
         this.descrizione = descrizione;
+        this.scenarioId = scenarioId;
     }
 
-    // Getter e Setter
+    // Getter e setter per id
     public Long getId() {
         return id;
     }
@@ -26,6 +26,7 @@ public class Oggetto {
         this.id = id;
     }
 
+    // Getter e setter per nome
     public String getNome() {
         return nome;
     }
@@ -34,6 +35,7 @@ public class Oggetto {
         this.nome = nome;
     }
 
+    // Getter e setter per descrizione
     public String getDescrizione() {
         return descrizione;
     }
@@ -42,35 +44,22 @@ public class Oggetto {
         this.descrizione = descrizione;
     }
 
-    // Metodo toString per una rappresentazione testuale
+    // Getter e setter per scenarioId
+    public Long getScenarioId() {
+        return scenarioId;
+    }
+
+    public void setScenarioId(Long scenarioId) {
+        this.scenarioId = scenarioId;
+    }
+
     @Override
     public String toString() {
         return "Oggetto{" +
                 "id=" + id +
                 ", nome='" + nome + '\'' +
                 ", descrizione='" + descrizione + '\'' +
+                ", scenarioId=" + scenarioId +
                 '}';
-    }
-
-    // Override di equals per confrontare oggetti
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        Oggetto oggetto = (Oggetto) o;
-
-        if (id != null ? !id.equals(oggetto.id) : oggetto.id != null) return false;
-        if (nome != null ? !nome.equals(oggetto.nome) : oggetto.nome != null) return false;
-        return descrizione != null ? descrizione.equals(oggetto.descrizione) : oggetto.descrizione == null;
-    }
-
-    // Override di hashCode per l'uso con strutture dati basate su hash
-    @Override
-    public int hashCode() {
-        int result = id != null ? id.hashCode() : 0;
-        result = 31 * result + (nome != null ? nome.hashCode() : 0);
-        result = 31 * result + (descrizione != null ? descrizione.hashCode() : 0);
-        return result;
     }
 }

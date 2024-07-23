@@ -1,19 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-
-interface Scenario {
-  title: string;
-  description: string;
-  riddle?: string;
-  riddleType?: 'text' | 'numeric';
-  choices?: Choice[];
-  itemsToCollect?: string[];
-}
-
-interface Choice {
-  text: string;
-  requiredItem?: string;
-  nextScenarioId: number;
-}
+import { ActivatedRoute } from '@angular/router';
+import { ApiService } from '../api.service';  // Assicurati di avere questo servizio
+import { Observable, of } from 'rxjs';
+import { switchMap, map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-gioca-storia',
@@ -21,75 +10,68 @@ interface Choice {
   styleUrls: ['./gioca-storia.component.scss']
 })
 export class GiocaStoriaComponent implements OnInit {
-  currentScenario: Scenario | undefined;
+  currentScenario: any;  // Cambia a 'any' se non vuoi definire un'interfaccia
   inventory: string[] = [];
   userRiddleAnswer: string = '';
-  scenarios: Scenario[] = [
-    {
-      title: 'Inizio della storia',
-      description: 'Ti trovi in una foresta oscura...',
-      choices: [
-        { text: 'Vai a destra', nextScenarioId: 1 },
-        { text: 'Vai a sinistra', nextScenarioId: 2 }
-      ],
-      itemsToCollect: ['lanterna']
-    },
-    {
-      title: 'Secondo scenario',
-      description: 'Hai trovato una caverna...',
-      riddle: 'Qual è il numero magico?',
-      riddleType: 'numeric',
-      choices: [
-        { text: 'Continua', nextScenarioId: 3 }
-      ]
-    },
-    {
-      title: 'Terzo scenario',
-      description: 'Hai trovato un tesoro...',
-      choices: [
-        { text: 'Apri il tesoro', nextScenarioId: 4, requiredItem: 'lanterna' }
-      ]
-    },
-    {
-      title: 'Fine della storia',
-      description: 'Hai completato la storia!',
-    }
-  ];
+  storiaId: number = 0;
+
+  constructor(
+    private route: ActivatedRoute,
+    private apiService: ApiService
+  ) {}
 
   ngOnInit(): void {
-    this.loadScenario(0);
+    this.route.paramMap.pipe(
+      switchMap(params => {
+        const id = params.get('id');
+        if (id !== null) {
+          this.storiaId = +id;  // Recupera l'ID dalla route
+          return this.apiService.getStoriaById(this.storiaId);  // Recupera la storia dall'API
+        } else {
+          return of(null);  // Se non c'è un ID, ritorna un osservabile con valore null
+        }
+      }),
+      map(storia => {
+        if (storia && storia.inizio) {
+          this.loadScenario(storia.inizio.id, storia);
+        } else {
+          console.error('Storia non trovata o ID non valido:', this.storiaId);
+        }
+      })
+    ).subscribe();
   }
 
-  loadScenario(id: number): void {
-    if (id >= 0 && id < this.scenarios.length) {
-      this.currentScenario = this.scenarios[id];
-      console.log('Carica scenario con ID:', id);
+  loadScenario(id: number, storia: any): void {
+    const scenario = storia.scenari.find((sc: any) => sc.id === id);
+    if (scenario) {
+      this.currentScenario = scenario;
     } else {
       console.error('ID scenario non valido:', id);
     }
   }
 
-  canMakeChoice(choice: Choice): boolean {
+  canMakeChoice(choice: any): boolean {
     if (choice.requiredItem) {
       return this.inventory.includes(choice.requiredItem);
     }
     return true;
   }
 
-  makeChoice(choice: Choice): void {
+  makeChoice(choice: any): void {
     if (this.currentScenario) {
-      this.loadScenario(choice.nextScenarioId);
+      const nextScenario = this.currentScenario.choices.find((c: any) => c.text === choice.text);
+      if (nextScenario) {
+        this.loadScenario(nextScenario.nextScenarioId, this.currentScenario.storia);
+      }
     }
   }
 
   submitRiddle(): void {
-    if (this.currentScenario && this.currentScenario.choices && this.currentScenario.choices.length > 0) {
+    if (this.currentScenario && this.currentScenario.riddleType) {
       if (this.currentScenario.riddleType === 'numeric' && this.userRiddleAnswer === '42') {
-        console.log('Risposta numerica corretta:', this.userRiddleAnswer);
-        this.loadScenario(this.currentScenario.choices[0].nextScenarioId);
+        this.makeChoice(this.currentScenario.choices[0]);
       } else if (this.currentScenario.riddleType === 'text' && this.userRiddleAnswer.toLowerCase() === 'answer') {
-        console.log('Risposta testuale corretta:', this.userRiddleAnswer);
-        this.loadScenario(this.currentScenario.choices[0].nextScenarioId);
+        this.makeChoice(this.currentScenario.choices[0]);
       } else {
         console.log('Risposta errata:', this.userRiddleAnswer);
       }
@@ -100,7 +82,7 @@ export class GiocaStoriaComponent implements OnInit {
   collectItem(item: string): void {
     this.inventory.push(item);
     if (this.currentScenario && this.currentScenario.itemsToCollect) {
-      this.currentScenario.itemsToCollect = this.currentScenario.itemsToCollect.filter(i => i !== item);
+      this.currentScenario.itemsToCollect = this.currentScenario.itemsToCollect.filter((i: string) => i !== item);
     }
   }
 }

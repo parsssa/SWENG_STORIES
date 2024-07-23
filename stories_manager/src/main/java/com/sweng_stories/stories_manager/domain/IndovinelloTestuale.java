@@ -1,32 +1,57 @@
-// IndovinelloTestuale.java
 package com.sweng_stories.stories_manager.domain;
 
 public class IndovinelloTestuale extends Indovinello {
     private String rispostaCorretta;
 
-    // // Default constructor This is necessary because MongoDB code needs to instantiate these objects without providing any parameters initially.
-    // public IndovinelloTestuale() {
-    //     super();
-    // }
+    // Costruttore vuoto
+    public IndovinelloTestuale() {}
 
-    public IndovinelloTestuale(Long id, String descrizione, String rispostaCorretta) {
-        super(id, descrizione);
-        this.rispostaCorretta = rispostaCorretta;
-    }
-
-    public String getRispostaCorretta() {
-        return rispostaCorretta;
-    }
-
-    public void setRispostaCorretta(String rispostaCorretta) {
-        this.rispostaCorretta = rispostaCorretta;
+    public IndovinelloTestuale(Long id, String descrizione, String domanda, String rispostaCorretta, Long scenarioId) {
+        super(id, descrizione, domanda, rispostaCorretta, scenarioId);
     }
 
     @Override
     public boolean verificaRisultato(Object risposta) {
         if (risposta instanceof String) {
-            return risposta.equals(this.rispostaCorretta);
+            return rispostaCorretta.equals(risposta);
         }
         return false;
+    }
+
+    @Override
+    public String getTipo() {
+        return "testuale";
+    }
+
+    @Override
+    public String getRispostaCorretta() {
+        return rispostaCorretta;
+    }
+
+    @Override
+    public void setRispostaCorretta(Object rispostaCorretta) {
+        if (rispostaCorretta instanceof String) {
+            this.rispostaCorretta = (String) rispostaCorretta;
+        }
+    }
+
+    @Override
+    public String getDomanda() {
+        return super.getDomanda();
+    }
+
+    @Override
+    public void setDomanda(String domanda) {
+        super.setDomanda(domanda);
+    }
+
+    @Override
+    public Long getScenarioId() {
+        return super.getScenarioId();
+    }
+
+    @Override
+    public void setScenarioId(Long scenarioId) {
+        super.setScenarioId(scenarioId);
     }
 }

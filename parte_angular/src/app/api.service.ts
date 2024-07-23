@@ -16,6 +16,10 @@ export class ApiService {
     return this.http.get(`${this.baseUrl}/storie`);
   }
 
+  getAllStorieTitoli(): Observable<any> {
+    return this.http.get(`${this.baseUrl}/storie/titoli`);
+  }
+
   getStoriaById(id: number): Observable<any> {
     return this.http.get(`${this.baseUrl}/storie/${id}`);
   }

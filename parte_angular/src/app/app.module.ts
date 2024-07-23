@@ -20,6 +20,7 @@ import { MatExpansionModule } from '@angular/material/expansion';
 import { MatSelectModule } from '@angular/material/select';
 import { GiocaStoriaComponent } from './gioca-storia/gioca-storia.component';
 import { GestioneScenarioComponent } from './gestione-scenario/gestione-scenario.component';
+import { SelezioneStoriaComponent } from './selezione-storia/selezione-storia.component';
 
 @NgModule({
   declarations: [
@@ -30,7 +31,8 @@ import { GestioneScenarioComponent } from './gestione-scenario/gestione-scenario
     RegisterComponent,
     CreaStoriaComponent,
     GiocaStoriaComponent,
-    GestioneScenarioComponent
+    GestioneScenarioComponent,
+    SelezioneStoriaComponent
   ],
   imports: [
     BrowserModule,
