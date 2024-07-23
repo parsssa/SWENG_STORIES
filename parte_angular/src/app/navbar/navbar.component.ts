@@ -1,6 +1,9 @@
-import { Component } from '@angular/core';
-import { trigger, state, style, animate, transition } from '@angular/animations';
+// navbar.component.ts
 
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { authStatus } from '../auth-status'; // Importa il comportamento
+import { Subscription } from 'rxjs';
+import { trigger, state, style, animate, transition } from '@angular/animations';
 
 @Component({
   selector: 'app-navbar',
@@ -13,34 +16,30 @@ import { trigger, state, style, animate, transition } from '@angular/animations'
       transition(':leave', animate(600, style({ opacity: 0 })))
     ])
   ]
-
-
 })
-export class NavbarComponent {
-  isLoggedIn = false; // Inizialmente impostato come non autenticato
+export class NavbarComponent implements OnInit, OnDestroy {
+  isLoggedIn = false;
+  private subscription?: Subscription; // Dichiara la proprietà come opzionale
 
-  constructor() {
-    // Simula uno stato di autenticazione fittizio
-    this.isLoggedIn = this.checkAuthStatus();
+  ngOnInit(): void {
+    this.subscription = authStatus.subscribe(status => {
+      this.isLoggedIn = status;
+    });
   }
 
+  ngOnDestroy(): void {
+    // Pulisci l'iscrizione quando il componente viene distrutto
+    if (this.subscription) {
+      this.subscription.unsubscribe();
+    }
+  }
 
   creaStoria() {
     // Logica per la creazione della storia
     console.log("Funzione creaStoria chiamata.");
   }
 
-  
-
   logout(): void {
-    // Simula la logica di logout
-    this.isLoggedIn = false;
-  }
-
-  private checkAuthStatus(): boolean {
-    // Simula la verifica dello stato di autenticazione
-    // Puoi impostare un valore fisso o utilizzare una logica più complessa
-    // Per questo esempio, supponiamo che l'utente sia autenticato
-    return true;
+    authStatus.next(false); // Aggiorna lo stato di autenticazione
   }
 }
