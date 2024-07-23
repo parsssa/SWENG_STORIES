@@ -14,9 +14,11 @@ public class Storia {
     private Inventario inventario;
 
     public Storia() {
+        this.id = 0L; // ID predefinito che può essere sovrascritto dal controller
         this.finali = new ArrayList<>();
         this.scenari = new ArrayList<>();
     }
+    
 
     public Storia(Long id, String titolo, String descrizione, Scenario inizio) {
         this.id = id;
@@ -39,10 +41,6 @@ public class Storia {
     // Getter e setter
     public Long getId() {
         return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public String getTitolo() {
@@ -92,6 +90,11 @@ public class Storia {
     public void setIndovinello(Indovinello indovinello) {
         this.indovinello = indovinello;
     }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+    
 
     public Inventario getInventario() {
         return inventario;

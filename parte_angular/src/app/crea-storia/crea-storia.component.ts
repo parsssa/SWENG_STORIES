@@ -20,6 +20,8 @@ export class CreaStoriaComponent implements OnInit {
       endings: this.fb.array([]),
       riddle: [''],
       riddleType: ['text'],
+      riddleQuestion: [''], // Campo aggiunto per la domanda dell'indovinello
+      riddleAnswer: [''], // Campo aggiunto per la risposta dell'indovinello
       inventory: ['']
     });
   }
@@ -55,38 +57,30 @@ export class CreaStoriaComponent implements OnInit {
     if (this.storyForm.valid) {
       const storyData = this.storyForm.value;
 
-      // Creazione del payload da inviare al backend
-      const payload = {
-        titolo: storyData.title,
-        descrizione: storyData.description,
-        inizio: {
-          descrizione: storyData.start,
-          indovinelli: [],
-          oggetti: []
-        },
-        finali: storyData.endings.map((ending: string) => ({
-          descrizione: ending,
-          indovinelli: [],
-          oggetti: []
-        })),
-        scenari: storyData.alternatives.map((alt: any) => ({
-          descrizione: alt.text,
-          indovinelli: [],
-          oggetti: alt.items.split(',').map((item: string) => ({ nome: item.trim(), descrizione: '' }))
-        })),
-        indovinello: {
-          descrizione: storyData.riddle,
-          tipo: storyData.riddleType,
-          rispostaCorretta: storyData.riddleType === 'text' ? '' : 0
-        },
-        inventario: {
-          oggetti: storyData.inventory.split(',').map((item: string) => ({ nome: item.trim(), descrizione: '' }))
+      const formData = new FormData();
+      formData.append('titolo', storyData.title);
+      formData.append('descrizione', storyData.description);
+      formData.append('inizioDescrizione', storyData.start);
+      formData.append('riddle', storyData.riddle);
+      formData.append('riddleType', storyData.riddleType);
+      formData.append('riddleQuestion', storyData.riddleQuestion);
+      formData.append('riddleAnswer', storyData.riddleAnswer);
+      formData.append('inventory', storyData.inventory);
+
+      storyData.endings.forEach((ending: string, index: number) => {
+        formData.append(`finali[${index}].descrizione`, ending);
+      });
+
+      storyData.alternatives.forEach((alt: any, index: number) => {
+        formData.append(`scenari[${index}].descrizione`, alt.text);
+        if (alt.items) {
+          alt.items.split(',').forEach((item: string, itemIndex: number) => {
+            formData.append(`scenari[${index}].oggetti[${itemIndex}].nome`, item.trim());
+          });
         }
-      };
+      });
 
-      console.log('Dati della storia inviati:', payload); // Aggiungi questo per debug
-
-      this.apiService.createStoria(payload).subscribe(
+      this.apiService.createStoria(formData).subscribe(
         response => {
           this.router.navigate(['/storie']);
         },

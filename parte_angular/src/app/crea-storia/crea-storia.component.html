@@ -24,7 +24,6 @@
             <textarea matInput placeholder="Descrivi l'alternativa" formControlName="text" required></textarea>
           </mat-form-field>
           
-          
           <mat-form-field appearance="fill" class="full-width">
             <mat-label>Tipo di Alternativa</mat-label>
             <mat-select formControlName="type">
@@ -62,6 +61,16 @@
           <mat-option value="text">Testuale</mat-option>
           <mat-option value="numeric">Numerico</mat-option>
         </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="fill" class="full-width">
+        <mat-label>Domanda dell'Indovinello</mat-label>
+        <input matInput placeholder="Inserisci la domanda" formControlName="riddleQuestion">
+      </mat-form-field>
+
+      <mat-form-field appearance="fill" class="full-width">
+        <mat-label>Risposta all'Indovinello</mat-label>
+        <input matInput placeholder="Inserisci la risposta" formControlName="riddleAnswer">
       </mat-form-field>
 
       <mat-form-field appearance="fill" class="full-width">

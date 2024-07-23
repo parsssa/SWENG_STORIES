@@ -1,5 +1,6 @@
 package com.sweng_stories.stories_manager.domain;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Scenario {
@@ -9,15 +10,18 @@ public class Scenario {
     private List<Oggetto> oggetti;
     private List<Alternative> alternative;
 
-    public Scenario() {}
+    public Scenario() {
+        this.indovinelli = new ArrayList<>();
+        this.oggetti = new ArrayList<>();
+        this.alternative = new ArrayList<>();
+    }
 
-    // Aggiungi un costruttore che includa le alternative se necessario
     public Scenario(Long id, String descrizione, List<Indovinello> indovinelli, List<Oggetto> oggetti, List<Alternative> alternative) {
         this.id = id;
         this.descrizione = descrizione;
-        this.indovinelli = indovinelli;
-        this.oggetti = oggetti;
-        this.alternative = alternative;
+        this.indovinelli = (indovinelli != null) ? indovinelli : new ArrayList<>();
+        this.oggetti = (oggetti != null) ? oggetti : new ArrayList<>();
+        this.alternative = (alternative != null) ? alternative : new ArrayList<>();
     }
 
     // Getter e setter
@@ -42,7 +46,7 @@ public class Scenario {
     }
 
     public void setIndovinelli(List<Indovinello> indovinelli) {
-        this.indovinelli = indovinelli;
+        this.indovinelli = (indovinelli != null) ? indovinelli : new ArrayList<>();
     }
 
     public List<Oggetto> getOggetti() {
@@ -50,7 +54,7 @@ public class Scenario {
     }
 
     public void setOggetti(List<Oggetto> oggetti) {
-        this.oggetti = oggetti;
+        this.oggetti = (oggetti != null) ? oggetti : new ArrayList<>();
     }
 
     public List<Alternative> getAlternative() {
@@ -58,6 +62,6 @@ public class Scenario {
     }
 
     public void setAlternative(List<Alternative> alternative) {
-        this.alternative = alternative;
+        this.alternative = (alternative != null) ? alternative : new ArrayList<>();
     }
 }
