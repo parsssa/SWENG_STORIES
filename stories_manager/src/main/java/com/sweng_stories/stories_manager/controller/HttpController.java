@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.*;
 
 import com.sweng_stories.stories_manager.domain.*;
 
-
 import java.util.List;
 
 @CrossOrigin(origins = "http://localhost:4200")
@@ -24,21 +23,43 @@ public class HttpController {
         return mongoDbController.getAllStorie();
     }
 
+    @GetMapping("/storie/titoli")
+    public List<String> getAllStorieTitoli() {
+        return mongoDbController.getAllStorieTitoli();
+    }
+
     @GetMapping("/storie/{id}")
-    public ResponseEntity<Storia> getStoriaById(@PathVariable Long id) {
-        Storia storia = mongoDbController.getStoriaById(id);
-        if (storia != null) {
-            return ResponseEntity.ok(storia);
-        } else {
-            return ResponseEntity.notFound().build();
+    public ResponseEntity<Storia> getStoriaById(@PathVariable String id) {
+        try {
+            System.out.println("SONO NELLA PARTE LONG");
+            Long storiaId = Long.parseLong(id);
+            Storia storia = mongoDbController.getStoriaById(storiaId);
+            if (storia != null) {
+                System.out.println("STORIA NULLLLLLL");
+
+                return ResponseEntity.ok(storia);
+            } else {
+                System.out.println("BUILDATOOOOOOOOOOOOO");
+
+                return ResponseEntity.notFound().build();
+            }
+        } catch (NumberFormatException e) {
+            return ResponseEntity.badRequest().body(null); // Ritorna una risposta di bad request se l'ID non è un
+                                                           // numero valido
         }
     }
 
     @PostMapping("/storie")
     public ResponseEntity<Storia> createStoria(@RequestBody Storia storia) {
         if (storia == null) {
+            System.out.println("NON Ricevuto storia: \n \n \n \n \n \n \n \n" + storia + " ds \n \n \n \n \n \n \n \n");
+            System.out.println("NON Ricevuto storia: \n \n \n \n \n \n \n \n" + storia + " ds \n \n \n \n \n \n \n \n");
             return ResponseEntity.badRequest().build();
         }
+        System.out.println("Ricevuto storia: \n \n \n \n \n \n \n \n" + storia + " ds \n \n \n \n \n \n \n \n"); // Aggiungi
+                                                                                                                 // questo
+                                                                                                                 // per
+                                                                                                                 // debug
         Storia nuovaStoria = mongoDbController.createStoria(storia);
         return ResponseEntity.status(HttpStatus.CREATED).body(nuovaStoria);
     }

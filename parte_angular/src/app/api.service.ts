@@ -1,4 +1,3 @@
-// api.service.ts
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
@@ -25,6 +24,7 @@ export class ApiService {
   }
 
   createStoria(storia: any): Observable<any> {
+    console.log('Sending storia to backend:', storia); // Log per debug
     return this.http.post(`${this.baseUrl}/storie`, storia);
   }
 

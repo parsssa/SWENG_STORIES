@@ -1,33 +1,29 @@
-<!--crea-storia.component.html-->
 <mat-card class="story-card">
   <mat-card-title>Crea una nuova storia</mat-card-title>
   <mat-card-content>
     <form [formGroup]="storyForm" (ngSubmit)="onSubmit()">
-      <!-- Titolo della storia -->
       <mat-form-field appearance="fill" class="full-width">
         <mat-label>Titolo della storia</mat-label>
         <input matInput placeholder="Inserisci il titolo" formControlName="title" required>
       </mat-form-field>
 
-      <!-- Descrizione della storia -->
       <mat-form-field appearance="fill" class="full-width">
         <mat-label>Descrizione</mat-label>
         <textarea matInput placeholder="Descrivi la storia" formControlName="description" required></textarea>
       </mat-form-field>
 
-      <!-- Inizio della storia -->
       <mat-form-field appearance="fill" class="full-width">
         <mat-label>Inizio della storia</mat-label>
         <textarea matInput placeholder="Scrivi l'inizio della storia" formControlName="start" required></textarea>
       </mat-form-field>
 
-      <!-- Alternative -->
       <div formArrayName="alternatives" *ngFor="let alternative of alternatives.controls; let i=index">
         <div [formGroupName]="i">
           <mat-form-field appearance="fill" class="full-width">
             <mat-label>Alternativa {{ i + 1 }}</mat-label>
             <textarea matInput placeholder="Descrivi l'alternativa" formControlName="text" required></textarea>
           </mat-form-field>
+          
           
           <mat-form-field appearance="fill" class="full-width">
             <mat-label>Tipo di Alternativa</mat-label>
@@ -38,7 +34,6 @@
           </mat-form-field>
 
           <ng-container *ngIf="alternative.get('type')?.value === 'with-items'">
-            <!-- Oggetti raccolti nell'alternativa -->
             <mat-form-field appearance="fill" class="full-width">
               <mat-label>Oggetti raccolti (separati da virgola)</mat-label>
               <input matInput placeholder="Elenca gli oggetti" formControlName="items">
@@ -48,7 +43,6 @@
       </div>
       <button mat-button type="button" (click)="addAlternative()">Aggiungi Alternativa</button>
 
-      <!-- Finali -->
       <div formArrayName="endings" *ngFor="let ending of endings.controls; let j=index">
         <mat-form-field appearance="fill" class="full-width">
           <mat-label>Finale {{ j + 1 }}</mat-label>
@@ -57,13 +51,11 @@
       </div>
       <button mat-button type="button" (click)="addEnding()">Aggiungi Finale</button>
 
-      <!-- Indovinello -->
       <mat-form-field appearance="fill" class="full-width">
         <mat-label>Indovinello</mat-label>
         <textarea matInput placeholder="Scrivi un indovinello" formControlName="riddle"></textarea>
       </mat-form-field>
 
-      <!-- Tipo di Indovinello -->
       <mat-form-field appearance="fill" class="full-width">
         <mat-label>Tipo di Indovinello</mat-label>
         <mat-select formControlName="riddleType">
@@ -72,13 +64,11 @@
         </mat-select>
       </mat-form-field>
 
-      <!-- Inventario -->
       <mat-form-field appearance="fill" class="full-width">
         <mat-label>Oggetti dell'inventario</mat-label>
         <textarea matInput placeholder="Elenca gli oggetti dell'inventario" formControlName="inventory"></textarea>
       </mat-form-field>
 
-      <!-- Pulsanti di azione -->
       <div class="button-group">
         <button mat-raised-button color="primary" type="submit" [disabled]="!storyForm.valid">Crea Storia</button>
         <button mat-raised-button type="button" (click)="resetForm()">Reset</button>

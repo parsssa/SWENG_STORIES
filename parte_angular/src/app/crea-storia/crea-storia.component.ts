@@ -1,5 +1,3 @@
-// crea-storia.component.ts
-
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
 import { ApiService } from '../api.service';
@@ -56,9 +54,40 @@ export class CreaStoriaComponent implements OnInit {
   onSubmit(): void {
     if (this.storyForm.valid) {
       const storyData = this.storyForm.value;
-      this.apiService.createStoria(storyData).subscribe(
+
+      // Creazione del payload da inviare al backend
+      const payload = {
+        titolo: storyData.title,
+        descrizione: storyData.description,
+        inizio: {
+          descrizione: storyData.start,
+          indovinelli: [],
+          oggetti: []
+        },
+        finali: storyData.endings.map((ending: string) => ({
+          descrizione: ending,
+          indovinelli: [],
+          oggetti: []
+        })),
+        scenari: storyData.alternatives.map((alt: any) => ({
+          descrizione: alt.text,
+          indovinelli: [],
+          oggetti: alt.items.split(',').map((item: string) => ({ nome: item.trim(), descrizione: '' }))
+        })),
+        indovinello: {
+          descrizione: storyData.riddle,
+          tipo: storyData.riddleType,
+          rispostaCorretta: storyData.riddleType === 'text' ? '' : 0
+        },
+        inventario: {
+          oggetti: storyData.inventory.split(',').map((item: string) => ({ nome: item.trim(), descrizione: '' }))
+        }
+      };
+
+      console.log('Dati della storia inviati:', payload); // Aggiungi questo per debug
+
+      this.apiService.createStoria(payload).subscribe(
         response => {
-          // Naviga alla lista delle storie o a un'altra pagina di conferma
           this.router.navigate(['/storie']);
         },
         error => {

@@ -8,7 +8,6 @@ public class Storia {
     private String titolo;
     private String descrizione;
     private Scenario inizio;
-    private String contenuto;
     private List<Scenario> finali;
     private List<Scenario> scenari;
     private Indovinello indovinello;
@@ -66,6 +65,8 @@ public class Storia {
         return inizio;
     }
 
+    
+
     public void setInizio(Scenario inizio) {
         this.inizio = inizio;
     }
@@ -86,14 +87,6 @@ public class Storia {
         this.scenari = scenari;
     }
 
-    public String getContenuto() {
-        return contenuto;
-    }
-
-    public void setContenuto(String contenuto) {
-        this.contenuto = contenuto;
-    }
-
     public Indovinello getIndovinello() {
         return indovinello;
     }
@@ -108,5 +101,71 @@ public class Storia {
 
     public void setInventario(Inventario inventario) {
         this.inventario = inventario;
+    }
+
+    // Metodi aggiuntivi per supportare la nuova struttura dei dati
+    public void addFinale(Scenario finale) {
+        this.finali.add(finale);
+    }
+
+    public void addScenario(Scenario scenario) {
+        this.scenari.add(scenario);
+    }
+
+    
+
+    public void setInizio(String descrizione) {
+        this.inizio = new Scenario();
+        this.inizio.setDescrizione(descrizione);
+    }
+
+    public void setFinaliFromDescriptions(List<String> descriptions) {
+        this.finali = new ArrayList<>();
+        for (String description : descriptions) {
+            Scenario scenario = new Scenario();
+            scenario.setDescrizione(description);
+            this.finali.add(scenario);
+        }
+    }
+
+    public void setScenariFromAlternatives(List<Alternative> alternatives) {
+        this.scenari = new ArrayList<>();
+        for (Alternative alt : alternatives) {
+            Scenario scenario = new Scenario();
+            scenario.setDescrizione(alt.getText());
+            List<Oggetto> oggetti = new ArrayList<>();
+            for (String itemName : alt.getItems().split(",")) {
+                Oggetto oggetto = new Oggetto();
+                oggetto.setNome(itemName.trim());
+                oggetto.setDescrizione("");  // Set a default description or modify as needed
+                oggetti.add(oggetto);
+            }
+            scenario.setOggetti(oggetti);
+            this.scenari.add(scenario);
+        }
+    }
+
+    public void setIndovinello(String descrizione, String tipo) {
+        if (tipo.equals("text")) {
+            IndovinelloTestuale indovinello = new IndovinelloTestuale();
+            indovinello.setDescrizione(descrizione);
+            this.indovinello = indovinello;
+        } else if (tipo.equals("numeric")) {
+            IndovinelloNumerico indovinello = new IndovinelloNumerico();
+            indovinello.setDescrizione(descrizione);
+            this.indovinello = indovinello;
+        }
+    }
+
+    public void setInventarioFromItems(String items) {
+        this.inventario = new Inventario();
+        List<Oggetto> oggetti = new ArrayList<>();
+        for (String itemName : items.split(",")) {
+            Oggetto oggetto = new Oggetto();
+            oggetto.setNome(itemName.trim());
+            oggetto.setDescrizione("");  // Set a default description or modify as needed
+            oggetti.add(oggetto);
+        }
+        this.inventario.setOggetti(oggetti);
     }
 }
