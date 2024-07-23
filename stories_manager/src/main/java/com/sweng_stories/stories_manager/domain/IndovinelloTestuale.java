@@ -3,11 +3,11 @@ package com.sweng_stories.stories_manager.domain;
 public class IndovinelloTestuale extends Indovinello {
     private String rispostaCorretta;
 
-    // Costruttore vuoto
     public IndovinelloTestuale() {}
 
     public IndovinelloTestuale(Long id, String descrizione, String domanda, String rispostaCorretta, Long scenarioId) {
         super(id, descrizione, domanda, rispostaCorretta, scenarioId);
+        this.rispostaCorretta = rispostaCorretta;
     }
 
     @Override
@@ -33,25 +33,5 @@ public class IndovinelloTestuale extends Indovinello {
         if (rispostaCorretta instanceof String) {
             this.rispostaCorretta = (String) rispostaCorretta;
         }
-    }
-
-    @Override
-    public String getDomanda() {
-        return super.getDomanda();
-    }
-
-    @Override
-    public void setDomanda(String domanda) {
-        super.setDomanda(domanda);
-    }
-
-    @Override
-    public Long getScenarioId() {
-        return super.getScenarioId();
-    }
-
-    @Override
-    public void setScenarioId(Long scenarioId) {
-        super.setScenarioId(scenarioId);
     }
 }

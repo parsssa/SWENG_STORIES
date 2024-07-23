@@ -65,8 +65,6 @@ public class Storia {
         return inizio;
     }
 
-    
-
     public void setInizio(Scenario inizio) {
         this.inizio = inizio;
     }
@@ -112,8 +110,6 @@ public class Storia {
         this.scenari.add(scenario);
     }
 
-    
-
     public void setInizio(String descrizione) {
         this.inizio = new Scenario();
         this.inizio.setDescrizione(descrizione);
@@ -134,7 +130,7 @@ public class Storia {
             Scenario scenario = new Scenario();
             scenario.setDescrizione(alt.getText());
             List<Oggetto> oggetti = new ArrayList<>();
-            for (String itemName : alt.getItems().split(",")) {
+            for (String itemName : alt.getItems()) {
                 Oggetto oggetto = new Oggetto();
                 oggetto.setNome(itemName.trim());
                 oggetto.setDescrizione("");  // Set a default description or modify as needed
@@ -146,11 +142,11 @@ public class Storia {
     }
 
     public void setIndovinello(String descrizione, String tipo) {
-        if (tipo.equals("text")) {
+        if (tipo.equals("testuale")) {
             IndovinelloTestuale indovinello = new IndovinelloTestuale();
             indovinello.setDescrizione(descrizione);
             this.indovinello = indovinello;
-        } else if (tipo.equals("numeric")) {
+        } else if (tipo.equals("numerico")) {
             IndovinelloNumerico indovinello = new IndovinelloNumerico();
             indovinello.setDescrizione(descrizione);
             this.indovinello = indovinello;

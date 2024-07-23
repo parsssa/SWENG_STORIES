@@ -1,4 +1,3 @@
-// Scenario.java
 package com.sweng_stories.stories_manager.domain;
 
 import java.util.List;
@@ -8,17 +7,20 @@ public class Scenario {
     private String descrizione;
     private List<Indovinello> indovinelli;
     private List<Oggetto> oggetti;
+    private List<Alternative> alternative;
 
-    public Scenario() {
-    }
+    public Scenario() {}
 
-    public Scenario(Long id, String descrizione, List<Indovinello> indovinelli, List<Oggetto> oggetti) {
+    // Aggiungi un costruttore che includa le alternative se necessario
+    public Scenario(Long id, String descrizione, List<Indovinello> indovinelli, List<Oggetto> oggetti, List<Alternative> alternative) {
         this.id = id;
         this.descrizione = descrizione;
         this.indovinelli = indovinelli;
         this.oggetti = oggetti;
+        this.alternative = alternative;
     }
 
+    // Getter e setter
     public Long getId() {
         return id;
     }
@@ -49,5 +51,13 @@ public class Scenario {
 
     public void setOggetti(List<Oggetto> oggetti) {
         this.oggetti = oggetti;
+    }
+
+    public List<Alternative> getAlternative() {
+        return alternative;
+    }
+
+    public void setAlternative(List<Alternative> alternative) {
+        this.alternative = alternative;
     }
 }

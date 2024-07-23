@@ -1,7 +1,7 @@
 package com.sweng_stories.stories_manager.domain;
 
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "tipo")
 @JsonSubTypes({
@@ -15,12 +15,6 @@ public abstract class Indovinello {
     private Object rispostaCorretta; // Oggetto generico per la risposta corretta
     private Long scenarioId;
 
-    public abstract boolean verificaRisultato(Object risposta);
-
-    // Aggiungi il metodo astratto getTipo()
-    public abstract String getTipo();
-
-    // Costruttori e getter/setter
     public Indovinello() {}
 
     public Indovinello(Long id, String descrizione, String domanda, Object rispostaCorretta, Long scenarioId) {
@@ -70,4 +64,7 @@ public abstract class Indovinello {
     public void setScenarioId(Long scenarioId) {
         this.scenarioId = scenarioId;
     }
+
+    public abstract boolean verificaRisultato(Object risposta);
+    public abstract String getTipo();
 }

@@ -1,12 +1,11 @@
-// JsonController.java
 package com.sweng_stories.stories_manager.controller;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sweng_stories.stories_manager.domain.Indovinello;
 import com.sweng_stories.stories_manager.domain.Storia;
 import com.sweng_stories.stories_manager.domain.Utente;
 import org.springframework.stereotype.Service;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -79,7 +78,12 @@ public class JsonController {
         for (Storia storia : storie) {
             if (storia.getId().equals(id)) {
                 storia.setTitolo(storiaAggiornata.getTitolo());
-                storia.setContenuto(storiaAggiornata.getContenuto());
+                storia.setDescrizione(storiaAggiornata.getDescrizione());
+                storia.setInizio(storiaAggiornata.getInizio());
+                storia.setFinali(storiaAggiornata.getFinali());
+                storia.setScenari(storiaAggiornata.getScenari());
+                storia.setIndovinello(storiaAggiornata.getIndovinello());
+                storia.setInventario(storiaAggiornata.getInventario());
                 // Aggiorna altri campi se necessario
                 writeStorieToFile(storie);
                 return storiaAggiornata;
@@ -102,22 +106,19 @@ public class JsonController {
         try {
             // Leggi la lista degli utenti dal file JSON
             List<Utente> utenti = objectMapper.readValue(databaseFile, new TypeReference<List<Utente>>() {});
-    
+
             // Verifica se la lista degli utenti è nulla e restituisci null se lo è
             if (utenti == null) {
                 return null;
             }
-    
+
             // Cerca l'utente con l'username specificato
-            // int i=1;
             for (Utente utente : utenti) {
-                // System.out.println("username utente " + i + " "+ utente.getUsername());
-                // i++;
                 if (utente.getUsername().equals(username)) {
                     return utente;
                 }
             }
-    
+
             // Se non viene trovato alcun utente con l'username specificato, restituisci null
             return null;
         } catch (IOException e) {
@@ -125,21 +126,21 @@ public class JsonController {
             return null;
         }
     }
-    
+
 
     public Utente createUtente(Utente nuovoUtente) {
         if (nuovoUtente == null || nuovoUtente.getUsername() == null || nuovoUtente.getUsername().trim().isEmpty()) {
             throw new IllegalArgumentException("L'utente non può essere null e deve avere un username valido.");
         }
-    
+
         // Verifica l'esistenza di un utente con lo stesso username
         Optional<Utente> utenteEsistente = utenti.stream()
-                                                 .filter(u -> u.getUsername().equals(nuovoUtente.getUsername()))
-                                                 .findFirst();
+                .filter(u -> u.getUsername().equals(nuovoUtente.getUsername()))
+                .findFirst();
         if (utenteEsistente.isPresent()) {
             throw new IllegalStateException("Esiste già un utente con lo stesso username: " + nuovoUtente.getUsername());
         }
-    
+
         utenti.add(nuovoUtente);
         try {
             saveData(); // Assicurati che saveData() gestisca la scrittura della lista aggiornata degli utenti nel file JSON
@@ -198,39 +199,36 @@ public class JsonController {
         return null; // If utente with given username is not found
     }
 
-
-
-
     public class DatabaseWrapper {
         private List<Utente> utenti;
         private List<Storia> storie;
-    
+
         public DatabaseWrapper() {
             this.utenti = new ArrayList<>();
             this.storie = new ArrayList<>();
         }
-        
+
         public DatabaseWrapper(List<Utente> utenti, List<Storia> storie) {
             this.utenti = utenti;
             this.storie = storie;
         }
-    
+
         // Getters e Setters
         public List<Utente> getUtenti() {
             return utenti;
         }
-    
+
         public void setUtenti(List<Utente> utenti) {
             this.utenti = utenti;
         }
-    
+
         public List<Storia> getStorie() {
             return storie;
         }
-    
+
         public void setStorie(List<Storia> storie) {
             this.storie = storie;
         }
     }
-    
+
 }
