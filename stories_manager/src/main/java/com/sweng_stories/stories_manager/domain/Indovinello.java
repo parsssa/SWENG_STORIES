@@ -13,7 +13,7 @@ public abstract class Indovinello {
     private String descrizione;
     private String domanda;
     private Object rispostaCorretta; // Oggetto generico per la risposta corretta
-    private Long scenarioId;
+    private Long scenarioId;  // Modifica: Aggiungi scenarioId per collegare lo scenario successivo
 
     public Indovinello() {}
 

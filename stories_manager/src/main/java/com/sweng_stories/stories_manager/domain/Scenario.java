@@ -8,20 +8,20 @@ public class Scenario {
     private String descrizione;
     private List<Indovinello> indovinelli;
     private List<Oggetto> oggetti;
-    private List<Alternative> alternative;
+    private List<Long> nextScenarioIds;
 
     public Scenario() {
         this.indovinelli = new ArrayList<>();
         this.oggetti = new ArrayList<>();
-        this.alternative = new ArrayList<>();
+        this.nextScenarioIds = new ArrayList<>();
     }
 
-    public Scenario(Long id, String descrizione, List<Indovinello> indovinelli, List<Oggetto> oggetti, List<Alternative> alternative) {
+    public Scenario(Long id, String descrizione, List<Indovinello> indovinelli, List<Oggetto> oggetti, List<Long> nextScenarioIds) {
         this.id = id;
         this.descrizione = descrizione;
         this.indovinelli = (indovinelli != null) ? indovinelli : new ArrayList<>();
         this.oggetti = (oggetti != null) ? oggetti : new ArrayList<>();
-        this.alternative = (alternative != null) ? alternative : new ArrayList<>();
+        this.nextScenarioIds = (nextScenarioIds != null) ? nextScenarioIds : new ArrayList<>();
     }
 
     // Getter e setter
@@ -57,11 +57,11 @@ public class Scenario {
         this.oggetti = (oggetti != null) ? oggetti : new ArrayList<>();
     }
 
-    public List<Alternative> getAlternative() {
-        return alternative;
+    public List<Long> getNextScenarioIds() {
+        return nextScenarioIds;
     }
 
-    public void setAlternative(List<Alternative> alternative) {
-        this.alternative = (alternative != null) ? alternative : new ArrayList<>();
+    public void setNextScenarioIds(List<Long> nextScenarioIds) {
+        this.nextScenarioIds = (nextScenarioIds != null) ? nextScenarioIds : new ArrayList<>();
     }
 }

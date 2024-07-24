@@ -13,14 +13,13 @@
       <button mat-raised-button color="primary" (click)="submitRiddle()">Invia Risposta</button>
     </div>
 
-    <div *ngIf="currentScenario.alternative.length > 0">
+    <div *ngIf="currentScenario.nextScenarioIds.length > 0">
       <h3>Le tue scelte</h3>
-      <div *ngFor="let choice of currentScenario.alternative">
+      <div *ngFor="let nextScenarioId of currentScenario.nextScenarioIds">
         <button mat-raised-button 
                 color="accent" 
-                (click)="makeChoice(choice)" 
-                [disabled]="!canMakeChoice(choice)">
-          {{ choice.text }}
+                (click)="makeChoice(nextScenarioId)">
+          Scenario ID: {{ nextScenarioId }}
         </button>
       </div>
     </div>

@@ -1,19 +1,16 @@
-export interface Oggetto {
+export interface Indovinello {
+    id: number;
+    descrizione: string;
+    domanda: string;
+    rispostaCorretta: any;
+    scenarioId: number;  // ID dello scenario successivo
+    tipo: string;
+  }
+  
+  export interface Oggetto {
     id: number;
     nome: string;
     descrizione: string;
-  }
-  
-  export interface Indovinello {
-    tipo: string;
-    id: number;
-    descrizione: string;
-  }
-  
-  export interface Alternative {
-    text: string;
-    nextScenarioId: number;
-    requiredItem?: string;
   }
   
   export interface Scenario {
@@ -21,6 +18,17 @@ export interface Oggetto {
     descrizione: string;
     indovinelli: Indovinello[];
     oggetti: Oggetto[];
-    alternative: Alternative[];
+    nextScenarioIds: number[];  // Lista degli ID degli scenari successivi
+  }
+  
+  export interface Storia {
+    id: number;
+    titolo: string;
+    descrizione: string;
+    inizio: Scenario;
+    finali: Scenario[];
+    scenari: Scenario[];
+    indovinello: Indovinello;
+    inventario: { oggetti: Oggetto[] };
   }
   
