@@ -14,7 +14,7 @@ const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
   { path: 'creaStoria', component: CreaStoriaComponent},
-  { path: 'gioca-storia/:id', component: GiocaStoriaComponent},
+  { path: 'giocaStoria/:id', component: GiocaStoriaComponent },
   { path: 'gestioneScenario', component: GestioneScenarioComponent},
   { path: 'selezione-storia', component: SelezioneStoriaComponent }, // Nuova rotta per selezione storia
 

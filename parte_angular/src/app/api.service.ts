@@ -15,12 +15,14 @@ export class ApiService {
     return this.http.get(`${this.baseUrl}/storie`);
   }
 
-  getAllStorieTitoli(): Observable<any> {
-    return this.http.get(`${this.baseUrl}/storie/titoli`);
+  getAllStorieTitoli(): Observable<any[]> {
+    console.log('Chiamata API: GET /storie/titoli'); // Debug: stampa quando viene effettuata la chiamata API
+    return this.http.get<any[]>(`${this.baseUrl}/storie/titoli`);
   }
 
+
   getStoriaById(id: number): Observable<any> {
-    return this.http.get(`${this.baseUrl}/storie/${id}`);
+    return this.http.get<any>(`${this.baseUrl}/storie/${id}`);
   }
 
   createStoria(storia: any): Observable<any> {

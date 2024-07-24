@@ -25,10 +25,6 @@ public class HttpController {
         return mongoDbController.getAllStorie();
     }
 
-    @GetMapping("/storie/titoli")
-    public List<String> getAllStorieTitoli() {
-        return mongoDbController.getAllStorieTitoli();
-    }
 
     @GetMapping("/storie/{id}")
     public ResponseEntity<Storia> getStoriaById(@PathVariable String id) {

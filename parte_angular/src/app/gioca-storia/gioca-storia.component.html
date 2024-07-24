@@ -1,11 +1,11 @@
 <mat-card class="play-story-card" *ngIf="currentScenario">
-  <mat-card-title>{{ currentScenario.title }}</mat-card-title>
+  <mat-card-title>{{ currentScenario.descrizione }}</mat-card-title>
   <mat-card-content>
     <div>
-      <p>{{ currentScenario.description }}</p>
+      <p>{{ currentScenario.descrizione }}</p>
     </div>
 
-    <div *ngIf="currentScenario.riddle">
+    <div *ngIf="currentScenario.indovinelli.length > 0">
       <mat-form-field appearance="fill" class="full-width">
         <mat-label>Indovinello</mat-label>
         <input matInput placeholder="Rispondi all'indovinello" [(ngModel)]="userRiddleAnswer">
@@ -13,9 +13,9 @@
       <button mat-raised-button color="primary" (click)="submitRiddle()">Invia Risposta</button>
     </div>
 
-    <div *ngIf="!currentScenario.riddle && currentScenario.choices">
+    <div *ngIf="currentScenario.alternative.length > 0">
       <h3>Le tue scelte</h3>
-      <div *ngFor="let choice of currentScenario.choices">
+      <div *ngFor="let choice of currentScenario.alternative">
         <button mat-raised-button 
                 color="accent" 
                 (click)="makeChoice(choice)" 
@@ -25,11 +25,11 @@
       </div>
     </div>
 
-    <div *ngIf="currentScenario.itemsToCollect && currentScenario.itemsToCollect.length > 0">
+    <div *ngIf="currentScenario.oggetti.length > 0">
       <h3>Strumenti da raccogliere</h3>
-      <div *ngFor="let item of currentScenario.itemsToCollect">
+      <div *ngFor="let item of currentScenario.oggetti">
         <button mat-raised-button color="warn" (click)="collectItem(item)">
-          Raccogli {{ item }}
+          Raccogli {{ item.nome }}
         </button>
       </div>
     </div>
@@ -42,7 +42,7 @@
     <div>
       <mat-chip-list>
         <mat-chip *ngFor="let item of inventory" color="primary" selected>
-          {{ item }}
+          {{ item.nome }}
         </mat-chip>
       </mat-chip-list>
     </div>

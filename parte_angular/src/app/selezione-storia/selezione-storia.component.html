@@ -1,11 +1,20 @@
 <mat-card class="story-selection-card">
-    <mat-card-title>Seleziona una Storia</mat-card-title>
-    <mat-card-content>
-      <div *ngFor="let storia of storie">
-        <button mat-raised-button color="primary" (click)="selectStoria(storia.id)">
-          {{ storia.titolo }}
-        </button>
-      </div>
-    </mat-card-content>
-  </mat-card>
-  
+  <mat-card-title>Seleziona una Storia</mat-card-title>
+  <mat-card-content>
+    <div class="stories-container">
+      <mat-card *ngFor="let storia of storie" class="story-card">
+        <mat-card-header>
+          <mat-card-title>{{ storia.titolo }}</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <p>{{ storia.descrizione }}</p>
+        </mat-card-content>
+        <mat-card-actions>
+          <button mat-raised-button color="primary" (click)="selectStoria(storia.id)">
+            Gioca
+          </button>
+        </mat-card-actions>
+      </mat-card>
+    </div>
+  </mat-card-content>
+</mat-card>

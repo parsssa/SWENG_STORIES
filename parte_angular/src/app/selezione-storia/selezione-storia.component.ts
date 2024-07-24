@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ApiService } from '../api.service'; // Assicurati di avere il servizio corretto importato
+import { ApiService } from '../api.service';
 import { Router } from '@angular/router';
 
 @Component({
@@ -8,7 +8,7 @@ import { Router } from '@angular/router';
   styleUrls: ['./selezione-storia.component.scss']
 })
 export class SelezioneStoriaComponent implements OnInit {
-  storie: any[] = []; // Cambia 'any' con un tipo più specifico se necessario
+  storie: any[] = [];
 
   constructor(private apiService: ApiService, private router: Router) { }
 
@@ -18,7 +18,10 @@ export class SelezioneStoriaComponent implements OnInit {
 
   loadStorie(): void {
     this.apiService.getAllStorieTitoli().subscribe(
-      (storie: any[]) => this.storie = storie,
+      (storie: any[]) => {
+        this.storie = storie;
+        console.log('Storie caricate:', this.storie);
+      },
       error => console.error('Errore nel caricamento delle storie', error)
     );
   }

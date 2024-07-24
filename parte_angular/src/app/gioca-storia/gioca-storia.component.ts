@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { ApiService } from '../api.service';  // Assicurati di avere questo servizio
+import { ApiService } from '../api.service';
 import { Observable, of } from 'rxjs';
-import { switchMap, map } from 'rxjs/operators';
+import { switchMap } from 'rxjs/operators';
+import { Scenario, Oggetto, Alternative } from './scenario.model'; // Percorso relativo aggiornato
 
 @Component({
   selector: 'app-gioca-storia',
@@ -10,8 +11,8 @@ import { switchMap, map } from 'rxjs/operators';
   styleUrls: ['./gioca-storia.component.scss']
 })
 export class GiocaStoriaComponent implements OnInit {
-  currentScenario: any;  // Cambia a 'any' se non vuoi definire un'interfaccia
-  inventory: string[] = [];
+  currentScenario: Scenario | null = null;
+  inventory: Oggetto[] = [];
   userRiddleAnswer: string = '';
   storiaId: number = 0;
 
@@ -25,53 +26,55 @@ export class GiocaStoriaComponent implements OnInit {
       switchMap(params => {
         const id = params.get('id');
         if (id !== null) {
-          this.storiaId = +id;  // Recupera l'ID dalla route
-          return this.apiService.getStoriaById(this.storiaId);  // Recupera la storia dall'API
+          this.storiaId = +id;
+          return this.apiService.getStoriaById(this.storiaId);
         } else {
-          return of(null);  // Se non c'è un ID, ritorna un osservabile con valore null
-        }
-      }),
-      map(storia => {
-        if (storia && storia.inizio) {
-          this.loadScenario(storia.inizio.id, storia);
-        } else {
-          console.error('Storia non trovata o ID non valido:', this.storiaId);
+          return of(null);
         }
       })
-    ).subscribe();
+    ).subscribe(storia => {
+      if (storia && storia.inizio) {
+        console.log('Storia caricata:', storia);
+        this.loadScenario(storia.inizio.id, storia);
+      } else {
+        console.error('Storia non trovata o ID non valido:', this.storiaId);
+      }
+    });
   }
 
   loadScenario(id: number, storia: any): void {
-    const scenario = storia.scenari.find((sc: any) => sc.id === id);
+    const scenario = storia.scenari.find((sc: Scenario) => sc.id === id);
     if (scenario) {
+      console.log('Scenario caricato:', scenario); // Debug: stampa lo scenario caricato
       this.currentScenario = scenario;
     } else {
       console.error('ID scenario non valido:', id);
     }
   }
 
-  canMakeChoice(choice: any): boolean {
+  canMakeChoice(choice: Alternative): boolean {
     if (choice.requiredItem) {
-      return this.inventory.includes(choice.requiredItem);
+      return this.inventory.some(item => item.nome === choice.requiredItem);
     }
     return true;
   }
 
-  makeChoice(choice: any): void {
+  makeChoice(choice: Alternative): void {
     if (this.currentScenario) {
-      const nextScenario = this.currentScenario.choices.find((c: any) => c.text === choice.text);
+      const nextScenario = this.currentScenario.alternative.find((c: Alternative) => c.text === choice.text);
       if (nextScenario) {
-        this.loadScenario(nextScenario.nextScenarioId, this.currentScenario.storia);
+        this.loadScenario(nextScenario.nextScenarioId, this.currentScenario);
       }
     }
   }
 
   submitRiddle(): void {
-    if (this.currentScenario && this.currentScenario.riddleType) {
-      if (this.currentScenario.riddleType === 'numeric' && this.userRiddleAnswer === '42') {
-        this.makeChoice(this.currentScenario.choices[0]);
-      } else if (this.currentScenario.riddleType === 'text' && this.userRiddleAnswer.toLowerCase() === 'answer') {
-        this.makeChoice(this.currentScenario.choices[0]);
+    if (this.currentScenario && this.currentScenario.indovinelli.length > 0) {
+      const indovinello = this.currentScenario.indovinelli[0]; // Supponiamo che ci sia un solo indovinello per scenario
+      if (indovinello.tipo === 'numerico' && this.userRiddleAnswer === '42') {
+        this.makeChoice(this.currentScenario.alternative[0]);
+      } else if (indovinello.tipo === 'testuale' && this.userRiddleAnswer.toLowerCase() === 'answer') {
+        this.makeChoice(this.currentScenario.alternative[0]);
       } else {
         console.log('Risposta errata:', this.userRiddleAnswer);
       }
@@ -79,10 +82,10 @@ export class GiocaStoriaComponent implements OnInit {
     }
   }
 
-  collectItem(item: string): void {
+  collectItem(item: Oggetto): void {
     this.inventory.push(item);
-    if (this.currentScenario && this.currentScenario.itemsToCollect) {
-      this.currentScenario.itemsToCollect = this.currentScenario.itemsToCollect.filter((i: string) => i !== item);
+    if (this.currentScenario) {
+      this.currentScenario.oggetti = this.currentScenario.oggetti.filter((i: Oggetto) => i.id !== item.id);
     }
   }
 }
