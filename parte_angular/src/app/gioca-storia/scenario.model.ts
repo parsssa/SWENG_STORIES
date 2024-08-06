@@ -1,3 +1,4 @@
+// scenario.model.ts
 export interface Indovinello {
     id: number;
     descrizione: string;
