@@ -1,3 +1,4 @@
+// Oggetto.java
 package com.sweng_stories.stories_manager.domain;
 
 public class Oggetto {

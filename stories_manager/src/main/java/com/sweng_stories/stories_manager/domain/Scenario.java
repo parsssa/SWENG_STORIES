@@ -1,3 +1,4 @@
+// Scenario.java
 package com.sweng_stories.stories_manager.domain;
 
 import java.util.ArrayList;

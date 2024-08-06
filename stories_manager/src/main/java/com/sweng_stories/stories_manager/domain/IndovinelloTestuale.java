@@ -1,3 +1,4 @@
+// IndovinelloTestuale.java
 package com.sweng_stories.stories_manager.domain;
 
 public class IndovinelloTestuale extends Indovinello {

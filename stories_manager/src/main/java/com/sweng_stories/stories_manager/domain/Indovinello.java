@@ -1,3 +1,4 @@
+// Indovinello.java
 package com.sweng_stories.stories_manager.domain;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
