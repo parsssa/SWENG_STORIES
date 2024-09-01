@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
-import { ApiService } from '../api.service';
+import { ApiService } from '../api.service';  // Assicurati che il percorso sia corretto
 import { Router } from '@angular/router';
 
 @Component({
@@ -16,40 +16,56 @@ export class CreaStoriaComponent implements OnInit {
       title: ['', Validators.required],
       description: ['', Validators.required],
       start: ['', Validators.required],
-      alternatives: this.fb.array([]),
+      scenarios: this.fb.array([]),
       endings: this.fb.array([]),
-      riddle: [''],
-      riddleType: ['text'],
-      riddleQuestion: [''], // Campo aggiunto per la domanda dell'indovinello
-      riddleAnswer: [''], // Campo aggiunto per la risposta dell'indovinello
-      inventory: ['']
     });
   }
 
   ngOnInit(): void {
-    this.addAlternative(); // Aggiungi una prima alternativa per default
+    this.addScenario(); // Aggiungi un primo scenario per default
     this.addEnding(); // Aggiungi un primo finale per default
   }
 
-  get alternatives(): FormArray {
-    return this.storyForm.get('alternatives') as FormArray;
+  get scenarios(): FormArray {
+    return this.storyForm.get('scenarios') as FormArray;
   }
 
   get endings(): FormArray {
     return this.storyForm.get('endings') as FormArray;
   }
 
-  addAlternative(): void {
+  getAlternatives(scenarioIndex: number): FormArray {
+    return this.scenarios.at(scenarioIndex).get('alternatives') as FormArray;
+  }
+
+  addScenario(): void {
+    const scenario = this.fb.group({
+      description: ['', Validators.required],
+      alternatives: this.fb.array([]),
+      riddle: [''],
+      riddleType: ['text'],
+      riddleQuestion: [''],
+      riddleAnswer: [''],
+      inventory: [''],
+    });
+    this.scenarios.push(scenario);
+    this.addAlternative(this.scenarios.length - 1);  // Aggiungi una alternativa per lo scenario appena creato
+  }
+
+  addAlternative(scenarioIndex: number): void {
     const alternative = this.fb.group({
       text: ['', Validators.required],
       type: ['without-items', Validators.required],
       items: ['']
     });
-    this.alternatives.push(alternative);
+    this.getAlternatives(scenarioIndex).push(alternative);
   }
 
   addEnding(): void {
-    const ending = this.fb.control('', Validators.required);
+    const ending = this.fb.group({
+      description: ['', Validators.required],
+      order: ['']
+    });
     this.endings.push(ending);
   }
 
@@ -61,27 +77,31 @@ export class CreaStoriaComponent implements OnInit {
       formData.append('titolo', storyData.title);
       formData.append('descrizione', storyData.description);
       formData.append('inizioDescrizione', storyData.start);
-      formData.append('riddle', storyData.riddle);
-      formData.append('riddleType', storyData.riddleType);
-      formData.append('riddleQuestion', storyData.riddleQuestion);
-      formData.append('riddleAnswer', storyData.riddleAnswer);
-      formData.append('inventory', storyData.inventory);
 
-      storyData.endings.forEach((ending: string, index: number) => {
-        formData.append(`finali[${index}].descrizione`, ending);
+      storyData.scenarios.forEach((scenario: any, scenarioIndex: number) => {
+        formData.append(`scenari[${scenarioIndex}].descrizione`, scenario.description);
+
+        scenario.alternatives.forEach((alt: any, altIndex: number) => {
+          formData.append(`scenari[${scenarioIndex}].alternatives[${altIndex}].text`, alt.text);
+          formData.append(`scenari[${scenarioIndex}].alternatives[${altIndex}].type`, alt.type);
+          formData.append(`scenari[${scenarioIndex}].alternatives[${altIndex}].items`, alt.items);
+        });
+
+        formData.append(`scenari[${scenarioIndex}].riddle`, scenario.riddle);
+        formData.append(`scenari[${scenarioIndex}].riddleType`, scenario.riddleType);
+        formData.append(`scenari[${scenarioIndex}].riddleQuestion`, scenario.riddleQuestion);
+        formData.append(`scenari[${scenarioIndex}].riddleAnswer`, scenario.riddleAnswer);
+        formData.append(`scenari[${scenarioIndex}].inventory`, scenario.inventory);
       });
 
-      storyData.alternatives.forEach((alt: any, index: number) => {
-        formData.append(`scenari[${index}].descrizione`, alt.text);
-        if (alt.items) {
-          alt.items.split(',').forEach((item: string, itemIndex: number) => {
-            formData.append(`scenari[${index}].oggetti[${itemIndex}].nome`, item.trim());
-          });
-        }
+      storyData.endings.forEach((ending: any, endingIndex: number) => {
+        formData.append(`finali[${endingIndex}].descrizione`, ending.description);
+        formData.append(`finali[${endingIndex}].ordine`, ending.order);
       });
 
       this.apiService.createStoria(formData).subscribe(
         response => {
+          console.log('Storia creata con successo!', response);
           this.router.navigate(['/storie']);
         },
         error => {
@@ -93,13 +113,9 @@ export class CreaStoriaComponent implements OnInit {
 
   resetForm(): void {
     this.storyForm.reset();
-    while (this.alternatives.length) {
-      this.alternatives.removeAt(0);
-    }
-    while (this.endings.length) {
-      this.endings.removeAt(0);
-    }
-    this.addAlternative();
+    this.scenarios.clear();
+    this.endings.clear();
+    this.addScenario();
     this.addEnding();
   }
 }

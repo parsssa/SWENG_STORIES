@@ -20,30 +20,25 @@ public class HttpController {
     @Autowired
     private MongoDbController mongoDbController;
 
+    // Storie Endpoints
+
     @GetMapping("/storie")
     public List<Storia> getAllStorie() {
         return mongoDbController.getAllStorie();
     }
 
-
     @GetMapping("/storie/{id}")
     public ResponseEntity<Storia> getStoriaById(@PathVariable String id) {
         try {
-            System.out.println("SONO NELLA PARTE LONG");
             Long storiaId = Long.parseLong(id);
             Storia storia = mongoDbController.getStoriaById(storiaId);
             if (storia != null) {
-                System.out.println("STORIA NULLLLLLL");
-
                 return ResponseEntity.ok(storia);
             } else {
-                System.out.println("BUILDATOOOOOOOOOOOOO");
-
                 return ResponseEntity.notFound().build();
             }
         } catch (NumberFormatException e) {
-            return ResponseEntity.badRequest().body(null); // Ritorna una risposta di bad request se l'ID non è un
-                                                           // numero valido
+            return ResponseEntity.badRequest().body(null); // Ritorna una risposta di bad request se l'ID non è un numero valido
         }
     }
 
@@ -67,7 +62,6 @@ public class HttpController {
         List<Scenario> finali = finaliDescrizioni.stream().map(desc -> {
             Scenario scenario = new Scenario();
             scenario.setDescrizione(desc);
-            // Aggiungi altri campi se necessario
             return scenario;
         }).collect(Collectors.toList());
     
@@ -79,7 +73,6 @@ public class HttpController {
         List<Scenario> scenari = scenariDescrizioni.stream().map(desc -> {
             Scenario scenario = new Scenario();
             scenario.setDescrizione(desc);
-            // Aggiungi altri campi se necessario
             return scenario;
         }).collect(Collectors.toList());
     
@@ -138,7 +131,6 @@ public class HttpController {
         }
         return ResponseEntity.status(HttpStatus.CREATED).body(nuovaStoria);
     }
-    
 
     @PutMapping("/storie/{id}")
     public ResponseEntity<Storia> updateStoria(@PathVariable Long id, @RequestBody Storia storia) {
@@ -154,6 +146,17 @@ public class HttpController {
         mongoDbController.deleteStoria(id);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/storie/titoli")
+    public ResponseEntity<List<StoriaTitoloDto>> getAllStorieTitoli() {
+        List<Storia> storie = mongoDbController.getAllStorie();
+        List<StoriaTitoloDto> storieTitoli = storie.stream()
+                .map(storia -> new StoriaTitoloDto(storia.getId(), storia.getTitolo()))
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(storieTitoli);
+    }
+
+    // Utenti Endpoints
 
     @GetMapping("/utenti")
     public List<Utente> getAllUtenti() {
@@ -203,5 +206,32 @@ public class HttpController {
     public ResponseEntity<Void> deleteUtente(@PathVariable String username) {
         mongoDbController.deleteUtente(username);
         return ResponseEntity.noContent().build();
+    }
+
+    // Classe DTO per restituire solo ID e titolo della storia
+    public static class StoriaTitoloDto {
+        private Long id;
+        private String titolo;
+
+        public StoriaTitoloDto(Long id, String titolo) {
+            this.id = id;
+            this.titolo = titolo;
+        }
+
+        public Long getId() {
+            return id;
+        }
+
+        public void setId(Long id) {
+            this.id = id;
+        }
+
+        public String getTitolo() {
+            return titolo;
+        }
+
+        public void setTitolo(String titolo) {
+            this.titolo = titolo;
+        }
     }
 }
