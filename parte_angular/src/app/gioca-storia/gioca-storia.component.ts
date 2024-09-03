@@ -1,10 +1,9 @@
-// gioca-storia.component.ts
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ApiService } from '../api.service';
 import { Observable, of } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
-import { Scenario, Oggetto, Storia } from './scenario.model'; // Assicurati che scenario.model.ts contenga la definizione di Storia
+import { Scenario, Oggetto, Storia, Alternative } from './scenario.model'; // Assicurati che scenario.model.ts contenga la definizione di Alternative
 
 @Component({
   selector: 'app-gioca-storia',
@@ -16,7 +15,7 @@ export class GiocaStoriaComponent implements OnInit {
   inventory: Oggetto[] = [];
   userRiddleAnswer: string = '';
   storiaId: number = 0;
-  storia: Storia | null = null; // Aggiunto per tenere traccia dell'intera storia
+  storia: Storia | null = null;
 
   constructor(
     private route: ActivatedRoute,
@@ -24,76 +23,64 @@ export class GiocaStoriaComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    console.log('ngOnInit chiamato');
     this.route.paramMap.pipe(
       switchMap(params => {
         const id = params.get('id');
         if (id !== null) {
           this.storiaId = +id;
-          console.log('ID storia trovato:', this.storiaId);
           return this.apiService.getStoriaById(this.storiaId);
         } else {
-          console.log('ID storia non trovato');
           return of(null);
         }
       })
     ).subscribe(storia => {
       if (storia) {
         this.storia = storia;
-        console.log('Storia caricata:', storia);
         this.currentScenario = storia.inizio;
-        console.log('Scenario iniziale:', this.currentScenario);
         this.inventory = storia.inventario ? storia.inventario.oggetti : [];
-        console.log('Inventario iniziale:', this.inventory);
-      } else {
-        console.error('Storia non trovata o ID non valido:', this.storiaId);
       }
     });
   }
 
-  canMakeChoice(nextScenarioId: number): boolean {
-    // Logica per verificare se una scelta può essere fatta (se necessario)
-    return true;
-  }
-
-  makeChoice(nextScenarioId: number): void {
-    console.log('Scelta effettuata, prossimo scenario ID:', nextScenarioId);
-    if (this.storia) {
-      const nextScenario = this.storia.scenari.find((sc: Scenario) => sc.id === nextScenarioId);
+  makeChoice(alternative: Alternative): void {  // Modificato per gestire l'Alternative direttamente
+    if (this.storia && alternative) {
+      const nextScenario = this.storia.scenari.find((sc: Scenario) => sc.id === alternative.nextScenarioId);
       if (nextScenario) {
-        console.log('Scenario successivo trovato:', nextScenario);
         this.currentScenario = nextScenario;
       } else {
-        console.error('Scenario successivo non trovato per ID:', nextScenarioId);
+        console.error('Scenario successivo non trovato per ID:', alternative.nextScenarioId);
       }
     }
   }
 
   submitRiddle(): void {
-    console.log('Risposta indovinello inviata:', this.userRiddleAnswer);
     if (this.currentScenario && this.currentScenario.indovinelli.length > 0) {
-      const indovinello = this.currentScenario.indovinelli[0]; // Supponiamo che ci sia un solo indovinello per scenario
-      console.log('Indovinello:', indovinello);
+      const indovinello = this.currentScenario.indovinelli[0];
+      let chosenAlternative: Alternative | undefined;
+  
       if (indovinello.tipo === 'numerico' && this.userRiddleAnswer === indovinello.rispostaCorretta.toString()) {
-        console.log('Risposta corretta per indovinello numerico');
-        this.makeChoice(indovinello.scenarioId);
+        chosenAlternative = this.currentScenario.alternatives.find(alt => alt.type === 'indovinello');
       } else if (indovinello.tipo === 'testuale' && this.userRiddleAnswer.toLowerCase() === indovinello.rispostaCorretta.toLowerCase()) {
-        console.log('Risposta corretta per indovinello testuale');
-        this.makeChoice(indovinello.scenarioId);
+        chosenAlternative = this.currentScenario.alternatives.find(alt => alt.type === 'indovinello');
       } else {
         console.log('Risposta errata:', this.userRiddleAnswer);
       }
+  
+      if (chosenAlternative) {
+        this.makeChoice(chosenAlternative);
+      } else {
+        console.log('Nessuna alternativa corrispondente trovata.');
+      }
+  
       this.userRiddleAnswer = '';
     }
   }
+  
 
   collectItem(item: Oggetto): void {
-    console.log('Oggetto raccolto:', item);
     this.inventory.push(item);
     if (this.currentScenario) {
       this.currentScenario.oggetti = this.currentScenario.oggetti.filter((i: Oggetto) => i.id !== item.id);
-      console.log('Inventario aggiornato:', this.inventory);
-      console.log('Oggetti rimanenti nello scenario:', this.currentScenario.oggetti);
     }
   }
 }

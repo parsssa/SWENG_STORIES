@@ -1,4 +1,3 @@
-// Scenario.java
 package com.sweng_stories.stories_manager.domain;
 
 import java.util.ArrayList;
@@ -10,19 +9,22 @@ public class Scenario {
     private List<Indovinello> indovinelli;
     private List<Oggetto> oggetti;
     private List<Long> nextScenarioIds;
+    private List<Alternative> alternatives;  // Nuovo campo per le alternative
 
     public Scenario() {
         this.indovinelli = new ArrayList<>();
         this.oggetti = new ArrayList<>();
         this.nextScenarioIds = new ArrayList<>();
+        this.alternatives = new ArrayList<>();  // Inizializza la lista delle alternative
     }
 
-    public Scenario(Long id, String descrizione, List<Indovinello> indovinelli, List<Oggetto> oggetti, List<Long> nextScenarioIds) {
+    public Scenario(Long id, String descrizione, List<Indovinello> indovinelli, List<Oggetto> oggetti, List<Long> nextScenarioIds, List<Alternative> alternatives) {
         this.id = id;
         this.descrizione = descrizione;
         this.indovinelli = (indovinelli != null) ? indovinelli : new ArrayList<>();
         this.oggetti = (oggetti != null) ? oggetti : new ArrayList<>();
         this.nextScenarioIds = (nextScenarioIds != null) ? nextScenarioIds : new ArrayList<>();
+        this.alternatives = (alternatives != null) ? alternatives : new ArrayList<>();
     }
 
     // Getter e setter
@@ -64,5 +66,13 @@ public class Scenario {
 
     public void setNextScenarioIds(List<Long> nextScenarioIds) {
         this.nextScenarioIds = (nextScenarioIds != null) ? nextScenarioIds : new ArrayList<>();
+    }
+
+    public List<Alternative> getAlternatives() {
+        return alternatives;
+    }
+
+    public void setAlternatives(List<Alternative> alternatives) {
+        this.alternatives = (alternatives != null) ? alternatives : new ArrayList<>();
     }
 }

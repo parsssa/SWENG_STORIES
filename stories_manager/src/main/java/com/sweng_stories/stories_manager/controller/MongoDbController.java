@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class MongoDbController {
@@ -110,6 +111,7 @@ public class MongoDbController {
         }
         return null;
     }
+    
 
     private Long generateId(String collectionName) {
         Long id = 1L;
@@ -154,6 +156,7 @@ public class MongoDbController {
             }
         }
     
+        // Conversione e inserimento nel database
         Document document = new Document("id", nuovaStoria.getId())
                 .append("titolo", nuovaStoria.getTitolo())
                 .append("descrizione", nuovaStoria.getDescrizione())
@@ -162,6 +165,7 @@ public class MongoDbController {
                 .append("scenari", convertScenariosToDocuments(nuovaStoria.getScenari()))
                 .append("indovinello", convertIndovinelloToDocument(nuovaStoria.getIndovinello()))
                 .append("inventario", convertInventarioToDocument(nuovaStoria.getInventario()));
+    
         storieCollection.insertOne(document);
         return nuovaStoria;
     }
@@ -179,15 +183,53 @@ public class MongoDbController {
         storieCollection.updateOne(query, update);
         return storiaAggiornata;
     }
+    
+
+    private Document convertOggettoToDocument(Oggetto oggetto) {
+        return new Document("id", oggetto.getId())
+                .append("nome", oggetto.getNome())
+                .append("descrizione", oggetto.getDescrizione());
+    }
+    
 
     private Document convertScenarioToDocument(Scenario scenario) {
         return new Document("id", scenario.getId())
                 .append("descrizione", scenario.getDescrizione())
-                .append("indovinelli", convertIndovinelliToDocuments(
-                        scenario.getIndovinelli() != null ? scenario.getIndovinelli() : new ArrayList<>()))
-                .append("oggetti", convertOggettiToDocuments(
-                        scenario.getOggetti() != null ? scenario.getOggetti() : new ArrayList<>()));
+                .append("indovinelli", scenario.getIndovinelli().stream()
+                        .map(this::convertIndovinelloToDocument).collect(Collectors.toList()))
+                .append("oggetti", scenario.getOggetti().stream()
+                        .map(this::convertOggettoToDocument).collect(Collectors.toList()))
+                .append("alternative", convertAlternativesToDocuments(scenario.getAlternatives()));  // Aggiungi le alternative
     }
+
+    private Document convertAlternativeToDocument(Alternative alternative) {
+        return new Document("text", alternative.getText())
+                .append("type", alternative.getType())
+                .append("items", alternative.getItems());
+    }
+    
+    private List<Document> convertAlternativesToDocuments(List<Alternative> alternatives) {
+        return alternatives.stream()
+                .map(this::convertAlternativeToDocument)
+                .collect(Collectors.toList());
+    }
+    
+    private Alternative convertDocumentToAlternative(Document document) {
+        return new Alternative(
+                document.getString("text"),
+                document.getString("type"),
+                (List<String>) document.get("items")
+        );
+    }
+    
+    private List<Alternative> convertDocumentsToAlternatives(List<Document> documents) {
+        return documents.stream()
+                .map(this::convertDocumentToAlternative)
+                .collect(Collectors.toList());
+    }
+    
+    
+    
 
     private List<Document> convertScenariosToDocuments(List<Scenario> scenari) {
         List<Document> documents = new ArrayList<>();
@@ -198,16 +240,20 @@ public class MongoDbController {
     }
 
     private Document convertIndovinelloToDocument(Indovinello indovinello) {
-        Document document = new Document("id", indovinello.getId())
-                .append("descrizione", indovinello.getDescrizione());
+        Document doc = new Document("id", indovinello.getId())
+                .append("descrizione", indovinello.getDescrizione())
+                .append("domanda", indovinello.getDomanda())
+                .append("scenarioId", indovinello.getScenarioId());
+    
         if (indovinello instanceof IndovinelloTestuale) {
-            document.append("tipo", "testuale")
-                    .append("rispostaCorretta", ((IndovinelloTestuale) indovinello).getRispostaCorretta());
+            doc.append("tipo", "testuale")
+               .append("rispostaCorretta", indovinello.getRispostaCorretta());
         } else if (indovinello instanceof IndovinelloNumerico) {
-            document.append("tipo", "numerico")
-                    .append("rispostaCorretta", ((IndovinelloNumerico) indovinello).getRispostaCorretta());
+            doc.append("tipo", "numerico")
+               .append("rispostaCorretta", indovinello.getRispostaCorretta());
         }
-        return document;
+    
+        return doc;
     }
 
     private List<Document> convertIndovinelliToDocuments(List<Indovinello> indovinelli) {
@@ -245,8 +291,11 @@ public class MongoDbController {
         scenario.setDescrizione(document.getString("descrizione"));
         scenario.setIndovinelli(convertDocumentsToIndovinelli((List<Document>) document.get("indovinelli")));
         scenario.setOggetti(convertDocumentsToOggetti((List<Document>) document.get("oggetti")));
+        scenario.setAlternatives(convertDocumentsToAlternatives((List<Document>) document.get("alternative")));  // Gestisci le alternative
         return scenario;
     }
+    
+    
 
     private List<Indovinello> convertDocumentsToIndovinelli(List<Document> documents) {
 
@@ -271,17 +320,14 @@ public class MongoDbController {
         if (document == null) {
             return null;
         }
-
+    
         String tipo = document.getString("tipo");
-        System.out.println(
-                "INDOVINELLOOOOOO: \n \n \n \n \n \n \n \n" + " tipo: " + tipo + " ds \n \n \n \n \n \n \n \n");
-
         Long id = document.getLong("id");
         String descrizione = document.getString("descrizione");
         String domanda = document.getString("domanda");
         Object rispostaCorretta = document.get("rispostaCorretta");
         Long scenarioId = document.getLong("scenarioId");
-
+    
         if ("testuale".equals(tipo)) {
             return new IndovinelloTestuale(id, descrizione, domanda, (String) rispostaCorretta, scenarioId);
         } else if ("numerico".equals(tipo)) {
@@ -290,6 +336,7 @@ public class MongoDbController {
             return null;
         }
     }
+    
 
     private Inventario convertDocumentToInventario(Document document) {
         if (document == null) {

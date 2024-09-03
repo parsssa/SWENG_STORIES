@@ -8,9 +8,13 @@ import org.springframework.web.bind.annotation.*;
 
 import com.sweng_stories.stories_manager.domain.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import java.util.stream.Stream;
+
 
 @CrossOrigin(origins = "http://localhost:4200")
 @RestController
@@ -43,94 +47,112 @@ public class HttpController {
     }
 
     @PostMapping(value = "/storie", consumes = { "multipart/form-data" })
-    public ResponseEntity<Storia> createStoria(
-            @RequestParam("titolo") String titolo,
-            @RequestParam("descrizione") String descrizione,
-            @RequestParam("inizioDescrizione") String inizioDescrizione,
-            @RequestParam("riddle") String riddle,
-            @RequestParam("riddleType") String riddleType,
-            @RequestParam("riddleQuestion") String riddleQuestion,
-            @RequestParam("riddleAnswer") String riddleAnswer,
-            @RequestParam("inventory") String inventory,
-            @RequestParam Map<String, String> allParams) {
-    
-        List<String> finaliDescrizioni = allParams.entrySet().stream()
-                .filter(entry -> entry.getKey().startsWith("finali["))
-                .map(Map.Entry::getValue)
-                .collect(Collectors.toList());
-    
-        List<Scenario> finali = finaliDescrizioni.stream().map(desc -> {
-            Scenario scenario = new Scenario();
-            scenario.setDescrizione(desc);
-            return scenario;
-        }).collect(Collectors.toList());
-    
-        List<String> scenariDescrizioni = allParams.entrySet().stream()
-                .filter(entry -> entry.getKey().startsWith("scenari[") && entry.getKey().endsWith("].descrizione"))
-                .map(Map.Entry::getValue)
-                .collect(Collectors.toList());
-    
-        List<Scenario> scenari = scenariDescrizioni.stream().map(desc -> {
-            Scenario scenario = new Scenario();
-            scenario.setDescrizione(desc);
-            return scenario;
-        }).collect(Collectors.toList());
-    
-        // Estrai gli oggetti per ciascuno scenario
-        scenari.forEach(scenario -> {
-            String keyPrefix = "scenari[" + scenari.indexOf(scenario) + "].oggetti";
-            List<Oggetto> oggetti = allParams.entrySet().stream()
-                    .filter(entry -> entry.getKey().startsWith(keyPrefix))
-                    .map(Map.Entry::getValue)
-                    .map(itemName -> {
-                        Oggetto oggetto = new Oggetto();
-                        oggetto.setNome(itemName);
-                        oggetto.setDescrizione(""); // Set a default description or modify as needed
-                        return oggetto;
-                    }).collect(Collectors.toList());
-            scenario.setOggetti(oggetti);
-        });
-    
-        // Creazione dell'oggetto Storia
-        Storia storia = new Storia();
-        storia.setTitolo(titolo);
-        storia.setDescrizione(descrizione);
-    
-        Scenario inizio = new Scenario();
-        inizio.setDescrizione(inizioDescrizione);
-        storia.setInizio(inizio);
-    
-        Indovinello indovinello;
+public ResponseEntity<Storia> createStoria(
+    @RequestParam("titolo") String titolo,
+    @RequestParam("descrizione") String descrizione,
+    @RequestParam("inizioDescrizione") String inizioDescrizione,
+    @RequestParam Map<String, String> allParams) {
+
+    // Creazione dell'oggetto Storia
+    Storia storia = new Storia();
+    storia.setTitolo(titolo);
+    storia.setDescrizione(descrizione);
+
+    // Inizio
+    Scenario inizio = new Scenario();
+    inizio.setDescrizione(inizioDescrizione);
+    storia.setInizio(inizio);
+
+    // Processa e popola i finali
+    List<Scenario> finali = allParams.entrySet().stream()
+            .filter(entry -> entry.getKey().startsWith("finali[") && entry.getKey().endsWith("descrizione"))
+            .map(entry -> {
+                Scenario scenario = new Scenario();
+                scenario.setDescrizione(entry.getValue());
+                return scenario;
+            }).collect(Collectors.toList());
+    storia.setFinali(finali);
+
+    // Processa e popola gli scenari
+List<Scenario> scenari = allParams.entrySet().stream()
+.filter(entry -> entry.getKey().startsWith("scenari[") && entry.getKey().endsWith("descrizione"))
+.map(entry -> {
+    Scenario scenario = new Scenario();
+    scenario.setDescrizione(entry.getValue());
+
+    // Estrazione delle alternative e oggetti per ogni scenario
+    String scenarioIndex = entry.getKey().split("\\[")[1].split("\\]")[0];
+    List<Alternative> alternatives = allParams.entrySet().stream()
+            .filter(e -> e.getKey().startsWith("scenari[" + scenarioIndex + "].alternatives"))
+            .map(e -> {
+                Alternative alternative = new Alternative();
+                if (e.getKey().endsWith(".text")) {
+                    alternative.setText(e.getValue());
+                }
+                if (e.getKey().endsWith(".type")) {
+                    alternative.setType(e.getValue());
+                }
+                if (e.getKey().endsWith(".items")) {
+                    // Controllo per evitare che items sia null
+                    if (e.getValue() != null && !e.getValue().trim().isEmpty()) {
+                        alternative.setItems(List.of(e.getValue().split(",")));
+                    } else {
+                        alternative.setItems(new ArrayList<>());  // Inizializza una lista vuota
+                    }
+                }
+                return alternative;
+            }).collect(Collectors.toList());
+
+    scenario.setOggetti(alternatives.stream()
+            .flatMap((Alternative alt) -> alt.getItems() != null 
+                ? alt.getItems().stream() 
+                : Stream.<String>empty())
+            .map((String item) -> {
+                Oggetto oggetto = new Oggetto();
+                oggetto.setNome(item.trim());
+                return oggetto;
+            }).collect(Collectors.toList()));
+
+    scenario.setAlternatives(alternatives);  // Aggiungi le alternative allo scenario
+
+    return scenario;
+}).collect(Collectors.toList());
+storia.setScenari(scenari);
+
+
+    // Creazione dell'indovinello
+    if (allParams.containsKey("riddle")) {
+        String riddleType = allParams.get("riddleType");
         if ("text".equals(riddleType)) {
-            indovinello = new IndovinelloTestuale(null, riddle, riddleQuestion, riddleAnswer, null);
-        } else {
-            indovinello = new IndovinelloNumerico(null, riddle, riddleQuestion, Integer.parseInt(riddleAnswer), null);
+            IndovinelloTestuale indovinello = new IndovinelloTestuale();
+            indovinello.setDescrizione(allParams.get("riddle"));
+            indovinello.setDomanda(allParams.get("riddleQuestion"));
+            indovinello.setRispostaCorretta(allParams.get("riddleAnswer"));
+            storia.setIndovinello(indovinello);
+        } else if ("numeric".equals(riddleType)) {
+            IndovinelloNumerico indovinello = new IndovinelloNumerico();
+            indovinello.setDescrizione(allParams.get("riddle"));
+            indovinello.setDomanda(allParams.get("riddleQuestion"));
+            indovinello.setRispostaCorretta(Integer.parseInt(allParams.get("riddleAnswer")));
+            storia.setIndovinello(indovinello);
         }
-        storia.setIndovinello(indovinello);
-    
-        Inventario inventario = new Inventario();
-        List<Oggetto> oggettiInventario = List.of(inventory.split(",")).stream()
-                .map(item -> {
-                    Oggetto oggetto = new Oggetto();
-                    oggetto.setNome(item.trim());
-                    oggetto.setDescrizione("");
-                    return oggetto;
-                }).collect(Collectors.toList());
-        inventario.setOggetti(oggettiInventario);
-        storia.setInventario(inventario);
-    
-        storia.setFinali(finali);
-        storia.setScenari(scenari);
-    
-        Storia nuovaStoria = null;
-        try {
-            nuovaStoria = mongoDbController.createStoria(storia);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
-        return ResponseEntity.status(HttpStatus.CREATED).body(nuovaStoria);
     }
+
+    // Creazione dell'inventario
+    if (allParams.containsKey("inventory")) {
+        storia.setInventarioFromItems(allParams.get("inventory"));
+    }
+
+    // Salva la storia nel database
+    try {
+        Storia nuovaStoria = mongoDbController.createStoria(storia);
+        return ResponseEntity.status(HttpStatus.CREATED).body(nuovaStoria);
+    } catch (Exception e) {
+        e.printStackTrace();
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+    }
+}
+
 
     @PutMapping("/storie/{id}")
     public ResponseEntity<Storia> updateStoria(@PathVariable Long id, @RequestBody Storia storia) {
