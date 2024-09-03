@@ -9,13 +9,13 @@ public class Scenario {
     private List<Indovinello> indovinelli;
     private List<Oggetto> oggetti;
     private List<Long> nextScenarioIds;
-    private List<Alternative> alternatives;  // Nuovo campo per le alternative
+    private List<Alternative> alternatives;
 
     public Scenario() {
         this.indovinelli = new ArrayList<>();
         this.oggetti = new ArrayList<>();
         this.nextScenarioIds = new ArrayList<>();
-        this.alternatives = new ArrayList<>();  // Inizializza la lista delle alternative
+        this.alternatives = new ArrayList<>();
     }
 
     public Scenario(Long id, String descrizione, List<Indovinello> indovinelli, List<Oggetto> oggetti, List<Long> nextScenarioIds, List<Alternative> alternatives) {
@@ -74,5 +74,27 @@ public class Scenario {
 
     public void setAlternatives(List<Alternative> alternatives) {
         this.alternatives = (alternatives != null) ? alternatives : new ArrayList<>();
+    }
+
+    // Aggiungi un indovinello alla lista
+    public void addIndovinello(Indovinello indovinello) {
+        if (indovinello != null) {
+            this.indovinelli.add(indovinello);
+        }
+    }
+
+    // Rimuovi un indovinello dalla lista
+    public void removeIndovinello(Indovinello indovinello) {
+        this.indovinelli.remove(indovinello);
+    }
+
+    // Trova un indovinello per tipo
+    public Indovinello findIndovinelloByTipo(String tipo) {
+        for (Indovinello indovinello : this.indovinelli) {
+            if (indovinello.getTipo().equals(tipo)) {
+                return indovinello;
+            }
+        }
+        return null;
     }
 }
