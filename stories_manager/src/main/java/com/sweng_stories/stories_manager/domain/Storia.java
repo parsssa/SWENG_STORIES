@@ -133,6 +133,14 @@ public class Storia {
         for (Alternative alt : alternatives) {
             Scenario scenario = new Scenario();
             scenario.setDescrizione(alt.getText());
+            
+            // Ottieni l'ID dello scenario a cui punta l'alternativa
+            Long nextScenarioId = alt.getNextScenarioId();
+            if (nextScenarioId != null) {
+                scenario.getNextScenarioIds().add(nextScenarioId);
+            }
+    
+            // Aggiungi oggetti se presenti
             List<Oggetto> oggetti = new ArrayList<>();
             for (String itemName : alt.getItems()) {
                 Oggetto oggetto = new Oggetto();
@@ -144,7 +152,7 @@ public class Storia {
             this.scenari.add(scenario);
         }
     }
-
+    
     public void setIndovinello(String descrizione, String tipo) {
         if (tipo.equals("testuale")) {
             IndovinelloTestuale indovinello = new IndovinelloTestuale();

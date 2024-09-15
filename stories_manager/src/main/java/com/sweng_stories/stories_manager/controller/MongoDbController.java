@@ -218,7 +218,8 @@ public class MongoDbController {
         return new Alternative(
                 document.getString("text"),
                 document.getString("type"),
-                (List<String>) document.get("items")
+                (List<String>) document.get("items"),
+                document.getLong("nextScenarioId") // Aggiungi questa riga per il nuovo campo
         );
     }
     
