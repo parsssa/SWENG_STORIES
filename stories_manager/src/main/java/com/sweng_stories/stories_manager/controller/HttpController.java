@@ -15,7 +15,6 @@ import java.util.stream.Collectors;
 
 import java.util.stream.Stream;
 
-
 @CrossOrigin(origins = "http://localhost:4200")
 @RestController
 @RequestMapping("/api")
@@ -42,27 +41,28 @@ public class HttpController {
                 return ResponseEntity.notFound().build();
             }
         } catch (NumberFormatException e) {
-            return ResponseEntity.badRequest().body(null); // Ritorna una risposta di bad request se l'ID non è un numero valido
+            return ResponseEntity.badRequest().body(null); // Ritorna una risposta di bad request se l'ID non è un
+                                                           // numero valido
         }
     }
 
     @PostMapping(value = "/storie", consumes = { "multipart/form-data" })
     public ResponseEntity<Storia> createStoria(
-        @RequestParam("titolo") String titolo,
-        @RequestParam("descrizione") String descrizione,
-        @RequestParam("inizioDescrizione") String inizioDescrizione,
-        @RequestParam Map<String, String> allParams) {
-    
+            @RequestParam("titolo") String titolo,
+            @RequestParam("descrizione") String descrizione,
+            @RequestParam("inizioDescrizione") String inizioDescrizione,
+            @RequestParam Map<String, String> allParams) {
+
         // Creazione dell'oggetto Storia
         Storia storia = new Storia();
         storia.setTitolo(titolo);
         storia.setDescrizione(descrizione);
-    
+
         // Inizio
         Scenario inizio = new Scenario();
         inizio.setDescrizione(inizioDescrizione);
         storia.setInizio(inizio);
-    
+
         // Processa e popola i finali
         List<Scenario> finali = allParams.entrySet().stream()
                 .filter(entry -> entry.getKey().startsWith("finali[") && entry.getKey().endsWith("descrizione"))
@@ -72,14 +72,14 @@ public class HttpController {
                     return scenario;
                 }).collect(Collectors.toList());
         storia.setFinali(finali);
-    
+
         // Processa e popola gli scenari
         List<Scenario> scenari = allParams.entrySet().stream()
                 .filter(entry -> entry.getKey().startsWith("scenari[") && entry.getKey().endsWith("descrizione"))
                 .map(entry -> {
                     Scenario scenario = new Scenario();
                     scenario.setDescrizione(entry.getValue());
-    
+
                     // Estrazione delle alternative per ogni scenario
                     String scenarioIndex = entry.getKey().split("\\[")[1].split("\\]")[0];
                     List<Alternative> alternatives = allParams.entrySet().stream()
@@ -99,32 +99,38 @@ public class HttpController {
                                         alternative.setItems(new ArrayList<>()); // Inizializza una lista vuota
                                     }
                                 }
-                                // Gestione del collegamento a uno scenario specifico
+                                // Gestione del collegamento a uno scenario o a un finale specifico
                                 if (e.getKey().endsWith(".portaA")) {
-                                    // Assuming the value is a scenario ID
-                                    try {
-                                        Long nextScenarioId = Long.parseLong(e.getValue());
-                                        alternative.setNextScenarioId(nextScenarioId);
-                                    } catch (NumberFormatException ex) {
-                                        ex.printStackTrace(); // Handle the exception as needed
+                                    String leadsToValue = e.getValue();
+                                    if (leadsToValue.startsWith("ending-")) {
+                                        // Logica per i finali
+                                        alternative.setNextScenarioId(null); // Impostare un valore speciale o gestirlo
+                                                                             // separatamente
+                                    } else {
+                                        try {
+                                            Long nextScenarioId = Long.parseLong(leadsToValue);
+                                            alternative.setNextScenarioId(nextScenarioId);
+                                        } catch (NumberFormatException ex) {
+                                            ex.printStackTrace(); // Gestisci l'errore secondo necessità
+                                        }
                                     }
                                 }
                                 return alternative;
                             }).collect(Collectors.toList());
-    
-                    scenario.setAlternatives(alternatives);  // Aggiungi le alternative allo scenario
-    
+
+                    scenario.setAlternatives(alternatives); // Aggiungi le alternative allo scenario
+
                     // Popola oggetti da alternative
                     scenario.setOggetti(alternatives.stream()
-                            .flatMap((Alternative alt) -> alt.getItems() != null 
-                                ? alt.getItems().stream() 
-                                : Stream.<String>empty())
+                            .flatMap((Alternative alt) -> alt.getItems() != null
+                                    ? alt.getItems().stream()
+                                    : Stream.<String>empty())
                             .map((String item) -> {
                                 Oggetto oggetto = new Oggetto();
                                 oggetto.setNome(item.trim());
                                 return oggetto;
                             }).collect(Collectors.toList()));
-    
+
                     // Gestione dell'indovinello specifico per scenario
                     if (allParams.containsKey("riddle")) {
                         String riddleType = allParams.get("riddleType");
@@ -138,18 +144,19 @@ public class HttpController {
                             indovinello = new IndovinelloNumerico();
                             ((IndovinelloNumerico) indovinello).setDescrizione(allParams.get("riddle"));
                             ((IndovinelloNumerico) indovinello).setDomanda(allParams.get("riddleQuestion"));
-                            ((IndovinelloNumerico) indovinello).setRispostaCorretta(Integer.parseInt(allParams.get("riddleAnswer")));
+                            ((IndovinelloNumerico) indovinello)
+                                    .setRispostaCorretta(Integer.parseInt(allParams.get("riddleAnswer")));
                         } else {
                             throw new IllegalArgumentException("Tipo di indovinello non riconosciuto");
                         }
-                    
+
                         // Aggiungi l'indovinello allo scenario
                         scenario.addIndovinello(indovinello);
                     }
                     return scenario;
                 }).collect(Collectors.toList());
         storia.setScenari(scenari);
-    
+
         // Gestione dell'indovinello globale
         if (allParams.containsKey("globalRiddle")) {
             String riddleType = allParams.get("globalRiddleType");
@@ -167,12 +174,12 @@ public class HttpController {
                 storia.setIndovinello(indovinello);
             }
         }
-    
+
         // Creazione dell'inventario
         if (allParams.containsKey("inventory")) {
             storia.setInventarioFromItems(allParams.get("inventory"));
         }
-    
+
         // Salva la storia nel database
         try {
             Storia nuovaStoria = mongoDbController.createStoria(storia);
@@ -182,7 +189,7 @@ public class HttpController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
-    
+
     @PutMapping("/storie/{id}")
     public ResponseEntity<Storia> updateStoria(@PathVariable Long id, @RequestBody Storia storia) {
         if (storia == null || !id.equals(storia.getId())) {

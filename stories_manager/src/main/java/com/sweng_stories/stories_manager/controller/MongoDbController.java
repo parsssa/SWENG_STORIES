@@ -111,8 +111,8 @@ public class MongoDbController {
         }
         return null;
     }
-    
 
+    // Metodo per gestire gli ID autoincrementali
     private Long generateId(String collectionName) {
         Long id = 1L;
         while (documentExists(collectionName, id)) {
@@ -128,14 +128,16 @@ public class MongoDbController {
     }
 
     public Storia createStoria(Storia nuovaStoria) {
+        // Generazione di un ID univoco per la storia
         Long newId = generateId("storie");
         nuovaStoria.setId(newId);
     
-        // Assicura che le liste non siano null
+        // Assicurati che l'inizio della storia abbia una lista di indovinelli vuota, se necessario
         if (nuovaStoria.getInizio() != null && nuovaStoria.getInizio().getIndovinelli() == null) {
             nuovaStoria.getInizio().setIndovinelli(new ArrayList<>());
         }
     
+        // Verifica e inizializza la lista dei finali
         if (nuovaStoria.getFinali() == null) {
             nuovaStoria.setFinali(new ArrayList<>());
         } else {
@@ -146,17 +148,30 @@ public class MongoDbController {
             }
         }
     
+        // Verifica e inizializza la lista degli scenari
         if (nuovaStoria.getScenari() == null) {
             nuovaStoria.setScenari(new ArrayList<>());
         } else {
             for (Scenario scenario : nuovaStoria.getScenari()) {
+                // Genera un ID univoco per ogni scenario
+                Long scenarioId = generateId("scenari");
+                scenario.setId(scenarioId);
+    
+                // Inizializza indovinelli se null
                 if (scenario.getIndovinelli() == null) {
                     scenario.setIndovinelli(new ArrayList<>());
+                }
+    
+                // Imposta l'ID per le alternative collegate
+                for (Alternative alt : scenario.getAlternatives()) {
+                    if (alt.getNextScenarioId() == null) {
+                        alt.setNextScenarioId(scenarioId); // Collegare l'alternativa allo scenario attuale
+                    }
                 }
             }
         }
     
-        // Conversione e inserimento nel database
+        // Creazione del documento per MongoDB
         Document document = new Document("id", nuovaStoria.getId())
                 .append("titolo", nuovaStoria.getTitolo())
                 .append("descrizione", nuovaStoria.getDescrizione())
@@ -166,7 +181,9 @@ public class MongoDbController {
                 .append("indovinello", convertIndovinelloToDocument(nuovaStoria.getIndovinello()))
                 .append("inventario", convertInventarioToDocument(nuovaStoria.getInventario()));
     
+        // Inserimento nel database
         storieCollection.insertOne(document);
+    
         return nuovaStoria;
     }
     
@@ -183,14 +200,12 @@ public class MongoDbController {
         storieCollection.updateOne(query, update);
         return storiaAggiornata;
     }
-    
 
     private Document convertOggettoToDocument(Oggetto oggetto) {
         return new Document("id", oggetto.getId())
                 .append("nome", oggetto.getNome())
                 .append("descrizione", oggetto.getDescrizione());
     }
-    
 
     private Document convertScenarioToDocument(Scenario scenario) {
         return new Document("id", scenario.getId())
@@ -199,7 +214,8 @@ public class MongoDbController {
                         .map(this::convertIndovinelloToDocument).collect(Collectors.toList()))
                 .append("oggetti", scenario.getOggetti().stream()
                         .map(this::convertOggettoToDocument).collect(Collectors.toList()))
-                .append("alternative", convertAlternativesToDocuments(scenario.getAlternatives()));  // Aggiungi le alternative
+                .append("alternative", convertAlternativesToDocuments(scenario.getAlternatives())); // Aggiungi le
+                                                                                                    // alternative
     }
 
     private Document convertAlternativeToDocument(Alternative alternative) {
@@ -207,13 +223,13 @@ public class MongoDbController {
                 .append("type", alternative.getType())
                 .append("items", alternative.getItems());
     }
-    
+
     private List<Document> convertAlternativesToDocuments(List<Alternative> alternatives) {
         return alternatives.stream()
                 .map(this::convertAlternativeToDocument)
                 .collect(Collectors.toList());
     }
-    
+
     private Alternative convertDocumentToAlternative(Document document) {
         return new Alternative(
                 document.getString("text"),
@@ -222,15 +238,12 @@ public class MongoDbController {
                 document.getLong("nextScenarioId") // Aggiungi questa riga per il nuovo campo
         );
     }
-    
+
     private List<Alternative> convertDocumentsToAlternatives(List<Document> documents) {
         return documents.stream()
                 .map(this::convertDocumentToAlternative)
                 .collect(Collectors.toList());
     }
-    
-    
-    
 
     private List<Document> convertScenariosToDocuments(List<Scenario> scenari) {
         List<Document> documents = new ArrayList<>();
@@ -245,15 +258,15 @@ public class MongoDbController {
                 .append("descrizione", indovinello.getDescrizione())
                 .append("domanda", indovinello.getDomanda())
                 .append("scenarioId", indovinello.getScenarioId());
-    
+
         if (indovinello instanceof IndovinelloTestuale) {
             doc.append("tipo", "testuale")
-               .append("rispostaCorretta", indovinello.getRispostaCorretta());
+                    .append("rispostaCorretta", indovinello.getRispostaCorretta());
         } else if (indovinello instanceof IndovinelloNumerico) {
             doc.append("tipo", "numerico")
-               .append("rispostaCorretta", indovinello.getRispostaCorretta());
+                    .append("rispostaCorretta", indovinello.getRispostaCorretta());
         }
-    
+
         return doc;
     }
 
@@ -292,11 +305,11 @@ public class MongoDbController {
         scenario.setDescrizione(document.getString("descrizione"));
         scenario.setIndovinelli(convertDocumentsToIndovinelli((List<Document>) document.get("indovinelli")));
         scenario.setOggetti(convertDocumentsToOggetti((List<Document>) document.get("oggetti")));
-        scenario.setAlternatives(convertDocumentsToAlternatives((List<Document>) document.get("alternative")));  // Gestisci le alternative
+        scenario.setAlternatives(convertDocumentsToAlternatives((List<Document>) document.get("alternative"))); // Gestisci
+                                                                                                                // le
+                                                                                                                // alternative
         return scenario;
     }
-    
-    
 
     private List<Indovinello> convertDocumentsToIndovinelli(List<Document> documents) {
 
@@ -321,14 +334,14 @@ public class MongoDbController {
         if (document == null) {
             return null;
         }
-    
+
         String tipo = document.getString("tipo");
         Long id = document.getLong("id");
         String descrizione = document.getString("descrizione");
         String domanda = document.getString("domanda");
         Object rispostaCorretta = document.get("rispostaCorretta");
         Long scenarioId = document.getLong("scenarioId");
-    
+
         if ("testuale".equals(tipo)) {
             return new IndovinelloTestuale(id, descrizione, domanda, (String) rispostaCorretta, scenarioId);
         } else if ("numerico".equals(tipo)) {
@@ -337,7 +350,6 @@ public class MongoDbController {
             return null;
         }
     }
-    
 
     private Inventario convertDocumentToInventario(Document document) {
         if (document == null) {
@@ -449,12 +461,17 @@ public class MongoDbController {
     }
 
     public Scenario createScenario(Scenario nuovoScenario) {
+        Long newId = generateId("scenari"); // Genera un nuovo ID univoco per lo scenario
+        nuovoScenario.setId(newId);
+
+        // Conversione a document e inserimento nel database
         Document document = new Document("id", nuovoScenario.getId())
-                .append("descrizione", nuovoScenario.getDescrizione());
-        // Aggiungi altri campi se necessario
+                .append("descrizione", nuovoScenario.getDescrizione())
+                .append("indovinelli", convertIndovinelliToDocuments(nuovoScenario.getIndovinelli()))
+                .append("oggetti", convertOggettiToDocuments(nuovoScenario.getOggetti()))
+                .append("alternative", convertAlternativesToDocuments(nuovoScenario.getAlternatives()));
+
         scenariCollection.insertOne(document);
-        // Salva anche indovinelli e oggetti associati
-        saveIndovinelliAndOggettiForScenario(nuovoScenario);
         return nuovoScenario;
     }
 

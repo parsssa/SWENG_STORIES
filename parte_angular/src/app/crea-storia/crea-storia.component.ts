@@ -62,10 +62,11 @@ export class CreaStoriaComponent implements OnInit {
       text: ['', Validators.required],
       type: ['without-items', Validators.required],
       items: [''],
-      leadsTo: [null]  // Link to other scenario
+      leadsTo: [null]  // Collega lo scenario successivo
     });
     alternatives.push(alternative);
   }
+  
 
   removeScenario(index: number): void {
     this.scenarios.removeAt(index);
@@ -78,18 +79,21 @@ export class CreaStoriaComponent implements OnInit {
   }
 
   getScenarioOptions(): any[] {
+    // Usa l'ID reale dello scenario (numerico) per `leadsTo`
     const scenarioOptions = this.scenarios.controls.map((control, index) => ({
-      value: `scenario-${index}`,
+      value: index,  // Qui utilizziamo l'indice numerico come valore
       label: `Scenario ${index + 1}`
     }));
   
     const endingOptions = this.endings.controls.map((control, index) => ({
-      value: `ending-${index}`,
+      value: `ending-${index}`,  // I finali possono ancora usare questa stringa
       label: `Finale ${index + 1}`
     }));
   
     return [...scenarioOptions, ...endingOptions];
   }
+  
+  
   
 
   trackByFn(index: number, item: any): number {
@@ -108,7 +112,7 @@ export class CreaStoriaComponent implements OnInit {
       formData.append('riddleQuestion', storyData.riddleQuestion);
       formData.append('riddleAnswer', storyData.riddleAnswer);
       formData.append('inventory', storyData.inventory);
-
+  
       storyData.scenarios.forEach((scenario: any, index: number) => {
         formData.append(`scenari[${index}].descrizione`, scenario.text);
         if (scenario.items) {
@@ -125,25 +129,26 @@ export class CreaStoriaComponent implements OnInit {
             });
           }
           if (alt.leadsTo != null) {
-            formData.append(`scenari[${index}].alternatives[${altIndex}].portaA`, alt.leadsTo);
+            formData.append(`scenari[${index}].alternatives[${altIndex}].portaA`, alt.leadsTo);  // leadsTo corrisponde a nextScenarioId
           }
         });
       });
-
+  
       storyData.endings.forEach((ending: any, endingIndex: number) => {
         formData.append(`finali[${endingIndex}].descrizione`, ending.description);
       });
-
+  
       this.apiService.createStoria(formData).subscribe(
         (response) => {
-          this.router.navigate(['/success-page']); // or any desired page
+          this.router.navigate(['/success-page']);  // Redirect alla pagina di successo
         },
         (error) => {
-          console.error('Error creating story', error);
+          console.error('Errore durante la creazione della storia', error);
         }
       );
     }
   }
+  
 
   resetForm(): void {
     this.storyForm.reset();

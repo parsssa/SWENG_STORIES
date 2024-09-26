@@ -35,46 +35,51 @@
               </mat-form-field>
 
               <!-- Alternatives Section -->
-<div formArrayName="alternatives">
-  <div *ngFor="let alternative of getAlternatives(i).controls; let j = index" [formGroupName]="j">
-    <mat-card class="alternative-container">
-      <mat-card-title>Alternativa {{ j + 1 }}</mat-card-title>
-      <mat-card-content>
-        <mat-form-field appearance="fill" class="full-width">
-          <mat-label>Descrivi l'alternativa</mat-label>
-          <textarea matInput placeholder="Descrivi l'alternativa" formControlName="text" required></textarea>
-        </mat-form-field>
+              <div formArrayName="alternatives">
+                <div *ngFor="let alternative of getAlternatives(i).controls; let j = index" [formGroupName]="j">
+                  <mat-card class="alternative-container">
+                    <mat-card-title>Alternativa {{ j + 1 }}</mat-card-title>
+                    <mat-card-content>
+                      <mat-form-field appearance="fill" class="full-width">
+                        <mat-label>Descrivi l'alternativa</mat-label>
+                        <textarea matInput placeholder="Descrivi l'alternativa" formControlName="text"
+                          required></textarea>
+                      </mat-form-field>
 
-        <mat-form-field appearance="fill" class="full-width">
-          <mat-label>Tipo di Alternativa</mat-label>
-          <mat-select formControlName="type">
-            <mat-option value="with-items">Con Raccolta Oggetti</mat-option>
-            <mat-option value="without-items">Senza Raccolta Oggetti</mat-option>
-          </mat-select>
-        </mat-form-field>
+                      <mat-form-field appearance="fill" class="full-width">
+                        <mat-label>Tipo di Alternativa</mat-label>
+                        <mat-select formControlName="type">
+                          <mat-option value="with-items">Con Raccolta Oggetti</mat-option>
+                          <mat-option value="without-items">Senza Raccolta Oggetti</mat-option>
+                        </mat-select>
+                      </mat-form-field>
 
-        <ng-container *ngIf="alternative.get('type')?.value === 'with-items'">
-          <mat-form-field appearance="fill" class="full-width">
-            <mat-label>Oggetti raccolti (separati da virgola)</mat-label>
-            <input matInput placeholder="Elenca gli oggetti" formControlName="items">
-          </mat-form-field>
-        </ng-container>
+                      <ng-container *ngIf="alternative.get('type')?.value === 'with-items'">
+                        <mat-form-field appearance="fill" class="full-width">
+                          <mat-label>Oggetti raccolti (separati da virgola)</mat-label>
+                          <input matInput placeholder="Elenca gli oggetti" formControlName="items">
+                        </mat-form-field>
+                      </ng-container>
 
-        <mat-form-field appearance="fill" class="full-width">
-          <mat-label>Collegamento a Scenario o Finale</mat-label>
-          <mat-select formControlName="leadsTo">
-            <mat-option *ngFor="let option of getScenarioOptions(); trackBy: trackByFn" [value]="option.value">
-              {{ option.label }}
-            </mat-option>
-          </mat-select>
-        </mat-form-field>
-      </mat-card-content>
-    </mat-card>
-  </div>
-</div>
+                      <!-- Collegamento a Scenario o Finale -->
+                      <mat-form-field appearance="fill" class="full-width">
+                        <mat-label>Collegamento a Scenario o Finale</mat-label>
+                        <mat-select formControlName="leadsTo">
+                          <mat-option *ngFor="let option of getScenarioOptions(); trackBy: trackByFn"
+                            [value]="option.value">
+                            {{ option.label }}
+                          </mat-option>
+                        </mat-select>
+                      </mat-form-field>
+
+                    </mat-card-content>
+                  </mat-card>
+                </div>
+              </div>
 
 
-              <button mat-raised-button color="primary" (click)="addAlternativeToScenario(i)">Aggiungi Alternativa</button>
+              <button mat-raised-button color="primary" (click)="addAlternativeToScenario(i)">Aggiungi
+                Alternativa</button>
               <button mat-raised-button color="warn" (click)="removeScenario(i)">Rimuovi Scenario</button>
             </mat-card-content>
           </mat-card>

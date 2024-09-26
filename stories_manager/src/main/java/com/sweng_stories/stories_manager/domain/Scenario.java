@@ -8,22 +8,19 @@ public class Scenario {
     private String descrizione;
     private List<Indovinello> indovinelli;
     private List<Oggetto> oggetti;
-    private List<Long> nextScenarioIds;
     private List<Alternative> alternatives;
 
     public Scenario() {
         this.indovinelli = new ArrayList<>();
         this.oggetti = new ArrayList<>();
-        this.nextScenarioIds = new ArrayList<>();
         this.alternatives = new ArrayList<>();
     }
 
-    public Scenario(Long id, String descrizione, List<Indovinello> indovinelli, List<Oggetto> oggetti, List<Long> nextScenarioIds, List<Alternative> alternatives) {
+    public Scenario(Long id, String descrizione, List<Indovinello> indovinelli, List<Oggetto> oggetti, List<Alternative> alternatives) {
         this.id = id;
         this.descrizione = descrizione;
         this.indovinelli = (indovinelli != null) ? indovinelli : new ArrayList<>();
         this.oggetti = (oggetti != null) ? oggetti : new ArrayList<>();
-        this.nextScenarioIds = (nextScenarioIds != null) ? nextScenarioIds : new ArrayList<>();
         this.alternatives = (alternatives != null) ? alternatives : new ArrayList<>();
     }
 
@@ -60,14 +57,6 @@ public class Scenario {
         this.oggetti = (oggetti != null) ? oggetti : new ArrayList<>();
     }
 
-    public List<Long> getNextScenarioIds() {
-        return nextScenarioIds;
-    }
-
-    public void setNextScenarioIds(List<Long> nextScenarioIds) {
-        this.nextScenarioIds = (nextScenarioIds != null) ? nextScenarioIds : new ArrayList<>();
-    }
-
     public List<Alternative> getAlternatives() {
         return alternatives;
     }
@@ -86,15 +75,5 @@ public class Scenario {
     // Rimuovi un indovinello dalla lista
     public void removeIndovinello(Indovinello indovinello) {
         this.indovinelli.remove(indovinello);
-    }
-
-    // Trova un indovinello per tipo
-    public Indovinello findIndovinelloByTipo(String tipo) {
-        for (Indovinello indovinello : this.indovinelli) {
-            if (indovinello.getTipo().equals(tipo)) {
-                return indovinello;
-            }
-        }
-        return null;
     }
 }
