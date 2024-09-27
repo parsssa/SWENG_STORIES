@@ -76,7 +76,6 @@ public class MongoDbController {
             storia.setInizio(convertDocumentToScenario(document.get("inizio", Document.class)));
             storia.setFinali(convertDocumentsToScenarios((List<Document>) document.get("finali")));
             storia.setScenari(convertDocumentsToScenarios((List<Document>) document.get("scenari")));
-            storia.setIndovinello(convertDocumentToIndovinello(document.get("indovinello", Document.class)));
             storia.setInventario(convertDocumentToInventario(document.get("inventario", Document.class)));
             storie.add(storia);
         });
@@ -105,7 +104,6 @@ public class MongoDbController {
             storia.setInizio(convertDocumentToScenario(result.get("inizio", Document.class)));
             storia.setFinali(convertDocumentsToScenarios((List<Document>) result.get("finali")));
             storia.setScenari(convertDocumentsToScenarios((List<Document>) result.get("scenari")));
-            storia.setIndovinello(convertDocumentToIndovinello(result.get("indovinello", Document.class)));
             storia.setInventario(convertDocumentToInventario(result.get("inventario", Document.class)));
             return storia;
         }
@@ -179,7 +177,6 @@ public class MongoDbController {
                 .append("inizio", convertScenarioToDocument(nuovaStoria.getInizio()))
                 .append("finali", convertScenariosToDocuments(nuovaStoria.getFinali()))
                 .append("scenari", convertScenariosToDocuments(nuovaStoria.getScenari()))
-                .append("indovinello", convertIndovinelloToDocument(nuovaStoria.getIndovinello()))
                 .append("inventario", convertInventarioToDocument(nuovaStoria.getInventario()));
 
         // Inserimento nel database

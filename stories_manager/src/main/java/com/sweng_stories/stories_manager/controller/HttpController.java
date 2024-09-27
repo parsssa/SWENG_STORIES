@@ -157,23 +157,6 @@ public class HttpController {
                 }).collect(Collectors.toList());
         storia.setScenari(scenari);
 
-        // Gestione dell'indovinello globale
-        if (allParams.containsKey("globalRiddle")) {
-            String riddleType = allParams.get("globalRiddleType");
-            if ("text".equals(riddleType)) {
-                IndovinelloTestuale indovinello = new IndovinelloTestuale();
-                indovinello.setDescrizione(allParams.get("globalRiddle"));
-                indovinello.setDomanda(allParams.get("globalRiddleQuestion"));
-                indovinello.setRispostaCorretta(allParams.get("globalRiddleAnswer"));
-                storia.setIndovinello(indovinello);
-            } else if ("numeric".equals(riddleType)) {
-                IndovinelloNumerico indovinello = new IndovinelloNumerico();
-                indovinello.setDescrizione(allParams.get("globalRiddle"));
-                indovinello.setDomanda(allParams.get("globalRiddleQuestion"));
-                indovinello.setRispostaCorretta(Integer.parseInt(allParams.get("globalRiddleAnswer")));
-                storia.setIndovinello(indovinello);
-            }
-        }
 
         // Creazione dell'inventario
         if (allParams.containsKey("inventory")) {

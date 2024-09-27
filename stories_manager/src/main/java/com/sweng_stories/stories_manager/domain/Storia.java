@@ -11,7 +11,6 @@ public class Storia {
     private Scenario inizio;
     private List<Scenario> finali;
     private List<Scenario> scenari;
-    private Indovinello indovinello;
     private Inventario inventario;
 
     public Storia() {
@@ -84,13 +83,6 @@ public class Storia {
         this.scenari = scenari;
     }
 
-    public Indovinello getIndovinello() {
-        return indovinello;
-    }
-
-    public void setIndovinello(Indovinello indovinello) {
-        this.indovinello = indovinello;
-    }
 
     public void setId(Long id) {
         this.id = id;
@@ -148,17 +140,6 @@ public class Storia {
         }
     }
 
-    public void setIndovinello(String descrizione, String tipo) {
-        if (tipo.equals("testuale")) {
-            IndovinelloTestuale indovinello = new IndovinelloTestuale();
-            indovinello.setDescrizione(descrizione);
-            this.indovinello = indovinello;
-        } else if (tipo.equals("numerico")) {
-            IndovinelloNumerico indovinello = new IndovinelloNumerico();
-            indovinello.setDescrizione(descrizione);
-            this.indovinello = indovinello;
-        }
-    }
 
     public void setInventarioFromItems(String items) {
         this.inventario = new Inventario();
