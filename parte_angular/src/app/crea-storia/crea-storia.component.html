@@ -107,6 +107,30 @@
         <button mat-raised-button color="primary" type="button" (click)="addEnding()">Aggiungi Finale</button>
       </div>
 
+      <mat-form-field appearance="fill" class="full-width">
+        <mat-label>Indovinello</mat-label>
+        <textarea matInput placeholder="Scrivi un indovinello" formControlName="riddle"></textarea>
+      </mat-form-field>
+
+      <mat-form-field appearance="fill" class="full-width">
+        <mat-label>Tipo di Indovinello</mat-label>
+        <mat-select formControlName="riddleType">
+          <mat-option value="text">Testuale</mat-option>
+          <mat-option value="numeric">Numerico</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="fill" class="full-width">
+        <mat-label>Domanda dell'Indovinello</mat-label>
+        <input matInput placeholder="Inserisci la domanda" formControlName="riddleQuestion">
+      </mat-form-field>
+
+      <mat-form-field appearance="fill" class="full-width">
+        <mat-label>Risposta all'Indovinello</mat-label>
+        <input matInput placeholder="Inserisci la risposta" formControlName="riddleAnswer">
+      </mat-form-field>
+
+
       <!-- Form Submission Buttons -->
       <div class="form-actions">
         <button mat-raised-button color="primary" type="submit">Salva Storia</button>
