@@ -46,108 +46,20 @@ public class HttpController {
         }
     }
 
-    @PostMapping(value = "/storie", consumes = { "multipart/form-data" })
-    public ResponseEntity<Storia> createStoria(
-            @RequestParam("titolo") String titolo,
-            @RequestParam("descrizione") String descrizione,
-            @RequestParam("inizioDescrizione") String inizioDescrizione,
-            @RequestParam Map<String, String> allParams) {
-    
-        // Creazione dell'oggetto Storia
-        Storia storia = new Storia();
-        storia.setTitolo(titolo);
-        storia.setDescrizione(descrizione);
-    
-        // Inizio della storia
-        Scenario inizio = new Scenario();
-        inizio.setDescrizione(inizioDescrizione);
-        storia.setInizio(inizio);
-    
-        // Processa e popola i finali
-        List<Scenario> finali = allParams.entrySet().stream()
-                .filter(entry -> entry.getKey().startsWith("finali[") && entry.getKey().endsWith("descrizione"))
-                .map(entry -> {
-                    Scenario scenario = new Scenario();
-                    scenario.setDescrizione(entry.getValue());
-                    return scenario;
-                }).collect(Collectors.toList());
-        storia.setFinali(finali);
-    
-        // Processa e popola gli scenari
-        List<Scenario> scenari = allParams.entrySet().stream()
-                .filter(entry -> entry.getKey().startsWith("scenari[") && entry.getKey().endsWith("descrizione"))
-                .map(entry -> {
-                    Scenario scenario = new Scenario();
-                    scenario.setDescrizione(entry.getValue());
-    
-                    // Estrazione dell'indice dello scenario
-                    String scenarioIndex = entry.getKey().split("\\[")[1].split("\\]")[0];
-    
-                    // Estrazione delle alternative per ogni scenario
-                    List<Alternative> alternatives = allParams.entrySet().stream()
-                            .filter(e -> e.getKey().startsWith("scenari[" + scenarioIndex + "].alternatives"))
-                            .map(e -> {
-                                Alternative alternative = new Alternative();
-                                if (e.getKey().endsWith(".descrizione")) {
-                                    alternative.setText(e.getValue());
-                                }
-                                if (e.getKey().endsWith(".tipo")) {
-                                    alternative.setType(e.getValue());
-                                }
-                                if (e.getKey().endsWith(".oggetti")) {
-                                    alternative.setItems(
-                                            e.getValue() != null ? List.of(e.getValue().split(",")) : new ArrayList<>());
-                                }
-                                if (e.getKey().endsWith(".portaA")) {
-                                    String leadsToValue = e.getValue();
-                                    if (leadsToValue.startsWith("ending-")) {
-                                        alternative.setNextScenarioId(null);  // finale
-                                    } else {
-                                        try {
-                                            Long nextScenarioId = Long.parseLong(leadsToValue);
-                                            alternative.setNextScenarioId(nextScenarioId);  // Collegato a scenario successivo
-                                        } catch (NumberFormatException ex) {
-                                            ex.printStackTrace();  // Gestisci errore conversione ID
-                                        }
-                                    }
-                                }
-                                return alternative;
-                            }).collect(Collectors.toList());
-    
-                    scenario.setAlternatives(alternatives);  // Aggiungi le alternative allo scenario
-    
-                    // Popola gli oggetti dagli oggetti nelle alternative
-                    scenario.setOggetti(alternatives.stream()
-                            .flatMap((Alternative alt) -> alt.getItems() != null
-                                    ? alt.getItems().stream()
-                                    : Stream.<String>empty())
-                            .map((String item) -> {
-                                Oggetto oggetto = new Oggetto();
-                                oggetto.setNome(item.trim());
-                                return oggetto;
-                            }).collect(Collectors.toList()));
-    
-                    return scenario;
-                }).collect(Collectors.toList());
-    
-        storia.setScenari(scenari);
-        System.out.println("\n"+ "\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+storia+ "\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n");
-    
-        // Creazione dell'inventario, se presente
-        if (allParams.containsKey("inventory")) {
-            storia.setInventarioFromItems(allParams.get("inventory"));
-        }
-    
-        // Salvataggio della storia nel database
-        try {
-            Storia nuovaStoria = mongoDbController.createStoria(storia);
-            return ResponseEntity.status(HttpStatus.CREATED).body(nuovaStoria);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+    @PostMapping("/storie")
+    public ResponseEntity<Storia> createStoria(@RequestBody Storia storia) {
+    try {
+        // Logica per creare e salvare la storia nel database
+        System.out.println("\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+storia+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n");
+
+        Storia nuovaStoria = mongoDbController.createStoria(storia);
+        return ResponseEntity.status(HttpStatus.CREATED).body(nuovaStoria);
+    } catch (Exception e) {
+        e.printStackTrace();
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
-    
+}
+
 
     @PutMapping("/storie/{id}")
     public ResponseEntity<Storia> updateStoria(@PathVariable Long id, @RequestBody Storia storia) {

@@ -102,59 +102,23 @@ export class CreaStoriaComponent implements OnInit {
   
   onSubmit(): void {
     if (this.storyForm.valid) {
+      // Ottieni i dati del form come oggetto JSON
       const storyData = this.storyForm.value;
-      const formData = new FormData();
   
-      // Costruisci il FormData
-      formData.append('titolo', storyData.title);
-      formData.append('descrizione', storyData.description);
-      formData.append('inizioDescrizione', storyData.start);
-      formData.append('riddle', storyData.riddle);
-      formData.append('riddleType', storyData.riddleType);
-      formData.append('riddleQuestion', storyData.riddleQuestion);
-      formData.append('riddleAnswer', storyData.riddleAnswer);
-      formData.append('inventory', storyData.inventory);
+      // Stampa i dati della storia nella console (opzionale per debug)
+      console.log('Storia inviata:', JSON.stringify(storyData, null, 2));
   
-      storyData.scenarios.forEach((scenario: any, index: number) => {
-        formData.append(`scenari[${index}].descrizione`, scenario.text);
-        if (scenario.items) {
-          scenario.items.split(',').forEach((item: string, itemIndex: number) => {
-            formData.append(`scenari[${index}].oggetti[${itemIndex}].nome`, item.trim());
-          });
-        }
-        scenario.alternatives.forEach((alt: any, altIndex: number) => {
-          formData.append(`scenari[${index}].alternatives[${altIndex}].descrizione`, alt.text);
-          formData.append(`scenari[${index}].alternatives[${altIndex}].tipo`, alt.type);
-          if (alt.items) {
-            alt.items.split(',').forEach((item: string, itemIndex: number) => {
-              formData.append(`scenari[${index}].alternatives[${altIndex}].oggetti[${itemIndex}].nome`, item.trim());
-            });
-          }
-          if (alt.leadsTo != null) {
-            formData.append(`scenari[${index}].alternatives[${altIndex}].portaA`, alt.leadsTo);  // leadsTo corrisponde a nextScenarioId
-          }
-        });
-      });
-  
-      storyData.endings.forEach((ending: any, endingIndex: number) => {
-        formData.append(`finali[${endingIndex}].descrizione`, ending.description);
-      });
-  
-      // Log per visualizzare il contenuto del FormData prima dell'invio
-      console.log('Contenuto del FormData:');
-      formData.forEach((value, key) => {
-        console.log(`${key}: ${value}`);
-      });
-  
-      // Invio del form data al backend
-      this.apiService.createStoria(formData).subscribe(
+      // Invio dei dati al backend come JSON
+      this.apiService.createStoria(storyData).subscribe(
         (response) => {
-          this.router.navigate(['/success-page']);  // Redirect alla pagina di successo
+          //this.router.navigate(['/success-page']);  // Redirect alla pagina di successo
         },
         (error) => {
           console.error('Errore durante la creazione della storia', error);
         }
       );
+    } else {
+      console.error('Il form non è valido');
     }
   }
   

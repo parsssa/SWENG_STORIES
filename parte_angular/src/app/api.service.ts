@@ -30,12 +30,13 @@ export class ApiService {
     );
   }
 
-  createStoria(storia: any): Observable<any> {
-    return this.http.post(`${this.baseUrl}/storie`, storia).pipe(
-      catchError(this.handleError('createStoria'))
-    );
-  }
-
+ createStoria(storia: any): Observable<any> {
+  return this.http.post(`${this.baseUrl}/storie`, storia, {
+    headers: { 'Content-Type': 'application/json' }
+  }).pipe(
+    catchError(this.handleError('createStoria'))
+  );
+}
   updateStoria(id: number, storia: any): Observable<any> {
     return this.http.put(`${this.baseUrl}/storie/${id}`, storia).pipe(
       catchError(this.handleError('updateStoria'))
