@@ -50,5 +50,13 @@ public class Alternative {
         this.nextScenarioId = nextScenarioId;
     }
 
+    @Override
+    public String toString() {
+        return "Alternative [text=" + text + ", type=" + type + ", items=" + items + ", nextScenarioId="
+                + nextScenarioId + "]";
+    }
+
+    
+
     
 }

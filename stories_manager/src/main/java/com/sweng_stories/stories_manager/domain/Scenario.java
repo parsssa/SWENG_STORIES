@@ -72,6 +72,15 @@ public class Scenario {
         }
     }
 
+
+
+    
+    @Override
+    public String toString() {
+        return "Scenario [id=" + id + ", descrizione=" + descrizione + ", indovinelli=" + indovinelli + ", oggetti="
+                + oggetti + ", alternatives=" + alternatives + "]";
+    }
+
     // Rimuovi un indovinello dalla lista
     public void removeIndovinello(Indovinello indovinello) {
         this.indovinelli.remove(indovinello);

@@ -104,6 +104,8 @@ export class CreaStoriaComponent implements OnInit {
     if (this.storyForm.valid) {
       const storyData = this.storyForm.value;
       const formData = new FormData();
+  
+      // Costruisci il FormData
       formData.append('titolo', storyData.title);
       formData.append('descrizione', storyData.description);
       formData.append('inizioDescrizione', storyData.start);
@@ -138,6 +140,13 @@ export class CreaStoriaComponent implements OnInit {
         formData.append(`finali[${endingIndex}].descrizione`, ending.description);
       });
   
+      // Log per visualizzare il contenuto del FormData prima dell'invio
+      console.log('Contenuto del FormData:');
+      formData.forEach((value, key) => {
+        console.log(`${key}: ${value}`);
+      });
+  
+      // Invio del form data al backend
       this.apiService.createStoria(formData).subscribe(
         (response) => {
           this.router.navigate(['/success-page']);  // Redirect alla pagina di successo

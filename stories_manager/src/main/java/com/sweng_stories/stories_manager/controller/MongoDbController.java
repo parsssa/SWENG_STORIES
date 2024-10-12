@@ -129,47 +129,13 @@ public class MongoDbController {
         // Generazione di un ID univoco per la storia
         Long newId = generateId("storie");
         nuovaStoria.setId(newId);
-
-        // Assicurati che l'inizio della storia abbia una lista di indovinelli vuota, se
-        // necessario
-        if (nuovaStoria.getInizio() != null && nuovaStoria.getInizio().getIndovinelli() == null) {
-            nuovaStoria.getInizio().setIndovinelli(new ArrayList<>());
-        }
-
-        // Verifica e inizializza la lista dei finali
-        if (nuovaStoria.getFinali() == null) {
-            nuovaStoria.setFinali(new ArrayList<>());
-        } else {
-            for (Scenario finale : nuovaStoria.getFinali()) {
-                if (finale.getIndovinelli() == null) {
-                    finale.setIndovinelli(new ArrayList<>());
-                }
-            }
-        }
-
-        // Verifica e inizializza la lista degli scenari
-        if (nuovaStoria.getScenari() == null) {
-            nuovaStoria.setScenari(new ArrayList<>());
-        } else {
-            for (Scenario scenario : nuovaStoria.getScenari()) {
-                // Genera un ID univoco per ogni scenario
-                Long scenarioId = generateId("scenari");
-                scenario.setId(scenarioId);
-
-                // Inizializza indovinelli se null
-                if (scenario.getIndovinelli() == null) {
-                    scenario.setIndovinelli(new ArrayList<>());
-                }
-
-                // Imposta l'ID per le alternative collegate
-                for (Alternative alt : scenario.getAlternatives()) {
-                    if (alt.getNextScenarioId() == null) {
-                        alt.setNextScenarioId(scenarioId); // Collegare l'alternativa allo scenario attuale
-                    }
-                }
-            }
-        }
-
+    
+        // Inizializza lo scenario iniziale, finali, e scenari
+        inizializzaScenario(nuovaStoria.getInizio());
+    
+        nuovaStoria.setFinali(inizializzaFinali(nuovaStoria.getFinali()));
+        nuovaStoria.setScenari(inizializzaScenari(nuovaStoria.getScenari()));
+    
         // Creazione del documento per MongoDB
         Document document = new Document("id", nuovaStoria.getId())
                 .append("titolo", nuovaStoria.getTitolo())
@@ -178,12 +144,58 @@ public class MongoDbController {
                 .append("finali", convertScenariosToDocuments(nuovaStoria.getFinali()))
                 .append("scenari", convertScenariosToDocuments(nuovaStoria.getScenari()))
                 .append("inventario", convertInventarioToDocument(nuovaStoria.getInventario()));
-
+    
         // Inserimento nel database
         storieCollection.insertOne(document);
-
+    
         return nuovaStoria;
     }
+    
+    private void inizializzaScenario(Scenario scenario) {
+        if (scenario != null) {
+            if (scenario.getIndovinelli() == null) {
+                scenario.setIndovinelli(new ArrayList<>());
+            }
+        }
+    }
+    
+    private List<Scenario> inizializzaFinali(List<Scenario> finali) {
+        if (finali == null) {
+            return new ArrayList<>();
+        }
+        for (Scenario finale : finali) {
+            inizializzaScenario(finale);
+        }
+        return finali;
+    }
+    
+    private List<Scenario> inizializzaScenari(List<Scenario> scenari) {
+        if (scenari == null) {
+            return new ArrayList<>();
+        }
+        for (Scenario scenario : scenari) {
+            // Genera un ID univoco per ogni scenario
+            Long scenarioId = generateId("scenari");
+            scenario.setId(scenarioId);
+    
+            inizializzaScenario(scenario); // Inizializza eventuali indovinelli
+    
+            // Inizializza e collega le alternative
+            inizializzaAlternative(scenario.getAlternatives(), scenarioId);
+        }
+        return scenari;
+    }
+    
+    private void inizializzaAlternative(List<Alternative> alternatives, Long scenarioId) {
+        if (alternatives != null) {
+            for (Alternative alt : alternatives) {
+                if (alt.getNextScenarioId() == null) {
+                    alt.setNextScenarioId(scenarioId); // Collegare l'alternativa allo scenario attuale
+                }
+            }
+        }
+    }
+    
 
     public Storia updateStoria(Long id, Storia storiaAggiornata) {
         Document query = new Document("id", id);

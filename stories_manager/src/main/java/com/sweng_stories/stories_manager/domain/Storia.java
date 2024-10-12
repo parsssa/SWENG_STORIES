@@ -76,8 +76,15 @@ public class Storia {
     }
 
     public List<Scenario> getScenari() {
+        // Ciclo per stampare ogni scenario
+        for (Scenario scenario : scenari) {
+            System.out.println(scenario.toString());  // Stampa il risultato di toString() di ogni scenario
+        }
+    
+        // Restituisce la lista di scenari come previsto
         return scenari;
     }
+    
 
     public void setScenari(List<Scenario> scenari) {
         this.scenari = scenari;
@@ -118,7 +125,10 @@ public class Storia {
             this.finali.add(scenario);
         }
     }
-
+/*
+ * 
+ * 
+ * 
     public void setScenariFromAlternatives(List<Alternative> alternatives) {
         this.scenari = new ArrayList<>();
         for (Alternative alt : alternatives) {
@@ -140,6 +150,15 @@ public class Storia {
         }
     }
 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ */
+
+ 
 
     public void setInventarioFromItems(String items) {
         this.inventario = new Inventario();
@@ -151,5 +170,12 @@ public class Storia {
             oggetti.add(oggetto);
         }
         this.inventario.setOggetti(oggetti);
+    }
+
+
+    @Override
+    public String toString() {
+        return "Storia [id=" + id + ", titolo=" + titolo + ", descrizione=" + descrizione + ", inizio=" + inizio
+                + ", finali=" + finali + ", scenari=" + scenari + ", inventario=" + inventario + "]";
     }
 }

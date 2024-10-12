@@ -52,17 +52,17 @@ public class HttpController {
             @RequestParam("descrizione") String descrizione,
             @RequestParam("inizioDescrizione") String inizioDescrizione,
             @RequestParam Map<String, String> allParams) {
-
+    
         // Creazione dell'oggetto Storia
         Storia storia = new Storia();
         storia.setTitolo(titolo);
         storia.setDescrizione(descrizione);
-
-        // Inizio
+    
+        // Inizio della storia
         Scenario inizio = new Scenario();
         inizio.setDescrizione(inizioDescrizione);
         storia.setInizio(inizio);
-
+    
         // Processa e popola i finali
         List<Scenario> finali = allParams.entrySet().stream()
                 .filter(entry -> entry.getKey().startsWith("finali[") && entry.getKey().endsWith("descrizione"))
@@ -72,55 +72,51 @@ public class HttpController {
                     return scenario;
                 }).collect(Collectors.toList());
         storia.setFinali(finali);
-
+    
         // Processa e popola gli scenari
         List<Scenario> scenari = allParams.entrySet().stream()
                 .filter(entry -> entry.getKey().startsWith("scenari[") && entry.getKey().endsWith("descrizione"))
                 .map(entry -> {
                     Scenario scenario = new Scenario();
                     scenario.setDescrizione(entry.getValue());
-
-                    // Estrazione delle alternative per ogni scenario
+    
+                    // Estrazione dell'indice dello scenario
                     String scenarioIndex = entry.getKey().split("\\[")[1].split("\\]")[0];
+    
+                    // Estrazione delle alternative per ogni scenario
                     List<Alternative> alternatives = allParams.entrySet().stream()
                             .filter(e -> e.getKey().startsWith("scenari[" + scenarioIndex + "].alternatives"))
                             .map(e -> {
                                 Alternative alternative = new Alternative();
-                                if (e.getKey().endsWith(".text")) {
+                                if (e.getKey().endsWith(".descrizione")) {
                                     alternative.setText(e.getValue());
                                 }
-                                if (e.getKey().endsWith(".type")) {
+                                if (e.getKey().endsWith(".tipo")) {
                                     alternative.setType(e.getValue());
                                 }
-                                if (e.getKey().endsWith(".items")) {
-                                    if (e.getValue() != null && !e.getValue().trim().isEmpty()) {
-                                        alternative.setItems(List.of(e.getValue().split(",")));
-                                    } else {
-                                        alternative.setItems(new ArrayList<>()); // Inizializza una lista vuota
-                                    }
+                                if (e.getKey().endsWith(".oggetti")) {
+                                    alternative.setItems(
+                                            e.getValue() != null ? List.of(e.getValue().split(",")) : new ArrayList<>());
                                 }
-                                // Gestione del collegamento a uno scenario o a un finale specifico
                                 if (e.getKey().endsWith(".portaA")) {
                                     String leadsToValue = e.getValue();
                                     if (leadsToValue.startsWith("ending-")) {
-                                        // Logica per i finali
-                                        alternative.setNextScenarioId(null); // Impostare un valore speciale o gestirlo
-                                                                             // separatamente
+                                        alternative.setNextScenarioId(null);  // finale
                                     } else {
                                         try {
                                             Long nextScenarioId = Long.parseLong(leadsToValue);
-                                            alternative.setNextScenarioId(nextScenarioId);
+                                            alternative.setNextScenarioId(nextScenarioId);  // Collegato a scenario successivo
                                         } catch (NumberFormatException ex) {
-                                            ex.printStackTrace(); // Gestisci l'errore secondo necessità
+                                            ex.printStackTrace();  // Gestisci errore conversione ID
                                         }
                                     }
                                 }
                                 return alternative;
                             }).collect(Collectors.toList());
-
-                    scenario.setAlternatives(alternatives); // Aggiungi le alternative allo scenario
-
-                    // Popola oggetti da alternative
+    
+                    scenario.setAlternatives(alternatives);  // Aggiungi le alternative allo scenario
+    
+                    // Popola gli oggetti dagli oggetti nelle alternative
                     scenario.setOggetti(alternatives.stream()
                             .flatMap((Alternative alt) -> alt.getItems() != null
                                     ? alt.getItems().stream()
@@ -130,40 +126,19 @@ public class HttpController {
                                 oggetto.setNome(item.trim());
                                 return oggetto;
                             }).collect(Collectors.toList()));
-
-                    // Gestione dell'indovinello specifico per scenario
-                    if (allParams.containsKey("riddle")) {
-                        String riddleType = allParams.get("riddleType");
-                        Indovinello indovinello;
-                        if ("text".equals(riddleType)) {
-                            indovinello = new IndovinelloTestuale();
-                            ((IndovinelloTestuale) indovinello).setDescrizione(allParams.get("riddle"));
-                            ((IndovinelloTestuale) indovinello).setDomanda(allParams.get("riddleQuestion"));
-                            ((IndovinelloTestuale) indovinello).setRispostaCorretta(allParams.get("riddleAnswer"));
-                        } else if ("numeric".equals(riddleType)) {
-                            indovinello = new IndovinelloNumerico();
-                            ((IndovinelloNumerico) indovinello).setDescrizione(allParams.get("riddle"));
-                            ((IndovinelloNumerico) indovinello).setDomanda(allParams.get("riddleQuestion"));
-                            ((IndovinelloNumerico) indovinello)
-                                    .setRispostaCorretta(Integer.parseInt(allParams.get("riddleAnswer")));
-                        } else {
-                            throw new IllegalArgumentException("Tipo di indovinello non riconosciuto");
-                        }
-
-                        // Aggiungi l'indovinello allo scenario
-                        scenario.addIndovinello(indovinello);
-                    }
+    
                     return scenario;
                 }).collect(Collectors.toList());
+    
         storia.setScenari(scenari);
-
-
-        // Creazione dell'inventario
+        System.out.println("\n"+ "\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+storia+ "\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n");
+    
+        // Creazione dell'inventario, se presente
         if (allParams.containsKey("inventory")) {
             storia.setInventarioFromItems(allParams.get("inventory"));
         }
-
-        // Salva la storia nel database
+    
+        // Salvataggio della storia nel database
         try {
             Storia nuovaStoria = mongoDbController.createStoria(storia);
             return ResponseEntity.status(HttpStatus.CREATED).body(nuovaStoria);
@@ -172,6 +147,7 @@ public class HttpController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+    
 
     @PutMapping("/storie/{id}")
     public ResponseEntity<Storia> updateStoria(@PathVariable Long id, @RequestBody Storia storia) {
