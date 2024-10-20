@@ -3,7 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import { ApiService } from '../api.service';
 import { Observable, of } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
-import { Scenario, Oggetto, Storia, Alternative } from './scenario.model';
+import { Scenario, Oggetto, Storia, Alternative, Indovinello } from './scenario.model';
 
 @Component({
   selector: 'app-gioca-storia',
@@ -60,31 +60,26 @@ export class GiocaStoriaComponent implements OnInit {
     if (this.currentScenario && this.currentScenario.indovinelli.length > 0) {
       const indovinello = this.currentScenario.indovinelli[0];
       let isCorrect = false;
-
-      // Verifica risposta in base al tipo di indovinello
-      if (indovinello.tipo === 'numerico' && this.userRiddleAnswer === indovinello.rispostaCorretta.toString()) {
-        isCorrect = true;
-      } else if (indovinello.tipo === 'testuale' && this.userRiddleAnswer.toLowerCase() === indovinello.rispostaCorretta.toLowerCase()) {
+  
+      // TODO: Aggiungere logica per risposte multiple
+      // Per ora, verifica se la risposta corretta è una stringa fissa.
+      if (this.userRiddleAnswer === indovinello.rispostaCorretta) {
         isCorrect = true;
       }
-
+  
       if (isCorrect) {
         console.log('Risposta corretta!');
-        const chosenAlternative = this.currentScenario.alternatives.find(alt => alt.type === 'indovinello');
-        if (chosenAlternative) {
-          this.makeChoice(chosenAlternative);
-        }
       } else {
         console.log('Risposta errata:', this.userRiddleAnswer);
       }
-
+  
       this.userRiddleAnswer = ''; // Reset dell'input
     }
   }
 
   collectItem(item: Oggetto): void {
     this.inventory.push(item);
-    if (this.currentScenario) {
+    if (this.currentScenario && this.currentScenario.oggetti) {
       this.currentScenario.oggetti = this.currentScenario.oggetti.filter(i => i.id !== item.id);
     }
   }

@@ -5,8 +5,8 @@ import { LoginComponent } from './login/login.component';
 import { RegisterComponent } from './register/register.component';
 import { CreaStoriaComponent } from './crea-storia/crea-storia.component';
 import { GiocaStoriaComponent } from './gioca-storia/gioca-storia.component';
-import { GestioneScenarioComponent } from './gestione-scenario/gestione-scenario.component';
 import { SelezioneStoriaComponent } from './selezione-storia/selezione-storia.component';
+import { ModificaStoriaComponent } from './modifica-storia/modifica-storia.component';
 
 const routes: Routes = [
   // Rotte principali
@@ -15,9 +15,9 @@ const routes: Routes = [
   { path: 'register', component: RegisterComponent },
   { path: 'creaStoria', component: CreaStoriaComponent},
   { path: 'giocaStoria/:id', component: GiocaStoriaComponent },
-  { path: 'gestioneScenario', component: GestioneScenarioComponent},
   { path: 'selezione-storia', component: SelezioneStoriaComponent }, // Nuova rotta per selezione storia
-
+  { path: 'modifica-storia/:id', component: ModificaStoriaComponent }, // Nuova rotta per modifica storia
+  
   // Rotta wildcard per gestire URL non trovati
   { path: '**', redirectTo: '' } // Rotta wildcard
 ];
