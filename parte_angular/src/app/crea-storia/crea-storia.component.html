@@ -29,66 +29,78 @@
                 <textarea matInput placeholder="Descrivi lo scenario" formControlName="text" required></textarea>
               </mat-form-field>
 
+              <!-- Oggetto singolo per lo scenario -->
               <mat-form-field appearance="fill" class="full-width">
-                <mat-label>Oggetti raccolti (separati da virgola)</mat-label>
-                <input matInput placeholder="Elenca gli oggetti" formControlName="items">
+                <mat-label>Oggetto raccolto (singolo)</mat-label>
+                <input matInput placeholder="Elenca un solo oggetto" formControlName="item">
               </mat-form-field>
 
+              <div *ngIf="isRiddleScenario(i)">
+                <!-- Domanda dell'indovinello -->
+                <mat-form-field appearance="fill" class="full-width">
+                  <mat-label>Domanda dell'indovinello</mat-label>
+                  <textarea matInput placeholder="Inserisci la domanda" formControlName="riddleQuestion" required></textarea>
+                </mat-form-field>
+              
+                <!-- Tipo di Indovinello -->
+                <mat-form-field appearance="fill" class="full-width">
+                  <mat-label>Tipo di Indovinello</mat-label>
+                  <mat-select formControlName="riddleType" required>
+                    <mat-option value="text">Testuale</mat-option>
+                    <mat-option value="numeric">Numerico</mat-option>
+                  </mat-select>
+                </mat-form-field>
+              
+                <!-- Risposta corretta -->
+                <mat-form-field appearance="fill" class="full-width">
+                  <mat-label>Risposta corretta</mat-label>
+                  <input matInput placeholder="Inserisci la risposta corretta" formControlName="correctAnswer" required>
+                </mat-form-field>
+              
+                <!-- Risposta errata -->
+                <mat-form-field appearance="fill" class="full-width">
+                  <mat-label>Risposta errata</mat-label>
+                  <input matInput placeholder="Inserisci la risposta errata" formControlName="wrongAnswer" required>
+                </mat-form-field>
+              </div>
+              
               <!-- Alternatives Section -->
-              <div formArrayName="alternatives">
+              <div formArrayName="alternatives" *ngIf="!isRiddleScenario(i)">
                 <div *ngFor="let alternative of getAlternatives(i).controls; let j = index" [formGroupName]="j">
                   <mat-card class="alternative-container">
                     <mat-card-title>Alternativa {{ j + 1 }}</mat-card-title>
                     <mat-card-content>
                       <mat-form-field appearance="fill" class="full-width">
                         <mat-label>Descrivi l'alternativa</mat-label>
-                        <textarea matInput placeholder="Descrivi l'alternativa" formControlName="text"
-                          required></textarea>
+                        <textarea matInput placeholder="Descrivi l'alternativa" formControlName="text" required></textarea>
                       </mat-form-field>
-
-                      <mat-form-field appearance="fill" class="full-width">
-                        <mat-label>Tipo di Alternativa</mat-label>
-                        <mat-select formControlName="type">
-                          <mat-option value="with-items">Con Raccolta Oggetti</mat-option>
-                          <mat-option value="without-items">Senza Raccolta Oggetti</mat-option>
-                        </mat-select>
-                      </mat-form-field>
-
-                      <ng-container *ngIf="alternative.get('type')?.value === 'with-items'">
-                        <mat-form-field appearance="fill" class="full-width">
-                          <mat-label>Oggetti raccolti (separati da virgola)</mat-label>
-                          <input matInput placeholder="Elenca gli oggetti" formControlName="items">
-                        </mat-form-field>
-                      </ng-container>
 
                       <!-- Collegamento a Scenario o Finale -->
                       <mat-form-field appearance="fill" class="full-width">
                         <mat-label>Collegamento a Scenario o Finale</mat-label>
                         <mat-select formControlName="leadsTo">
-                          <mat-option *ngFor="let option of getScenarioOptions(); trackBy: trackByFn"
-                            [value]="option.value">
+                          <mat-option *ngFor="let option of getScenarioOptions(); trackBy: trackByFn" [value]="option.value">
                             {{ option.label }}
                           </mat-option>
                         </mat-select>
                       </mat-form-field>
-
                     </mat-card-content>
                   </mat-card>
                 </div>
+                <!-- Pulsante per aggiungere alternativa -->
+                <button mat-raised-button color="accent" type="button" (click)="addAlternativeToScenario(i)">
+                  Aggiungi Alternativa
+                </button>
               </div>
-
-
-              <button mat-raised-button color="primary" (click)="addAlternativeToScenario(i)">Aggiungi
-                Alternativa</button>
-              <button mat-raised-button color="warn" (click)="removeScenario(i)">Rimuovi Scenario</button>
             </mat-card-content>
           </mat-card>
         </div>
       </div>
 
-      <!-- Button to Add New Scenario -->
+      <!-- Button to Add New Scenario with Alternatives -->
       <div class="actions">
-        <button mat-raised-button color="primary" (click)="addScenario()">Aggiungi Scenario</button>
+        <button mat-raised-button color="primary" (click)="addScenarioWithAlternatives()">Aggiungi Scenario con Alternative</button>
+        <button mat-raised-button color="primary" (click)="addScenarioWithRiddle()">Aggiungi Scenario con Indovinello</button>
       </div>
 
       <!-- Endings Section -->
@@ -106,30 +118,6 @@
         </div>
         <button mat-raised-button color="primary" type="button" (click)="addEnding()">Aggiungi Finale</button>
       </div>
-
-      <mat-form-field appearance="fill" class="full-width">
-        <mat-label>Indovinello</mat-label>
-        <textarea matInput placeholder="Scrivi un indovinello" formControlName="riddle"></textarea>
-      </mat-form-field>
-
-      <mat-form-field appearance="fill" class="full-width">
-        <mat-label>Tipo di Indovinello</mat-label>
-        <mat-select formControlName="riddleType">
-          <mat-option value="text">Testuale</mat-option>
-          <mat-option value="numeric">Numerico</mat-option>
-        </mat-select>
-      </mat-form-field>
-
-      <mat-form-field appearance="fill" class="full-width">
-        <mat-label>Domanda dell'Indovinello</mat-label>
-        <input matInput placeholder="Inserisci la domanda" formControlName="riddleQuestion">
-      </mat-form-field>
-
-      <mat-form-field appearance="fill" class="full-width">
-        <mat-label>Risposta all'Indovinello</mat-label>
-        <input matInput placeholder="Inserisci la risposta" formControlName="riddleAnswer">
-      </mat-form-field>
-
 
       <!-- Form Submission Buttons -->
       <div class="form-actions">

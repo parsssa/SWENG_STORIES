@@ -1,7 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
-import { ApiService } from '../api.service';
-import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-crea-storia',
@@ -11,123 +9,103 @@ import { Router } from '@angular/router';
 export class CreaStoriaComponent implements OnInit {
   storyForm: FormGroup;
 
-  constructor(private fb: FormBuilder, private apiService: ApiService, private router: Router) {
+  constructor(private fb: FormBuilder) {
     this.storyForm = this.fb.group({
       title: ['', Validators.required],
       description: ['', Validators.required],
       start: ['', Validators.required],
       scenarios: this.fb.array([]),
-      endings: this.fb.array([]),
-      riddle: [''],
-      riddleType: ['text'],
-      riddleQuestion: [''], 
-      riddleAnswer: [''],
-      inventory: ['']
+      endings: this.fb.array([])
     });
   }
 
   ngOnInit(): void {
-    this.addScenario(); // Add one default scenario
+    this.addScenarioWithAlternatives(); // Aggiungi uno scenario predefinito con alternative
   }
 
   get scenarios(): FormArray {
     return this.storyForm.get('scenarios') as FormArray;
   }
 
-  addScenario(): void {
-    const scenario = this.fb.group({
-      text: ['', Validators.required],
-      alternatives: this.fb.array([]),
-      items: ['']
-    });
-    this.scenarios.push(scenario);
-    this.addAlternativeToScenario(this.scenarios.length - 1); // Add one default alternative
-  }
-
   get endings(): FormArray {
     return this.storyForm.get('endings') as FormArray;
   }
 
-  addEnding(): void {
-    const ending = this.fb.group({
-      description: ['', Validators.required],
-      order: ['']
+  isRiddleScenario(index: number): boolean {
+    return this.scenarios.at(index).get('isRiddle')?.value || false;
+  }
+
+  addScenarioWithAlternatives(): void {
+    const scenario = this.fb.group({
+      text: ['', Validators.required],
+      item: [''],
+      alternatives: this.fb.array([]) // Array per le alternative
     });
-    this.endings.push(ending);
+    this.scenarios.push(scenario);
+    this.addAlternativeToScenario(this.scenarios.length - 1); // Aggiungi una prima alternativa
+  }
+
+  addScenarioWithRiddle(): void {
+    const scenario = this.fb.group({
+      text: ['', Validators.required],  // Descrizione dello scenario
+      riddleQuestion: ['', Validators.required],  // Domanda dell'indovinello
+      riddleType: ['text', Validators.required],  // Tipo di indovinello
+      correctAnswer: ['', Validators.required],  // Risposta corretta
+      wrongAnswer: ['', Validators.required],  // Risposta errata
+      isRiddle: [true]  // Indica che questo scenario contiene un indovinello
+    });
+    this.scenarios.push(scenario);
   }
 
   addAlternativeToScenario(index: number): void {
     const alternatives = (this.scenarios.at(index).get('alternatives') as FormArray);
     const alternative = this.fb.group({
-      text: ['', Validators.required],
-      type: ['without-items', Validators.required],
-      items: [''],
-      leadsTo: [null]  // Collega lo scenario successivo
+      text: ['', Validators.required],  // Descrizione dell'alternativa
+      leadsTo: [null]  // Collegamento allo scenario successivo o finale
     });
     alternatives.push(alternative);
   }
-  
-
-  removeScenario(index: number): void {
-    this.scenarios.removeAt(index);
-  }
 
   getAlternatives(scenarioIndex: number): FormArray {
-    const scenarios = this.storyForm.get('scenarios') as FormArray;
-    const scenario = scenarios.at(scenarioIndex) as FormGroup;
-    return scenario.get('alternatives') as FormArray;
+    return this.scenarios.at(scenarioIndex).get('alternatives') as FormArray;
+  }
+
+  addEnding(): void {
+    const ending = this.fb.group({
+      description: ['', Validators.required]
+    });
+    this.endings.push(ending);
   }
 
   getScenarioOptions(): any[] {
-    // Usa l'ID reale dello scenario (numerico) per `leadsTo`
     const scenarioOptions = this.scenarios.controls.map((control, index) => ({
-      value: index,  // Qui utilizziamo l'indice numerico come valore
+      value: index,
       label: `Scenario ${index + 1}`
     }));
   
     const endingOptions = this.endings.controls.map((control, index) => ({
-      value: `ending-${index}`,  // I finali possono ancora usare questa stringa
+      value: `ending-${index}`,
       label: `Finale ${index + 1}`
     }));
   
     return [...scenarioOptions, ...endingOptions];
   }
-  
-  
-  
 
-  trackByFn(index: number, item: any): number {
-    return index; // or item.value depending on your data structure
-  }
-  
   onSubmit(): void {
     if (this.storyForm.valid) {
-      // Ottieni i dati del form come oggetto JSON
       const storyData = this.storyForm.value;
-  
-      // Stampa i dati della storia nella console (opzionale per debug)
-      console.log('Storia inviata:', JSON.stringify(storyData, null, 2));
-  
-      // Invio dei dati al backend come JSON
-      this.apiService.createStoria(storyData).subscribe(
-        (response) => {
-          //this.router.navigate(['/success-page']);  // Redirect alla pagina di successo
-        },
-        (error) => {
-          console.error('Errore durante la creazione della storia', error);
-        }
-      );
-    } else {
-      console.error('Il form non è valido');
+      console.log(storyData); // Sostituire con la logica di invio dati
     }
   }
-  
 
   resetForm(): void {
     this.storyForm.reset();
     this.scenarios.clear();
     this.endings.clear();
-    this.addScenario(); // Add one default scenario again
-    this.addEnding(); // Add one default ending again
+    this.addScenarioWithAlternatives(); // Aggiungi uno scenario predefinito
+  }
+
+  trackByFn(index: number): number {
+    return index;
   }
 }
