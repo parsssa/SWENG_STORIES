@@ -6,7 +6,7 @@
       <ng-container *ngIf="isLoggedIn; else loginRegister">
         <a mat-raised-button (click)="logout()" class="navbarButtons" [@fade]>Logout</a>
         <a mat-raised-button routerLink="/creaStoria" class="navbarButtons">Crea Storia</a>
-        <a mat-raised-button routerLink="/selezione-storia" class="navbarButtons">Storia</a> <!-- Modificato da 'Gioca Storia' a 'Storia' -->
+        <a mat-raised-button routerLink="/selezione-storia" class="navbarButtons">Storie</a> <!-- Modificato da 'Gioca Storia' a 'Storia' -->
       </ng-container>
       <ng-template #loginRegister>
         <a mat-raised-button routerLink="/login" class="navbarButtons">Login</a>

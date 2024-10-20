@@ -1,8 +1,6 @@
-// modifica-storia.component.ts
-
 import { Component, OnInit } from '@angular/core';
 import { ApiService } from '../api.service';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-modifica-storia',
@@ -10,30 +8,24 @@ import { Router } from '@angular/router';
   styleUrls: ['./modifica-storia.component.scss']
 })
 export class ModificaStoriaComponent implements OnInit {
-  storie: any[] = [];
   selectedStoria: any = null;
   scenarioDescriptions: string[] = []; // Per mantenere le descrizioni degli scenari
 
-  constructor(private apiService: ApiService, private router: Router) {}
+  constructor(private apiService: ApiService, private router: Router, private route: ActivatedRoute) {}
 
   ngOnInit(): void {
-    this.loadStorie();
+    // Ottieni l'id della storia dalla rotta
+    const storiaId = Number(this.route.snapshot.paramMap.get('id'));
+    this.loadStoria(storiaId); // Carica solo la storia selezionata
   }
 
-  loadStorie(): void {
-    this.apiService.getAllStorieTitoli().subscribe(
-      (storie: any[]) => {
-        this.storie = storie;
-        console.log('Storie caricate:', this.storie);
-      },
-      error => console.error('Errore nel caricamento delle storie', error)
-    );
-  }
-
-  selectStoria(id: number): void {
+  loadStoria(id: number): void {
     this.apiService.getStoriaById(id).subscribe(storia => {
       this.selectedStoria = storia;
       this.scenarioDescriptions = storia.scenari.map((scenario: any) => scenario.descrizione); // Aggiungi : any
+    }, error => {
+      console.error('Errore nel caricamento della storia', error);
+      this.router.navigate(['/selezione-storia']); // Reindirizza se c'è un errore
     });
   }
 
@@ -41,7 +33,7 @@ export class ModificaStoriaComponent implements OnInit {
     if (this.selectedStoria) {
       const updatedStoria = {
         ...this.selectedStoria,
-        scenari: this.selectedStoria.scenari.map((scenario: any, index: number) => ({ // Aggiungi : any
+        scenari: this.selectedStoria.scenari.map((scenario: any, index: number) => ({
           ...scenario,
           descrizione: this.scenarioDescriptions[index] // Aggiorna la descrizione
         }))
