@@ -19,8 +19,8 @@ import { CreaStoriaComponent } from './crea-storia/crea-storia.component';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatSelectModule } from '@angular/material/select';
 import { GiocaStoriaComponent } from './gioca-storia/gioca-storia.component';
-import { GestioneScenarioComponent } from './gestione-scenario/gestione-scenario.component';
 import { SelezioneStoriaComponent } from './selezione-storia/selezione-storia.component';
+import { ModificaStoriaComponent } from './modifica-storia/modifica-storia.component';
 
 @NgModule({
   declarations: [
@@ -31,8 +31,8 @@ import { SelezioneStoriaComponent } from './selezione-storia/selezione-storia.co
     RegisterComponent,
     CreaStoriaComponent,
     GiocaStoriaComponent,
-    GestioneScenarioComponent,
-    SelezioneStoriaComponent
+    SelezioneStoriaComponent,
+    ModificaStoriaComponent
   ],
   imports: [
     BrowserModule,

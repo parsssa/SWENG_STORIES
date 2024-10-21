@@ -29,4 +29,8 @@ export class SelezioneStoriaComponent implements OnInit {
   selectStoria(id: number): void {
     this.router.navigate(['/giocaStoria', id]);
   }
+
+  editStoria(id: number): void {
+    this.router.navigate(['/modifica-storia', id]); // Nuovo metodo per la modifica
+  }
 }

@@ -1,4 +1,3 @@
-// IndovinelloNumerico.java
 package com.sweng_stories.stories_manager.domain;
 
 public class IndovinelloNumerico extends Indovinello {
@@ -33,6 +32,7 @@ public class IndovinelloNumerico extends Indovinello {
     public void setRispostaCorretta(Object rispostaCorretta) {
         if (rispostaCorretta instanceof Integer) {
             this.rispostaCorretta = (Integer) rispostaCorretta;
+            super.setRispostaCorretta(rispostaCorretta);
         }
     }
 }

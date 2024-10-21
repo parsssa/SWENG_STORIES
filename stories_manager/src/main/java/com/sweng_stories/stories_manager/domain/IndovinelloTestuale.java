@@ -1,4 +1,3 @@
-// IndovinelloTestuale.java
 package com.sweng_stories.stories_manager.domain;
 
 public class IndovinelloTestuale extends Indovinello {
@@ -33,6 +32,7 @@ public class IndovinelloTestuale extends Indovinello {
     public void setRispostaCorretta(Object rispostaCorretta) {
         if (rispostaCorretta instanceof String) {
             this.rispostaCorretta = (String) rispostaCorretta;
+            super.setRispostaCorretta(rispostaCorretta);
         }
     }
 }

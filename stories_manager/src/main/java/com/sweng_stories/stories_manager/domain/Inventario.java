@@ -31,4 +31,11 @@ public class Inventario {
     public void setOggetti(List<Oggetto> oggetti) {
         this.oggetti = oggetti;
     }
+
+    @Override
+    public String toString() {
+        return "Inventario [id=" + id + ", oggetti=" + oggetti + "]";
+    }
+
+    
 }

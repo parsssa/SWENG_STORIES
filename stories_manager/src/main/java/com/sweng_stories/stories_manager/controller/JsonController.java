@@ -82,7 +82,6 @@ public class JsonController {
                 storia.setInizio(storiaAggiornata.getInizio());
                 storia.setFinali(storiaAggiornata.getFinali());
                 storia.setScenari(storiaAggiornata.getScenari());
-                storia.setIndovinello(storiaAggiornata.getIndovinello());
                 storia.setInventario(storiaAggiornata.getInventario());
                 // Aggiorna altri campi se necessario
                 writeStorieToFile(storie);
