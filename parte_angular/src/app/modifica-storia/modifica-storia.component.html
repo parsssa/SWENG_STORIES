@@ -1,0 +1,14 @@
+<mat-card class="story-edit-card" *ngIf="selectedStoria">
+  <mat-card-title>Modifica Storia: {{ selectedStoria.titolo }}</mat-card-title>
+  <mat-card-content>
+    <div *ngFor="let scenario of selectedStoria.scenari; let i = index">
+      <mat-form-field appearance="fill">
+        <mat-label>Descrizione Scenario {{ i + 1 }}</mat-label>
+        <textarea matInput [(ngModel)]="scenarioDescriptions[i]"></textarea>
+      </mat-form-field>
+    </div>
+    <button mat-raised-button color="accent" (click)="updateStoria()">
+      Salva Modifiche
+    </button>
+  </mat-card-content>
+</mat-card>

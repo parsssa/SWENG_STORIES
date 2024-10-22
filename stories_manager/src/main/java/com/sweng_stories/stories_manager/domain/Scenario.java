@@ -1,4 +1,3 @@
-// Scenario.java
 package com.sweng_stories.stories_manager.domain;
 
 import java.util.ArrayList;
@@ -9,20 +8,20 @@ public class Scenario {
     private String descrizione;
     private List<Indovinello> indovinelli;
     private List<Oggetto> oggetti;
-    private List<Long> nextScenarioIds;
+    private List<Alternative> alternatives;
 
     public Scenario() {
         this.indovinelli = new ArrayList<>();
         this.oggetti = new ArrayList<>();
-        this.nextScenarioIds = new ArrayList<>();
+        this.alternatives = new ArrayList<>();
     }
 
-    public Scenario(Long id, String descrizione, List<Indovinello> indovinelli, List<Oggetto> oggetti, List<Long> nextScenarioIds) {
+    public Scenario(Long id, String descrizione, List<Indovinello> indovinelli, List<Oggetto> oggetti, List<Alternative> alternatives) {
         this.id = id;
         this.descrizione = descrizione;
         this.indovinelli = (indovinelli != null) ? indovinelli : new ArrayList<>();
         this.oggetti = (oggetti != null) ? oggetti : new ArrayList<>();
-        this.nextScenarioIds = (nextScenarioIds != null) ? nextScenarioIds : new ArrayList<>();
+        this.alternatives = (alternatives != null) ? alternatives : new ArrayList<>();
     }
 
     // Getter e setter
@@ -58,11 +57,32 @@ public class Scenario {
         this.oggetti = (oggetti != null) ? oggetti : new ArrayList<>();
     }
 
-    public List<Long> getNextScenarioIds() {
-        return nextScenarioIds;
+    public List<Alternative> getAlternatives() {
+        return alternatives;
     }
 
-    public void setNextScenarioIds(List<Long> nextScenarioIds) {
-        this.nextScenarioIds = (nextScenarioIds != null) ? nextScenarioIds : new ArrayList<>();
+    public void setAlternatives(List<Alternative> alternatives) {
+        this.alternatives = (alternatives != null) ? alternatives : new ArrayList<>();
+    }
+
+    // Aggiungi un indovinello alla lista
+    public void addIndovinello(Indovinello indovinello) {
+        if (indovinello != null) {
+            this.indovinelli.add(indovinello);
+        }
+    }
+
+
+
+    
+    @Override
+    public String toString() {
+        return "Scenario [id=" + id + ", descrizione=" + descrizione + ", indovinelli=" + indovinelli + ", oggetti="
+                + oggetti + ", alternatives=" + alternatives + "]";
+    }
+
+    // Rimuovi un indovinello dalla lista
+    public void removeIndovinello(Indovinello indovinello) {
+        this.indovinelli.remove(indovinello);
     }
 }

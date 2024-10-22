@@ -1,4 +1,3 @@
-// Indovinello.java
 package com.sweng_stories.stories_manager.domain;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
@@ -14,7 +13,7 @@ public abstract class Indovinello {
     private String descrizione;
     private String domanda;
     private Object rispostaCorretta; // Oggetto generico per la risposta corretta
-    private Long scenarioId;  // Modifica: Aggiungi scenarioId per collegare lo scenario successivo
+    private Long scenarioId;  // Scenario successivo in caso di risposta corretta
 
     public Indovinello() {}
 
@@ -26,6 +25,7 @@ public abstract class Indovinello {
         this.scenarioId = scenarioId;
     }
 
+    // Getter e setter
     public Long getId() {
         return id;
     }
@@ -66,6 +66,9 @@ public abstract class Indovinello {
         this.scenarioId = scenarioId;
     }
 
+    // Metodo astratto per verificare la risposta data
     public abstract boolean verificaRisultato(Object risposta);
+
+    // Metodo astratto per ottenere il tipo di indovinello
     public abstract String getTipo();
 }

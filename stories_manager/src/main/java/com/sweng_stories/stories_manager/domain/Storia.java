@@ -11,7 +11,6 @@ public class Storia {
     private Scenario inizio;
     private List<Scenario> finali;
     private List<Scenario> scenari;
-    private Indovinello indovinello;
     private Inventario inventario;
 
     public Storia() {
@@ -77,25 +76,24 @@ public class Storia {
     }
 
     public List<Scenario> getScenari() {
+        // Ciclo per stampare ogni scenario
+        for (Scenario scenario : scenari) {
+            System.out.println(scenario.toString());  // Stampa il risultato di toString() di ogni scenario
+        }
+    
+        // Restituisce la lista di scenari come previsto
         return scenari;
     }
+    
 
     public void setScenari(List<Scenario> scenari) {
         this.scenari = scenari;
     }
 
-    public Indovinello getIndovinello() {
-        return indovinello;
-    }
-
-    public void setIndovinello(Indovinello indovinello) {
-        this.indovinello = indovinello;
-    }
 
     public void setId(Long id) {
         this.id = id;
     }
-    
 
     public Inventario getInventario() {
         return inventario;
@@ -127,12 +125,17 @@ public class Storia {
             this.finali.add(scenario);
         }
     }
-
+/*
+ * 
+ * 
+ * 
     public void setScenariFromAlternatives(List<Alternative> alternatives) {
         this.scenari = new ArrayList<>();
         for (Alternative alt : alternatives) {
             Scenario scenario = new Scenario();
             scenario.setDescrizione(alt.getText());
+
+            // Aggiungi oggetti se presenti
             List<Oggetto> oggetti = new ArrayList<>();
             for (String itemName : alt.getItems()) {
                 Oggetto oggetto = new Oggetto();
@@ -141,21 +144,21 @@ public class Storia {
                 oggetti.add(oggetto);
             }
             scenario.setOggetti(oggetti);
+
+            // Non c'è più bisogno di aggiungere `nextScenarioIds`, gestiamo tutto con le alternative
             this.scenari.add(scenario);
         }
     }
 
-    public void setIndovinello(String descrizione, String tipo) {
-        if (tipo.equals("testuale")) {
-            IndovinelloTestuale indovinello = new IndovinelloTestuale();
-            indovinello.setDescrizione(descrizione);
-            this.indovinello = indovinello;
-        } else if (tipo.equals("numerico")) {
-            IndovinelloNumerico indovinello = new IndovinelloNumerico();
-            indovinello.setDescrizione(descrizione);
-            this.indovinello = indovinello;
-        }
-    }
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ */
+
+ 
 
     public void setInventarioFromItems(String items) {
         this.inventario = new Inventario();
@@ -167,5 +170,12 @@ public class Storia {
             oggetti.add(oggetto);
         }
         this.inventario.setOggetti(oggetti);
+    }
+
+
+    @Override
+    public String toString() {
+        return "Storia [id=" + id + ", titolo=" + titolo + ", descrizione=" + descrizione + ", inizio=" + inizio
+                + ", finali=" + finali + ", scenari=" + scenari + ", inventario=" + inventario + "]";
     }
 }
