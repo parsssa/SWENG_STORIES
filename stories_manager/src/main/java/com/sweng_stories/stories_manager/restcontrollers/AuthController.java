@@ -3,28 +3,32 @@ package com.sweng_stories.stories_manager.restcontrollers;
 import com.sweng_stories.stories_manager.domain.Utente;
 import com.sweng_stories.stories_manager.services.OpAutenticazione;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @CrossOrigin(origins = "http://localhost:4200")
 @RestController
-@RequestMapping("/api")
-public class AuthController implements OpAutenticazione {
+@RequestMapping("/api/auth")
+public class AuthController {
+
     @Autowired
     private OpAutenticazione serviceAuth;
-    @Override
-    public boolean registraUtente(String username, String password) {
+
+    @PostMapping("/AuthController/register")
+    public boolean registraUtente(
+            @RequestParam String username,
+            @RequestParam String password) {
         return serviceAuth.registraUtente(username, password);
     }
 
-    @Override
-    public boolean loginUtente(String username, String password) {
+    @PostMapping("/AuthController/login")
+    public boolean loginUtente(
+            @RequestParam String username,
+            @RequestParam String password) {
         return serviceAuth.loginUtente(username, password);
     }
 
-    @Override
-    public Utente getUtente(String username) {
+    @GetMapping("/AuthController/user/{username}")
+    public Utente getUtente(@PathVariable String username) {
         return serviceAuth.getUtente(username);
     }
 }

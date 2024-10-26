@@ -21,7 +21,7 @@ public class ServiceSessioneGioco implements OpSessioneGioco {
             return null;
         }
 
-        int idStoria = partita.getStoria().getId();
+        int idStoria = partita.getIdStoria();
 
         Scenario scenario = sessioneGiocoDao.getScenarioCorrente(idStoria,idScenario);
         Indovinello indovinello = scenario.getIndovinello();
@@ -29,10 +29,10 @@ public class ServiceSessioneGioco implements OpSessioneGioco {
         if(indovinello == null)
             return null;
 
-        boolean esito = indovinello.getRisposta().equals(risposta);
+        boolean esito = indovinello.getRispostaCorretta().equals(risposta);
 
         if(esito){
-            int idScenarioSuccessivo = indovinello.getIdScenarioRispGiusta();
+            int idScenarioSuccessivo = indovinello.getScenarioId(); //dipende da getRispostaCorretta.scenarioId
 
             Scenario scenarioSuccessivo = sessioneGiocoDao.getScenarioCorrente(idStoria,idScenarioSuccessivo);
             partita.setIdScenarioCorrente(scenarioSuccessivo.getIdScenario());
@@ -40,7 +40,7 @@ public class ServiceSessioneGioco implements OpSessioneGioco {
 
             return scenarioSuccessivo;
         }else{
-            int idScenarioErrato = indovinello.getIdScenarioRispSbagliata();
+            int idScenarioErrato = indovinello.getScenarioId(); //dipende da getRispostaSbagliata.scenarioId da correggere
 
             Scenario scenarioSuccessivo = sessioneGiocoDao.getScenarioCorrente(idStoria,idScenarioErrato);
             partita.setIdScenarioCorrente(scenarioSuccessivo.getIdScenario());
@@ -58,7 +58,7 @@ public class ServiceSessioneGioco implements OpSessioneGioco {
         if(partita == null)
             return null;
 
-        int idStoria = partita.getStoria().getId();
+        int idStoria = partita.getIdStoria();
 
         Scenario scenario = sessioneGiocoDao.getScenarioCorrente(idStoria,idScenario);
 

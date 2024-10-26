@@ -9,15 +9,15 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
     @JsonSubTypes.Type(value = IndovinelloTestuale.class, name = "testuale")
 })
 public abstract class Indovinello {
-    private Long id;
+    private int id;
     private String descrizione;
     private String domanda;
     private Object rispostaCorretta; // Oggetto generico per la risposta corretta
-    private Long scenarioId;  // Scenario successivo in caso di risposta corretta
+    private int scenarioId;  // Scenario successivo in caso di risposta corretta
 
     public Indovinello() {}
 
-    public Indovinello(Long id, String descrizione, String domanda, Object rispostaCorretta, Long scenarioId) {
+    public Indovinello(int id, String descrizione, String domanda, Object rispostaCorretta, int scenarioId) {
         this.id = id;
         this.descrizione = descrizione;
         this.domanda = domanda;
@@ -26,11 +26,11 @@ public abstract class Indovinello {
     }
 
     // Getter e setter
-    public Long getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(int id) {
         this.id = id;
     }
 
@@ -58,11 +58,11 @@ public abstract class Indovinello {
         this.rispostaCorretta = rispostaCorretta;
     }
 
-    public Long getScenarioId() {
+    public int getScenarioId() {
         return scenarioId;
     }
 
-    public void setScenarioId(Long scenarioId) {
+    public void setScenarioId(int scenarioId) {
         this.scenarioId = scenarioId;
     }
 

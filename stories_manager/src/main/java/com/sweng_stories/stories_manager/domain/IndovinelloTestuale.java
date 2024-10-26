@@ -5,7 +5,7 @@ public class IndovinelloTestuale extends Indovinello {
 
     public IndovinelloTestuale() {}
 
-    public IndovinelloTestuale(Long id, String descrizione, String domanda, String rispostaCorretta, Long scenarioId) {
+    public IndovinelloTestuale(int id, String descrizione, String domanda, String rispostaCorretta, int scenarioId) {
         super(id, descrizione, domanda, rispostaCorretta, scenarioId);
         this.rispostaCorretta = rispostaCorretta;
     }

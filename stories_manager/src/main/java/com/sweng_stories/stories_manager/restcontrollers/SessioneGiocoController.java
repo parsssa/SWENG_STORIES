@@ -5,60 +5,58 @@ import com.sweng_stories.stories_manager.domain.Scenario;
 import com.sweng_stories.stories_manager.domain.SessioneGioco;
 import com.sweng_stories.stories_manager.services.OpSessioneGioco;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 
 @CrossOrigin(origins = "http://localhost:4200")
 @RestController
-@RequestMapping("/api")
-public class SessioneGiocoController implements OpSessioneGioco {
+@RequestMapping("/api/sessioni")
+public class SessioneGiocoController {
+
     @Autowired
-    OpSessioneGioco serviceSessioneGioco;
-    @Override
-    public Scenario elaboraIndovinello(int idScenario, String risposta, int idPartita) {
+    private OpSessioneGioco serviceSessioneGioco;
+
+    @PutMapping("/SessioneGioco/{idPartita}/scenari/{idScenario}/indovinello")
+    public Scenario elaboraIndovinello(
+            @PathVariable int idScenario,
+            @RequestParam String risposta,
+            @PathVariable int idPartita) {
         return serviceSessioneGioco.elaboraIndovinello(idScenario, risposta, idPartita);
     }
 
-    @Override
-    public Scenario elaboraAlternativa(int idScenario, int idScelta, int idPartita) {
+    @PutMapping("/SessioneGioco/{idPartita}/scenari/{idScenario}/alternativa")
+    public Scenario elaboraAlternativa(
+            @PathVariable int idScenario,
+            @RequestParam int idScelta,
+            @PathVariable int idPartita) {
         return serviceSessioneGioco.elaboraAlternativa(idScenario, idScelta, idPartita);
     }
 
-    @Override
-    public Inventario raccogliOggetto(int idPartita, String oggetto) {
+    @PostMapping("/SessioneGioco/{idPartita}/inventario")
+    public Inventario raccogliOggetto(
+            @PathVariable int idPartita,
+            @RequestParam String oggetto) {
         return serviceSessioneGioco.raccogliOggetto(idPartita, oggetto);
     }
 
-    @Override
-    public SessioneGioco creaSessione(SessioneGioco partita) {
+    @PostMapping("/SessioneGioco/")
+    public SessioneGioco creaSessione(@RequestBody SessioneGioco partita) {
         return serviceSessioneGioco.creaSessione(partita);
     }
 
-    @Override
-    public boolean eliminaSessione(int idPartita) {
+    @DeleteMapping("/SessioneGioco/{idPartita}")
+    public boolean eliminaSessione(@PathVariable int idPartita) {
         return serviceSessioneGioco.eliminaSessione(idPartita);
     }
 
-    @Override
-    public ArrayList<SessioneGioco> getSessioniUtente(String username) {
+    @GetMapping("/SessioneGioco/utente/{username}")
+    public ArrayList<SessioneGioco> getSessioniUtente(@PathVariable String username) {
         return serviceSessioneGioco.getSessioniUtente(username);
     }
 
-    @Override
-    public SessioneGioco getSessioneConID(int idPartita) {
+    @GetMapping("/SessioneGioco/{idPartita}")
+    public SessioneGioco getSessioneConID(@PathVariable int idPartita) {
         return serviceSessioneGioco.getSessioneConID(idPartita);
-    }
-
-    @Override
-    public Scenario getScenarioAttuale(int idStoria, int idScenario) {
-        return serviceSessioneGioco.getScenarioAttuale(idStoria, idScenario);
-    }
-
-    @Override
-    public boolean aggiornaPartita(SessioneGioco partita) {
-        return serviceSessioneGioco.aggiornaPartita(partita);
     }
 }

@@ -5,7 +5,7 @@ public class IndovinelloNumerico extends Indovinello {
 
     public IndovinelloNumerico() {}
 
-    public IndovinelloNumerico(Long id, String descrizione, String domanda, Integer rispostaCorretta, Long scenarioId) {
+    public IndovinelloNumerico(int id, String descrizione, String domanda, Integer rispostaCorretta, int scenarioId) {
         super(id, descrizione, domanda, rispostaCorretta, scenarioId);
         this.rispostaCorretta = rispostaCorretta;
     }

@@ -4,55 +4,67 @@ import com.sweng_stories.stories_manager.domain.Scenario;
 import com.sweng_stories.stories_manager.domain.Storia;
 import com.sweng_stories.stories_manager.services.OpStoria;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 
 @CrossOrigin(origins = "http://localhost:4200")
 @RestController
-@RequestMapping("/api")
-public class StoriaController implements OpStoria {
+@RequestMapping("/api/storie")
+public class StoriaController {
+
     @Autowired
-    OpStoria serviceStoria;
-    @Override
-    public Storia getStoriaConID(int idStoria) {
-        return serviceStoria.getStoriaConID(idStoria);
+    private OpStoria serviceStoria;
+
+    @GetMapping("/storie/{id}")
+    public Storia getStoriaConID(@PathVariable int id) {
+        return serviceStoria.getStoriaConID(id);
     }
 
-    @Override
+    @GetMapping("/storie")
     public ArrayList<Storia> getAllStorie() {
         return serviceStoria.getAllStorie();
     }
 
-    @Override
-    public ArrayList<Storia> getStoriaConUsername(String username) {
+    @GetMapping("/utente/{username}")
+    public ArrayList<Storia> getStoriaConUsername(@PathVariable String username) {
         return serviceStoria.getStoriaConUsername(username);
     }
 
-    @Override
-    public Storia inserisciStoria(Storia storia) {
-        return serviceStoria.inserisciStoria(storia);
+    @PostMapping("/storie")
+    public ResponseEntity<Storia> inserisciStoria(@RequestBody Storia storia) {
+    try {
+        Storia nuovaStoria = serviceStoria.inserisciStoria(storia);
+        return ResponseEntity.status(HttpStatus.CREATED).body(nuovaStoria);
+    } catch (Exception e) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
+}
 
-    @Override
-    public Scenario modificaScenario(int idScenario, int idStoria, String nuovoTesto) {
+    @PutMapping("/storie/{idStoria}/scenari/{idScenario}")
+    public Scenario modificaScenario(
+            @PathVariable int idScenario,
+            @PathVariable int idStoria,
+            @RequestParam String nuovoTesto) {
         return serviceStoria.modificaScenario(idScenario, idStoria, nuovoTesto);
     }
 
-    @Override
-    public Scenario getScenario(int idScenario, int idStoria) {
+    @GetMapping("/storie/{idStoria}/scenari/{idScenario}")
+    public Scenario getScenario(
+            @PathVariable int idScenario,
+            @PathVariable int idStoria) {
         return serviceStoria.getScenario(idScenario, idStoria);
     }
 
-    @Override
-    public boolean inserisciScenario(Scenario scenario) {
+    @PostMapping("/storie/{idStoria}/scenari")
+    public boolean inserisciScenario(@RequestBody Scenario scenario) {
         return serviceStoria.inserisciScenario(scenario);
     }
 
-    @Override
-    public ArrayList<Scenario> getScenariStoria(int idStoria) {
+    @GetMapping("/storie/{idStoria}/scenari")
+    public ArrayList<Scenario> getScenariStoria(@PathVariable int idStoria) {
         return serviceStoria.getScenariStoria(idStoria);
     }
 }
