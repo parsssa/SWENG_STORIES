@@ -4,85 +4,82 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Scenario {
-    private Long id;
-    private String descrizione;
-    private List<Indovinello> indovinelli;
-    private List<Oggetto> oggetti;
-    private List<Alternative> alternatives;
+
+    private int idStoria;
+
+    private int idScenario;
+
+    private String testoScenario;
+    private String oggetto;
+
+    private List<Alternativa> alternative;
+    private Indovinello indovinello;
 
     public Scenario() {
-        this.indovinelli = new ArrayList<>();
-        this.oggetti = new ArrayList<>();
-        this.alternatives = new ArrayList<>();
     }
 
-    public Scenario(Long id, String descrizione, List<Indovinello> indovinelli, List<Oggetto> oggetti, List<Alternative> alternatives) {
-        this.id = id;
-        this.descrizione = descrizione;
-        this.indovinelli = (indovinelli != null) ? indovinelli : new ArrayList<>();
-        this.oggetti = (oggetti != null) ? oggetti : new ArrayList<>();
-        this.alternatives = (alternatives != null) ? alternatives : new ArrayList<>();
+    public void setIdScenario(int idScenario) {
+        this.idScenario = idScenario;
     }
 
-    // Getter e setter
-    public Long getId() {
-        return id;
+    public void setAlternative(List<Alternativa> alternative) {
+        this.alternative = alternative;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public Scenario(int idStoria, int idScenario, String testoScenario, String oggetto, List<Alternativa> alternative, Indovinello indovinello) {
+        this.idStoria = idStoria;
+        this.idScenario = idScenario;
+        this.testoScenario = testoScenario;
+        this.oggetto = oggetto;
+        this.alternative = alternative;
+        this.indovinello = indovinello;
     }
 
-    public String getDescrizione() {
-        return descrizione;
+    public int getIdScenario() {
+        return idScenario;
     }
 
-    public void setDescrizione(String descrizione) {
-        this.descrizione = descrizione;
+    public void setAlternative(ArrayList<Alternativa> alternative) {
+        this.alternative = alternative;
     }
 
-    public List<Indovinello> getIndovinelli() {
-        return indovinelli;
+    public Indovinello getIndovinello() {
+        return indovinello;
     }
 
-    public void setIndovinelli(List<Indovinello> indovinelli) {
-        this.indovinelli = (indovinelli != null) ? indovinelli : new ArrayList<>();
+    public void setIndovinello(Indovinello indovinello) {
+        this.indovinello = indovinello;
     }
 
-    public List<Oggetto> getOggetti() {
-        return oggetti;
+    public void setIdStoria(int idStoria) {
+        this.idStoria = idStoria;
     }
 
-    public void setOggetti(List<Oggetto> oggetti) {
-        this.oggetti = (oggetti != null) ? oggetti : new ArrayList<>();
+    public String getOggetto() {
+        return oggetto;
     }
 
-    public List<Alternative> getAlternatives() {
-        return alternatives;
+    public void setOggetto(String oggetto) {
+        this.oggetto = oggetto;
     }
 
-    public void setAlternatives(List<Alternative> alternatives) {
-        this.alternatives = (alternatives != null) ? alternatives : new ArrayList<>();
+    public int getIdStoria() {
+        return idStoria;
     }
 
-    // Aggiungi un indovinello alla lista
-    public void addIndovinello(Indovinello indovinello) {
-        if (indovinello != null) {
-            this.indovinelli.add(indovinello);
-        }
+    public String getTestoScenario() {
+        return testoScenario;
     }
 
-
-
-    
-    @Override
-    public String toString() {
-        return "Scenario [id=" + id + ", descrizione=" + descrizione + ", indovinelli=" + indovinelli + ", oggetti="
-                + oggetti + ", alternatives=" + alternatives + "]";
+    public List<Alternativa> getAlternative() {
+        return alternative;
     }
 
-    // Rimuovi un indovinello dalla lista
-    public void removeIndovinello(Indovinello indovinello) {
-        this.indovinelli.remove(indovinello);
+    public void setTestoScenario(String testoScenario) {
+        this.testoScenario = testoScenario;
     }
+    public void aggiungiAlternativa(Alternativa alternativa){
+        alternative.add(alternativa);
+    }
+
 }

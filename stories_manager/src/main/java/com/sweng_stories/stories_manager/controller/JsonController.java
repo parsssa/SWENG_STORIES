@@ -2,8 +2,6 @@ package com.sweng_stories.stories_manager.controller;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sweng_stories.stories_manager.domain.Storia;
-import com.sweng_stories.stories_manager.domain.Utente;
 import org.springframework.stereotype.Service;
 
 import java.io.File;

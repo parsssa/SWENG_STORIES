@@ -1,41 +1,34 @@
-// Inventario.java
 package com.sweng_stories.stories_manager.domain;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Inventario {
-    private Long id;
-    private List<Oggetto> oggetti;
 
-    // Costruttori
-    public Inventario() {}
+    private List<String> oggetti;
 
-    public Inventario(Long id, List<Oggetto> oggetti) {
-        this.id = id;
+    public Inventario(List<String> oggetti){
         this.oggetti = oggetti;
     }
 
-    // Getter e setter
-    public Long getId() {
-        return id;
+    public Inventario() {
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public boolean raccogliOggetto(String oggetto){
+
+        if(!oggetti.contains(oggetto)){
+          oggetti.add(oggetto);
+          return true;
+        }
+
+        return false;
     }
 
-    public List<Oggetto> getOggetti() {
+    public boolean eliminaOggetto(String oggetto){
+        return oggetti.remove(oggetto);
+    }
+
+    public List<String> getOggetti(){
         return oggetti;
     }
-
-    public void setOggetti(List<Oggetto> oggetti) {
-        this.oggetti = oggetti;
-    }
-
-    @Override
-    public String toString() {
-        return "Inventario [id=" + id + ", oggetti=" + oggetti + "]";
-    }
-
-    
 }

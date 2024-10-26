@@ -1,40 +1,73 @@
-// SessioneGioco.java
 package com.sweng_stories.stories_manager.domain;
 
 public class SessioneGioco {
-    private Utente utente;
-    private Storia storiaCorrente;
+    private int idStoria;
     private Inventario inventario;
+    private String username;
+    private int idScenarioCorrente;
+    private int idSessione;
 
-    public SessioneGioco(Utente utente, Storia storiaCorrente, Inventario inventario) {
-        this.utente = utente;
-        this.storiaCorrente = storiaCorrente;
+    public SessioneGioco() {
+    }
+
+    public SessioneGioco(String username, Integer idStoria, Integer idScenarioCorrente, Inventario inventario) {
+        this.username = username;
+        this.idStoria = idStoria;
+        this.idScenarioCorrente = idScenarioCorrente;
         this.inventario = inventario;
     }
 
-    public Utente getUtente() {
-        return utente;
+    public int getIdStoria() {
+        return idStoria;
     }
 
-    public void setUtente(Utente utente) {
-        this.utente = utente;
-    }
-
-    public Storia getStoriaCorrente() {
-        return storiaCorrente;
-    }
-
-    public void setStoriaCorrente(Storia storiaCorrente) {
-        this.storiaCorrente = storiaCorrente;
-    }
-
-    public Inventario getInventario() {
-        return inventario;
+    public void setIdStoria(int idStoria) {
+        this.idStoria = idStoria;
     }
 
     public void setInventario(Inventario inventario) {
         this.inventario = inventario;
     }
 
-    // Altri metodi per gestire lo stato del gioco e l'inventario dell'utente
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public SessioneGioco(int idStoria, String username, int idScenarioCorrente) {
+        this.idStoria = idStoria;
+        this.username = username;
+        this.idScenarioCorrente = idScenarioCorrente;
+    }
+
+    public void setInventario(){
+        inventario = new Inventario();
+    }
+
+    public Inventario getInventario() {
+        return inventario;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public int getIdScenarioCorrente() {
+        return idScenarioCorrente;
+    }
+
+    public void setIdScenarioCorrente(int idScenarioCorrente) {
+        this.idScenarioCorrente = idScenarioCorrente;
+    }
+
+    private boolean aggiungiOggetto(String oggetto){
+        return inventario.raccogliOggetto(oggetto);
+    }
+    public int getIdSessione() {
+        return idSessione;
+    }
+
+    public void setIdSessione(int idSessione) {
+        this.idSessione = idSessione;
+    }
+
 }
