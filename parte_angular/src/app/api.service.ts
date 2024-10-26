@@ -129,14 +129,15 @@ export class ApiService {
     );
   }
 
-  loginUtente(username: string, password: string): Observable<any> {
+  loginUtente(formData: { username: string; password: string }): Observable<any> {
     return this.http.post(`${this.baseUrl}/auth/AuthController/login`, {}, {
-      params: { username, password },
+      params: { username: formData.username, password: formData.password },
       ...this.httpOptions
     }).pipe(
       catchError(this.handleError('loginUtente'))
     );
-  }
+}
+
 
   getUtente(username: string): Observable<any> {
     return this.http.get(`${this.baseUrl}/auth/AuthController/user/${username}`, this.httpOptions).pipe(

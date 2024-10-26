@@ -36,23 +36,24 @@ export class RegisterComponent implements OnInit {
   onSubmit() {
     if (this.registerForm.valid) {
       const formData = this.registerForm.value;
-      this.apiService.createUtente({ username: formData.username, password: formData.password }).subscribe(
+      this.apiService.registraUtente(formData.username, formData.password).subscribe(
         response => {
           console.log('Registrazione riuscita:', response);
           this.successMessage = 'Registrazione avvenuta con successo. Reindirizzamento al login...';
           setTimeout(() => {
             this.router.navigate(['/login']);
-          }, 2000); // 2 secondi di ritardo
+          }, 2000); // 2 secondi di ritardo per il reindirizzamento
         },
         error => {
           console.error('Errore durante la registrazione:', error);
           if (error.status === 409) { // HTTP 409 Conflict
             this.errorMessage = 'Username già esistente. Si prega di effettuare il login.';
           } else {
-            this.errorMessage = error.error.message || 'Si è verificato un errore durante la registrazione. Riprova più tardi.';
+            this.errorMessage = error.error?.message || 'Si è verificato un errore durante la registrazione. Riprova più tardi.';
           }
         }
       );
     }
   }
+  
 }

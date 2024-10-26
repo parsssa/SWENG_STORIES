@@ -17,7 +17,7 @@ export class SelezioneStoriaComponent implements OnInit {
   }
 
   loadStorie(): void {
-    this.apiService.getAllStorieTitoli().subscribe(
+    this.apiService.getAllStorie().subscribe(
       (storie: any[]) => {
         this.storie = storie;
         console.log('Storie caricate:', this.storie);
@@ -25,7 +25,7 @@ export class SelezioneStoriaComponent implements OnInit {
       error => console.error('Errore nel caricamento delle storie', error)
     );
   }
-
+  
   selectStoria(id: number): void {
     this.router.navigate(['/giocaStoria', id]);
   }

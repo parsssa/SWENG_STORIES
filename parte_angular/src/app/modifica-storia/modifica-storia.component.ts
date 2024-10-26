@@ -31,21 +31,21 @@ export class ModificaStoriaComponent implements OnInit {
 
   updateStoria(): void {
     if (this.selectedStoria) {
-      const updatedStoria = {
-        ...this.selectedStoria,
-        scenari: this.selectedStoria.scenari.map((scenario: any, index: number) => ({
-          ...scenario,
-          descrizione: this.scenarioDescriptions[index] // Aggiorna la descrizione
-        }))
-      };
-
-      this.apiService.updateStoria(this.selectedStoria.id, updatedStoria).subscribe(
-        () => {
-          console.log('Storia aggiornata con successo!');
-          this.router.navigate(['/selezione-storia']); // Reindirizza dopo l'aggiornamento
-        },
-        error => console.error('Errore nell\'aggiornamento della storia', error)
-      );
+      this.selectedStoria.scenari.forEach((scenario: any, index: number) => {
+        const nuovoTesto = this.scenarioDescriptions[index]; // Testo aggiornato dello scenario
+        const idScenario = scenario.id; // Id dello scenario
+  
+        this.apiService.updateStoria(this.selectedStoria.id, idScenario, nuovoTesto).subscribe(
+          () => {
+            console.log(`Scenario ${idScenario} aggiornato con successo!`);
+            // Se vuoi reindirizzare dopo l'ultimo aggiornamento, fallo solo all'ultimo ciclo
+            if (index === this.selectedStoria.scenari.length - 1) {
+              this.router.navigate(['/selezione-storia']);
+            }
+          },
+          error => console.error(`Errore nell'aggiornamento dello scenario ${idScenario}`, error)
+        );
+      });
     }
   }
 }
