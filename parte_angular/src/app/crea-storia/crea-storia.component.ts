@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
+import { ApiService } from '../api.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-crea-storia',
@@ -8,8 +10,13 @@ import { FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
 })
 export class CreaStoriaComponent implements OnInit {
   storyForm: FormGroup;
+  errorMessage: string = '';
 
-  constructor(private fb: FormBuilder) {
+  constructor(
+    private fb: FormBuilder,
+    private apiService: ApiService,
+    private router: Router
+  ) {
     this.storyForm = this.fb.group({
       title: ['', Validators.required],
       description: ['', Validators.required],
@@ -47,12 +54,12 @@ export class CreaStoriaComponent implements OnInit {
 
   addScenarioWithRiddle(): void {
     const scenario = this.fb.group({
-      text: ['', Validators.required],  // Descrizione dello scenario
-      riddleQuestion: ['', Validators.required],  // Domanda dell'indovinello
-      riddleType: ['text', Validators.required],  // Tipo di indovinello
-      correctAnswer: ['', Validators.required],  // Risposta corretta
-      wrongAnswer: ['', Validators.required],  // Risposta errata
-      isRiddle: [true]  // Indica che questo scenario contiene un indovinello
+      text: ['', Validators.required],
+      riddleQuestion: ['', Validators.required],
+      riddleType: ['text', Validators.required],
+      correctAnswer: ['', Validators.required],
+      wrongAnswer: ['', Validators.required],
+      isRiddle: [true]
     });
     this.scenarios.push(scenario);
   }
@@ -60,8 +67,8 @@ export class CreaStoriaComponent implements OnInit {
   addAlternativeToScenario(index: number): void {
     const alternatives = (this.scenarios.at(index).get('alternatives') as FormArray);
     const alternative = this.fb.group({
-      text: ['', Validators.required],  // Descrizione dell'alternativa
-      leadsTo: [null]  // Collegamento allo scenario successivo o finale
+      text: ['', Validators.required],
+      leadsTo: [null]
     });
     alternatives.push(alternative);
   }
@@ -93,8 +100,32 @@ export class CreaStoriaComponent implements OnInit {
 
   onSubmit(): void {
     if (this.storyForm.valid) {
-      const storyData = this.storyForm.value;
-      console.log(storyData); // Sostituire con la logica di invio dati
+      const storyData = {
+        title: this.storyForm.value.title,
+        description: this.storyForm.value.description,
+        start: this.storyForm.value.start
+      };
+      
+      this.apiService.inserisciStoria(storyData).subscribe(
+        response => {
+          const idStoria = response.id; // Supponendo che il backend restituisca l'id della storia creata
+
+          // Invia ogni scenario
+          this.storyForm.value.scenarios.forEach((scenario: any) => {
+            this.apiService.inserisciScenario(idStoria, scenario).subscribe(
+              () => console.log('Scenario aggiunto con successo!'),
+              error => console.error('Errore durante l\'aggiunta dello scenario:', error)
+            );
+          });
+
+          console.log('Storia creata con successo!', response);
+          this.router.navigate(['/dashboard']); // Reindirizza dopo la creazione
+        },
+        error => {
+          console.error('Errore durante la creazione della storia:', error);
+          this.errorMessage = 'Si è verificato un errore durante la creazione della storia. Riprova più tardi.';
+        }
+      );
     }
   }
 
