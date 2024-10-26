@@ -35,10 +35,11 @@ export class ApiService {
   }
 
   inserisciStoria(storia: any): Observable<any> {
-    return this.http.post<any>(`${this.baseUrl}/storie/storie`, storia, this.httpOptions).pipe(
+    return this.http.post<any>(`${this.baseUrl}/storie`, storia, this.httpOptions).pipe(
       catchError(this.handleError('inserisciStoria'))
     );
   }
+  
 
   updateStoria(idStoria: number, idScenario: number, nuovoTesto: string): Observable<any> {
     return this.http.put(`${this.baseUrl}/storie/storie/${idStoria}/scenari/${idScenario}`, {}, {
@@ -56,7 +57,7 @@ export class ApiService {
   }
 
   inserisciScenario(idStoria: number, scenario: any): Observable<any> {
-    return this.http.post(`${this.baseUrl}/storie/storie/${idStoria}/scenari`, scenario, this.httpOptions).pipe(
+    return this.http.post(`${this.baseUrl}/storie/${idStoria}/scenari`, scenario, this.httpOptions).pipe(
       catchError(this.handleError('inserisciScenario'))
     );
   }

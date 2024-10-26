@@ -18,12 +18,12 @@ public class StoriaController {
     @Autowired
     private OpStoria serviceStoria;
 
-    @GetMapping("/storie/{id}")
+    @GetMapping("/{id}")
     public Storia getStoriaConID(@PathVariable int id) {
         return serviceStoria.getStoriaConID(id);
     }
 
-    @GetMapping("/storie")
+    @GetMapping
     public ArrayList<Storia> getAllStorie() {
         return serviceStoria.getAllStorie();
     }
@@ -33,17 +33,17 @@ public class StoriaController {
         return serviceStoria.getStoriaConUsername(username);
     }
 
-    @PostMapping("/storie")
+    @PostMapping
     public ResponseEntity<Storia> inserisciStoria(@RequestBody Storia storia) {
-    try {
-        Storia nuovaStoria = serviceStoria.inserisciStoria(storia);
-        return ResponseEntity.status(HttpStatus.CREATED).body(nuovaStoria);
-    } catch (Exception e) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        try {
+            Storia nuovaStoria = serviceStoria.inserisciStoria(storia);
+            return ResponseEntity.status(HttpStatus.CREATED).body(nuovaStoria);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
-}
 
-    @PutMapping("/storie/{idStoria}/scenari/{idScenario}")
+    @PutMapping("/{idStoria}/scenari/{idScenario}")
     public Scenario modificaScenario(
             @PathVariable int idScenario,
             @PathVariable int idStoria,
@@ -51,19 +51,19 @@ public class StoriaController {
         return serviceStoria.modificaScenario(idScenario, idStoria, nuovoTesto);
     }
 
-    @GetMapping("/storie/{idStoria}/scenari/{idScenario}")
+    @GetMapping("/{idStoria}/scenari/{idScenario}")
     public Scenario getScenario(
             @PathVariable int idScenario,
             @PathVariable int idStoria) {
         return serviceStoria.getScenario(idScenario, idStoria);
     }
 
-    @PostMapping("/storie/{idStoria}/scenari")
+    @PostMapping("/{idStoria}/scenari")
     public boolean inserisciScenario(@RequestBody Scenario scenario) {
         return serviceStoria.inserisciScenario(scenario);
     }
 
-    @GetMapping("/storie/{idStoria}/scenari")
+    @GetMapping("/{idStoria}/scenari")
     public ArrayList<Scenario> getScenariStoria(@PathVariable int idStoria) {
         return serviceStoria.getScenariStoria(idStoria);
     }

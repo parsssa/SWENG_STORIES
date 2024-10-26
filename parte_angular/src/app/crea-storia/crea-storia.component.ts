@@ -89,30 +89,29 @@ export class CreaStoriaComponent implements OnInit {
       value: index,
       label: `Scenario ${index + 1}`
     }));
-  
+
     const endingOptions = this.endings.controls.map((control, index) => ({
       value: `ending-${index}`,
       label: `Finale ${index + 1}`
     }));
-  
+
     return [...scenarioOptions, ...endingOptions];
   }
 
   onSubmit(): void {
     if (this.storyForm.valid) {
-      const storyData = {
-        title: this.storyForm.value.title,
-        description: this.storyForm.value.description,
-        start: this.storyForm.value.start
-      };
-      
+      const storyData = this.prepareStoryData();
+      console.log("STORIONE DATONE", storyData);
+
+      // Invio della storia al backend come JSON
       this.apiService.inserisciStoria(storyData).subscribe(
         response => {
           const idStoria = response.id; // Supponendo che il backend restituisca l'id della storia creata
 
-          // Invia ogni scenario
-          this.storyForm.value.scenarios.forEach((scenario: any) => {
-            this.apiService.inserisciScenario(idStoria, scenario).subscribe(
+          // Invia ogni scenario al backend come JSON
+          this.storyForm.value.scenarios.forEach((scenario: any, index: number) => {
+            const scenarioData = this.prepareScenarioData(idStoria, scenario, index);
+            this.apiService.inserisciScenario(idStoria, scenarioData).subscribe(
               () => console.log('Scenario aggiunto con successo!'),
               error => console.error('Errore durante l\'aggiunta dello scenario:', error)
             );
@@ -127,6 +126,58 @@ export class CreaStoriaComponent implements OnInit {
         }
       );
     }
+  }
+
+  // Prepara i dati della storia come JSON
+  private prepareStoryData() {
+    const initialScenario = this.storyForm.value.scenarios[0];
+
+    return {
+      titolo: this.storyForm.value.title,
+      inizio: initialScenario ? { // Struttura dello scenario iniziale
+        idStoria: 0,
+        idScenario: 1,
+        testoScenario: this.storyForm.value.start,
+        oggetto: initialScenario.item || '',
+        alternative: initialScenario.alternatives.map((alt: any) => ({
+          testoAlternativa: alt.text,
+          idScenarioSuccessivo: alt.leadsTo,
+          oggettoRichiesto: alt.oggettoRichiesto || ''
+        })),
+        indovinello: initialScenario.isRiddle ? {
+          id: 1,
+          descrizione: 'Indovinello',
+          domanda: initialScenario.riddleQuestion,
+          rispostaCorretta: initialScenario.correctAnswer,
+          scenarioId: initialScenario.leadsTo,
+          tipo: initialScenario.riddleType
+        } : null
+      } : null,
+      username: 'utenteCorrente' // Sostituisci con l'username attuale
+    };
+  }
+
+  // Prepara i dati dello scenario come JSON
+  private prepareScenarioData(idStoria: number, scenario: any, index: number) {
+    return {
+      idStoria,
+      idScenario: index + 1,
+      testoScenario: scenario.text,
+      oggetto: scenario.item || '',
+      alternative: scenario.alternatives.map((alt: any) => ({
+        testoAlternativa: alt.text,
+        idScenarioSuccessivo: alt.leadsTo,
+        oggettoRichiesto: alt.oggettoRichiesto || ''
+      })),
+      indovinello: scenario.isRiddle ? {
+        id: index + 1,
+        descrizione: 'Indovinello',
+        domanda: scenario.riddleQuestion,
+        rispostaCorretta: scenario.correctAnswer,
+        scenarioId: scenario.leadsTo,
+        tipo: scenario.riddleType
+      } : null
+    };
   }
 
   resetForm(): void {
