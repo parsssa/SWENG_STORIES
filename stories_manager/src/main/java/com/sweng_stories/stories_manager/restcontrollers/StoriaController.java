@@ -60,7 +60,7 @@ public class StoriaController {
         return serviceStoria.getScenario(idScenario, idStoria);
     }
 
-    @PostMapping("/{idStoria}/scenari")
+    @PostMapping("/scenari")
     public boolean inserisciScenario(@RequestBody Scenario scenario) {
         return serviceStoria.inserisciScenario(scenario);
     }

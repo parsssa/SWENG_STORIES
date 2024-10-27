@@ -57,19 +57,19 @@ export class ApiService {
   }
 
   getScenario(idStoria: number, idScenario: number): Observable<any> {
-    return this.http.get<any>(`${this.baseUrl}/storie/storie/${idStoria}/scenari/${idScenario}`, this.httpOptions).pipe(
+    return this.http.get<any>(`${this.baseUrl}/storie/${idStoria}/scenari/${idScenario}`, this.httpOptions).pipe(
       catchError(this.handleError('getScenario'))
     );
   }
 
   inserisciScenario(idStoria: number, scenario: any): Observable<any> {
-    return this.http.post(`${this.baseUrl}/storie/${idStoria}/scenari`, scenario, this.httpOptions).pipe(
+    return this.http.post(`${this.baseUrl}/storie/scenari`, scenario, this.httpOptions).pipe(
       catchError(this.handleError('inserisciScenario'))
     );
   }
 
   getScenariStoria(idStoria: number): Observable<any[]> {
-    return this.http.get<any[]>(`${this.baseUrl}/storie/storie/${idStoria}/scenari`, this.httpOptions).pipe(
+    return this.http.get<any[]>(`${this.baseUrl}/storie/${idStoria}/scenari`, this.httpOptions).pipe(
       catchError(this.handleError('getScenariStoria'))
     );
   }

@@ -119,6 +119,8 @@ export class CreaStoriaComponent implements OnInit {
           // Invia ogni scenario al backend come JSON
           this.storyForm.value.scenarios.forEach((scenario: any, index: number) => {
             const scenarioData = this.prepareScenarioData(idStoria, scenario, index);
+            console.log("indice attuale "+ index)
+            console.log(scenarioData)
             this.apiService.inserisciScenario(idStoria, scenarioData).subscribe(
               () => console.log('Scenario aggiunto con successo!'),   
               error => console.error('Errore durante l\'aggiunta dello scenario:', error)

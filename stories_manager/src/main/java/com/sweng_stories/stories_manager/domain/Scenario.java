@@ -55,6 +55,12 @@ public class Scenario {
         return oggetto;
     }
 
+    @Override
+    public String toString() {
+        return "Scenario [idStoria=" + idStoria + ", idScenario=" + idScenario + ", testoScenario=" + testoScenario
+                + ", oggetto=" + oggetto + ", alternative=" + alternative + ", indovinello=" + indovinello + "]";
+    }
+
     public void setOggetto(String oggetto) {
         this.oggetto = oggetto;
     }
