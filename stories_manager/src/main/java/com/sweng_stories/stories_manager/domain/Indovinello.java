@@ -1,74 +1,71 @@
 package com.sweng_stories.stories_manager.domain;
 
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
+public class Indovinello{
+    private int idScenario;
+    private int idScenarioRispGiusta;
+    private String testoIndovinello;
+    private String risposta;
+    private String rispostaSbagliata;
+    private int idScenarioRispSbagliata;
 
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "tipo")
-@JsonSubTypes({
-    @JsonSubTypes.Type(value = IndovinelloNumerico.class, name = "numerico"),
-    @JsonSubTypes.Type(value = IndovinelloTestuale.class, name = "testuale")
-})
-public abstract class Indovinello {
-    private int id;
-    private String descrizione;
-    private String domanda;
-    private Object rispostaCorretta; // Oggetto generico per la risposta corretta
-    private int scenarioId;  // Scenario successivo in caso di risposta corretta
-
-    public Indovinello() {}
-
-    public Indovinello(int id, String descrizione, String domanda, Object rispostaCorretta, int scenarioId) {
-        this.id = id;
-        this.descrizione = descrizione;
-        this.domanda = domanda;
-        this.rispostaCorretta = rispostaCorretta;
-        this.scenarioId = scenarioId;
+    public Indovinello() {
     }
 
-    // Getter e setter
-    public int getId() {
-        return id;
+    public Indovinello(int idScenario, int idScenarioRispGiusta, String testoIndovinello, String risposta, String rispostaSbagliata, int idScenarioRispSbagliata) {
+        this.idScenario = idScenario;
+        this.idScenarioRispGiusta = idScenarioRispGiusta;
+        this.testoIndovinello = testoIndovinello;
+        this.risposta = risposta;
+        this.rispostaSbagliata = rispostaSbagliata;
+        this.idScenarioRispSbagliata = idScenarioRispSbagliata;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setIdScenario(int idScenario) {
+        this.idScenario = idScenario;
     }
 
-    public String getDescrizione() {
-        return descrizione;
+    public void setIdScenarioRispGiusta(int idScenarioRispGiusta) {
+        this.idScenarioRispGiusta = idScenarioRispGiusta;
     }
 
-    public void setDescrizione(String descrizione) {
-        this.descrizione = descrizione;
+    public void setTestoIndovinello(String testoIndovinello) {
+        this.testoIndovinello = testoIndovinello;
     }
 
-    public String getDomanda() {
-        return domanda;
+    public void setRisposta(String risposta) {
+        this.risposta = risposta;
     }
 
-    public void setDomanda(String domanda) {
-        this.domanda = domanda;
+    public String getRispostaSbagliata() {
+        return rispostaSbagliata;
     }
 
-    public Object getRispostaCorretta() {
-        return rispostaCorretta;
+    public void setRispostaSbagliata(String rispostaSbagliata) {
+        this.rispostaSbagliata = rispostaSbagliata;
     }
 
-    public void setRispostaCorretta(Object rispostaCorretta) {
-        this.rispostaCorretta = rispostaCorretta;
+    public void setIdScenarioRispSbagliata(int idScenarioRispSbagliata) {
+        this.idScenarioRispSbagliata = idScenarioRispSbagliata;
     }
 
-    public int getScenarioId() {
-        return scenarioId;
+    public String getTestoIndovinello() {
+        return testoIndovinello;
     }
 
-    public void setScenarioId(int scenarioId) {
-        this.scenarioId = scenarioId;
+    public String getRisposta() {
+        return risposta;
     }
 
-    // Metodo astratto per verificare la risposta data
-    public abstract boolean verificaRisultato(Object risposta);
+    public int getIdScenario() {
+        return idScenario;
+    }
+    
 
-    // Metodo astratto per ottenere il tipo di indovinello
-    public abstract String getTipo();
+    public int getIdScenarioRispGiusta() {
+        return idScenarioRispGiusta;
+    }
+
+    public int getIdScenarioRispSbagliata() {
+        return idScenarioRispSbagliata;
+    }
 }

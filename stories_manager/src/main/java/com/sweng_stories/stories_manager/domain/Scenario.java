@@ -39,10 +39,6 @@ public class Scenario {
         return idScenario;
     }
 
-    public void setAlternative(ArrayList<Alternativa> alternative) {
-        this.alternative = alternative;
-    }
-
     public Indovinello getIndovinello() {
         return indovinello;
     }

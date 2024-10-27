@@ -76,15 +76,57 @@ public class StoriaDao implements OpStoriaDao {
 
     @Override
     public Storia inserisciStoria(Storia storia) {
-        ObjectId objectId = new ObjectId();
-        Document document = new Document("_id", objectId)
-                .append("titolo", storia.getTitolo())
-                .append("username", storia.getUsername())
-                .append("inizio", storia.getInizio());
-        storieCollection.insertOne(document);
-        storia.setId(objectId.hashCode());
-        return storia;
+    ObjectId objectId = new ObjectId();
+
+    // Creazione del documento per l'oggetto `Scenario`
+    Document scenarioDoc = new Document()
+            .append("idStoria", storia.getInizio().getIdStoria())
+            .append("idScenario", storia.getInizio().getIdScenario())
+            .append("testoScenario", storia.getInizio().getTestoScenario())
+            .append("oggetto", storia.getInizio().getOggetto());
+
+    // Creazione della lista di `Alternativa` come documenti
+    List<Document> alternativeDocs = new ArrayList<>();
+    for (Alternativa alternativa : storia.getInizio().getAlternative()) {
+        Document alternativaDoc = new Document()
+                .append("idScenario", alternativa.getIdScenario())
+                .append("idScenarioSuccessivo", alternativa.getIdScenarioSuccessivo())
+                .append("testoAlternativa", alternativa.getTestoAlternativa())
+                .append("oggettoRichiesto", alternativa.getOggettoRichiesto());
+        alternativeDocs.add(alternativaDoc);
     }
+    scenarioDoc.append("alternative", alternativeDocs);
+
+    // Aggiungi `Indovinello` se presente
+    if (storia.getInizio().getIndovinello() != null) {
+        Indovinello indovinello = storia.getInizio().getIndovinello();
+        Document indovinelloDoc = new Document()
+                .append("idScenario", indovinello.getIdScenario())
+                .append("idScenarioRispGiusta", indovinello.getIdScenarioRispGiusta())
+                .append("testoIndovinello", indovinello.getTestoIndovinello())
+                .append("risposta", indovinello.getRisposta())
+                .append("rispostaSbagliata", indovinello.getRispostaSbagliata())
+                .append("idScenarioRispSbagliata", indovinello.getIdScenarioRispSbagliata());
+        scenarioDoc.append("indovinello", indovinelloDoc);
+    } else {
+        scenarioDoc.append("indovinello", null);
+    }
+
+    // Creazione del documento principale per `Storia`
+    Document document = new Document("_id", objectId)
+            .append("titolo", storia.getTitolo())
+            .append("inizio", scenarioDoc)
+            .append("id", storia.getId())
+            .append("username", storia.getUsername());
+
+    System.out.println("SONO DENTROO A INSERIMENTO STORIE");
+    storieCollection.insertOne(document);
+
+    // Imposta l'ID della storia a partire dall'ObjectId generato
+    storia.setId(objectId.hashCode());
+    return storia;
+}
+
 
     @Override
     public Scenario modificaScenario(int idScenario, int idStoria, String nuovoTesto) {

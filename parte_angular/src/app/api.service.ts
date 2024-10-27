@@ -35,10 +35,16 @@ export class ApiService {
   }
 
   inserisciStoria(storia: any): Observable<any> {
-    return this.http.post<any>(`${this.baseUrl}/storie`, storia, this.httpOptions).pipe(
-      catchError(this.handleError('inserisciStoria'))
+    console.log("DETTAGLI INVIO POWER");
+    console.log(storia); // Rimuovi JSON.stringify qui
+    const headers = new HttpHeaders({
+        'Content-Type': 'application/json'
+    });
+    return this.http.post<any>(`${this.baseUrl}/storie`, storia, { headers }).pipe(
+        catchError(this.handleError('inserisciStoria'))
     );
-  }
+}
+
   
 
   updateStoria(idStoria: number, idScenario: number, nuovoTesto: string): Observable<any> {

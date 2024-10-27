@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin(origins = "http://localhost:8080")
 @RestController
 @RequestMapping("/api/storie")
 public class StoriaController {
@@ -33,8 +33,10 @@ public class StoriaController {
         return serviceStoria.getStoriaConUsername(username);
     }
 
+
     @PostMapping
     public ResponseEntity<Storia> inserisciStoria(@RequestBody Storia storia) {
+        System.out.println(storia);
         try {
             Storia nuovaStoria = serviceStoria.inserisciStoria(storia);
             return ResponseEntity.status(HttpStatus.CREATED).body(nuovaStoria);

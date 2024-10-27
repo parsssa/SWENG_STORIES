@@ -8,16 +8,6 @@
         <input matInput placeholder="Inserisci il titolo" formControlName="title" required>
       </mat-form-field>
 
-      <mat-form-field appearance="fill" class="full-width">
-        <mat-label>Descrizione</mat-label>
-        <textarea matInput placeholder="Descrivi la storia" formControlName="description" required></textarea>
-      </mat-form-field>
-
-      <mat-form-field appearance="fill" class="full-width">
-        <mat-label>Inizio della storia</mat-label>
-        <textarea matInput placeholder="Scrivi l'inizio della storia" formControlName="start" required></textarea>
-      </mat-form-field>
-
       <!-- Scenarios Section -->
       <div formArrayName="scenarios">
         <div *ngFor="let scenario of scenarios.controls; let i = index" [formGroupName]="i">
@@ -62,6 +52,27 @@
                   <mat-label>Risposta errata</mat-label>
                   <input matInput placeholder="Inserisci la risposta errata" formControlName="wrongAnswer" required>
                 </mat-form-field>
+
+                <!-- Collegamento Risposta corretta -->
+                <mat-form-field appearance="fill" class="full-width">
+                  <mat-label>Collegamento Risp corretta</mat-label>
+                  <mat-select formControlName="correctLeadsTo">
+                    <mat-option *ngFor="let option of getScenarioOptions(); trackBy: trackByFn" [value]="option.value">
+                      {{ option.label }}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+
+                <!-- Collegamento Risposta errata -->
+                <mat-form-field appearance="fill" class="full-width">
+                  <mat-label>Collegamento Risp errata</mat-label>
+                  <mat-select formControlName="wrongLeadsTo">
+                    <mat-option *ngFor="let option of getScenarioOptions(); trackBy: trackByFn" [value]="option.value">
+                      {{ option.label }}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+
               </div>
               
               <!-- Alternatives Section -->

@@ -19,8 +19,6 @@ export class CreaStoriaComponent implements OnInit {
   ) {
     this.storyForm = this.fb.group({
       title: ['', Validators.required],
-      description: ['', Validators.required],
-      start: ['', Validators.required],
       scenarios: this.fb.array([]),
       endings: this.fb.array([])
     });
@@ -45,12 +43,13 @@ export class CreaStoriaComponent implements OnInit {
   addScenarioWithAlternatives(): void {
     const scenario = this.fb.group({
       text: ['', Validators.required],
-      item: [''],
-      alternatives: this.fb.array([]) // Array per le alternative
+      item: [''],  // Definisci correttamente `item`
+      alternatives: this.fb.array([])  // Array per le alternative
     });
     this.scenarios.push(scenario);
     this.addAlternativeToScenario(this.scenarios.length - 1); // Aggiungi una prima alternativa
   }
+  
 
   addScenarioWithRiddle(): void {
     const scenario = this.fb.group({
@@ -59,20 +58,25 @@ export class CreaStoriaComponent implements OnInit {
       riddleType: ['text', Validators.required],
       correctAnswer: ['', Validators.required],
       wrongAnswer: ['', Validators.required],
-      isRiddle: [true]
+      isRiddle: [true],
+      correctLeadsTo: [null, Validators.required],  // Aggiungi questo controllo con validazione
+      wrongLeadsTo: [null, Validators.required]     // Aggiungi questo controllo con validazione
     });
     this.scenarios.push(scenario);
   }
+  
+  
 
   addAlternativeToScenario(index: number): void {
-    const alternatives = (this.scenarios.at(index).get('alternatives') as FormArray);
+    const alternatives = this.scenarios.at(index).get('alternatives') as FormArray;
     const alternative = this.fb.group({
       text: ['', Validators.required],
-      leadsTo: [null]
+      leadsTo: [null, Validators.required]  // Definisci `leadsTo` come FormControl
     });
     alternatives.push(alternative);
   }
-
+  
+  
   getAlternatives(scenarioIndex: number): FormArray {
     return this.scenarios.at(scenarioIndex).get('alternatives') as FormArray;
   }
@@ -91,7 +95,7 @@ export class CreaStoriaComponent implements OnInit {
     }));
 
     const endingOptions = this.endings.controls.map((control, index) => ({
-      value: `ending-${index}`,
+      value: {index},
       label: `Finale ${index + 1}`
     }));
 
@@ -99,9 +103,13 @@ export class CreaStoriaComponent implements OnInit {
   }
 
   onSubmit(): void {
+    
+    console.log("FORMONE DATONE", this.storyForm); //LOGGONE FORMONE
     if (this.storyForm.valid) {
       const storyData = this.prepareStoryData();
-      console.log("STORIONE DATONE", storyData);
+      console.log("STORIONE DATONE", storyData); //LOGGONE
+     
+
 
       // Invio della storia al backend come JSON
       this.apiService.inserisciStoria(storyData).subscribe(
@@ -112,7 +120,7 @@ export class CreaStoriaComponent implements OnInit {
           this.storyForm.value.scenarios.forEach((scenario: any, index: number) => {
             const scenarioData = this.prepareScenarioData(idStoria, scenario, index);
             this.apiService.inserisciScenario(idStoria, scenarioData).subscribe(
-              () => console.log('Scenario aggiunto con successo!'),
+              () => console.log('Scenario aggiunto con successo!'),   
               error => console.error('Errore durante l\'aggiunta dello scenario:', error)
             );
           });
@@ -126,59 +134,89 @@ export class CreaStoriaComponent implements OnInit {
         }
       );
     }
+    else{ //PARTE DEDICATA AGLI ERRORI
+      console.log("FORMONE NON VALIDO")
+      console.error("Form non valido, errori:", this.storyForm.errors);
+      this.storyForm.markAllAsTouched(); // Evidenzia i campi non validi
+
+      Object.keys(this.storyForm.controls).forEach(key => {
+        const controlErrors = this.storyForm.get(key)?.errors;
+        if (controlErrors) {
+          console.log(`Errore nel controllo '${key}':`, controlErrors);
+        }
+      });
+  
+      this.scenarios.controls.forEach((scenario, index) => {
+        if (scenario.invalid) {
+          console.log(`Errore nello scenario ${index + 1}:`, scenario.errors);
+          const scenarioControls = (scenario as FormGroup).controls;
+          Object.keys(scenarioControls).forEach(controlName => {
+            const errors = scenarioControls[controlName]?.errors;
+            if (errors) {
+              console.log(`Errore nel controllo '${controlName}' di scenario ${index + 1}:`, errors);
+            }
+          });
+        }
+      });
+
+    }
   }
 
   // Prepara i dati della storia come JSON
-  private prepareStoryData() {
-    const initialScenario = this.storyForm.value.scenarios[0];
+private prepareStoryData() {
+  const initialScenario = this.storyForm.value.scenarios[0];
 
-    return {
-      titolo: this.storyForm.value.title,
-      inizio: initialScenario ? { // Struttura dello scenario iniziale
-        idStoria: 0,
-        idScenario: 1,
-        testoScenario: this.storyForm.value.start,
-        oggetto: initialScenario.item || '',
-        alternative: initialScenario.alternatives.map((alt: any) => ({
-          testoAlternativa: alt.text,
-          idScenarioSuccessivo: alt.leadsTo,
-          oggettoRichiesto: alt.oggettoRichiesto || ''
-        })),
-        indovinello: initialScenario.isRiddle ? {
-          id: 1,
-          descrizione: 'Indovinello',
-          domanda: initialScenario.riddleQuestion,
-          rispostaCorretta: initialScenario.correctAnswer,
-          scenarioId: initialScenario.leadsTo,
-          tipo: initialScenario.riddleType
-        } : null
-      } : null,
-      username: 'utenteCorrente' // Sostituisci con l'username attuale
-    };
-  }
-
-  // Prepara i dati dello scenario come JSON
-  private prepareScenarioData(idStoria: number, scenario: any, index: number) {
-    return {
-      idStoria,
-      idScenario: index + 1,
-      testoScenario: scenario.text,
-      oggetto: scenario.item || '',
-      alternative: scenario.alternatives.map((alt: any) => ({
-        testoAlternativa: alt.text,
+  return {
+    titolo: this.storyForm.value.title,
+    inizio: initialScenario ? { // Struttura dello scenario iniziale
+      idStoria: 0,
+      idScenario: 1,
+      testoScenario: initialScenario.text,
+      oggetto: initialScenario.item || '',
+      alternative: initialScenario.alternatives.map((alt: any) => ({
+        idScenario: 1, // ID Arbitario
         idScenarioSuccessivo: alt.leadsTo,
+        testoAlternativa: alt.text,
         oggettoRichiesto: alt.oggettoRichiesto || ''
       })),
-      indovinello: scenario.isRiddle ? {
-        id: index + 1,
-        descrizione: 'Indovinello',
-        domanda: scenario.riddleQuestion,
-        rispostaCorretta: scenario.correctAnswer,
-        scenarioId: scenario.leadsTo,
-        tipo: scenario.riddleType
+      
+      indovinello: initialScenario.isRiddle ? {
+        idScenario: 1,
+        idScenarioRispGiusta: initialScenario.correctLeadsTo, // Collegamento per risposta corretta
+        testoIndovinello: initialScenario.riddleQuestion,
+        risposta: initialScenario.correctAnswer,
+        idScenarioRispSbagliata: initialScenario.wrongLeadsTo, // Collegamento per risposta errata
+        tipo: initialScenario.riddleType 
       } : null
-    };
-  }
+    } : null,
+    id: 0, // ID Arbitario
+    username: 'utenteCorrente' // Sostituisci con l'username attuale
+  };
+}
+
+// Prepara i dati dello scenario come JSON
+private prepareScenarioData(idStoria: number, scenario: any, index: number) {
+  return {
+    idStoria,
+    idScenario: index + 1,
+    testoScenario: scenario.text,
+    oggetto: scenario.item || '',
+    alternative: scenario.alternatives.map((alt: any) => ({
+      testoAlternativa: alt.text,
+      idScenarioSuccessivo: alt.leadsTo,
+      oggettoRichiesto: alt.oggettoRichiesto || ''
+    })),
+    indovinello: scenario.isRiddle ? {
+      id: index + 1,
+      descrizione: 'Indovinello',
+      domanda: scenario.riddleQuestion,
+      rispostaCorretta: scenario.correctAnswer,
+      scenarioId: scenario.correctLeadsTo, // Collegamento per risposta corretta
+      scenarioIdErrato: scenario.wrongLeadsTo, // Collegamento per risposta errata
+      tipo: scenario.riddleType
+    } : null
+  };
+}
 
   resetForm(): void {
     this.storyForm.reset();
