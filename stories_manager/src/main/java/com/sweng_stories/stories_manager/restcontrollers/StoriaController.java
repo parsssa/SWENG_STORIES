@@ -20,6 +20,7 @@ public class StoriaController {
 
     @GetMapping("/{id}")
     public Storia getStoriaConID(@PathVariable int id) {
+        System.out.println("id storia " + id);
         return serviceStoria.getStoriaConID(id);
     }
 
