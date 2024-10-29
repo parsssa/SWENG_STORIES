@@ -1,26 +1,28 @@
 <mat-card class="play-story-card" *ngIf="currentScenario">
   <mat-card-title>{{ currentScenario.descrizione }}</mat-card-title>
   <mat-card-content>
+    <!-- Descrizione dello scenario -->
     <div>
       <p>{{ currentScenario.descrizione }}</p>
     </div>
 
-    <!-- Scenario a Indovinello -->
-    <div *ngIf="currentScenario.indovinelli.length > 0">
-      <h3>{{ currentScenario.indovinelli[0].domanda }}</h3> <!-- Testo dell'indovinello -->
+    <!-- Indovinello -->
+    <div *ngIf="currentScenario.indovinelli && currentScenario.indovinelli.length > 0">
+      <h3>{{ currentScenario.indovinelli[0].testoIndovinello }}</h3> <!-- Testo dell'indovinello -->
       
-      <!-- Placeholder: Risposte multiple (Lavoro in corso) -->
-      <div> <!-- TODO: Implementare risposte multiple quando disponibile nel backend -->
-        <!-- Codice da aggiungere successivamente per la selezione delle risposte -->
-        <p>Lavoro in corso: risposte multiple verranno implementate qui.</p>
-      </div>
+      <!-- Input per la risposta -->
+      <mat-form-field appearance="fill" class="full-width">
+        <mat-label>Rispondi all'indovinello</mat-label>
+        <input matInput [(ngModel)]="userRiddleAnswer" placeholder="Inserisci la tua risposta">
+      </mat-form-field>
 
+      <!-- Pulsante per inviare la risposta -->
       <button mat-raised-button color="primary" (click)="submitRiddle()">Invia Risposta</button>
     </div>
 
-    <!-- Scenario ad Alternative -->
-    <div *ngIf="currentScenario.alternatives.length > 0">
-      <h3>Le tue scelte</h3>
+    <!-- Alternative di scelta -->
+    <div *ngIf="currentScenario.alternatives && currentScenario.alternatives.length > 0">
+      <h3>Scegli una delle seguenti opzioni</h3>
       <div *ngFor="let alternative of currentScenario.alternatives">
         <button mat-raised-button 
                 color="accent" 
@@ -30,9 +32,9 @@
       </div>
     </div>
 
-    <!-- Inventario -->
-    <div *ngIf="currentScenario.oggetti.length > 0">
-      <h3>Strumenti da raccogliere</h3>
+    <!-- Oggetti da raccogliere -->
+    <div *ngIf="currentScenario.oggetti && currentScenario.oggetti.length > 0">
+      <h3>Oggetti disponibili</h3>
       <div *ngFor="let item of currentScenario.oggetti">
         <button mat-raised-button color="warn" (click)="collectItem(item)">
           Raccogli {{ item.nome }}
@@ -42,6 +44,7 @@
   </mat-card-content>
 </mat-card>
 
+<!-- Inventario dell'utente -->
 <mat-card class="inventory-card" *ngIf="inventory.length > 0">
   <mat-card-title>Inventario</mat-card-title>
   <mat-card-content>
@@ -54,3 +57,6 @@
     </div>
   </mat-card-content>
 </mat-card>
+
+<!-- Pulsante per terminare la sessione -->
+<button mat-raised-button color="warn" (click)="terminaSessione()">Termina Sessione</button>

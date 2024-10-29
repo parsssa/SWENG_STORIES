@@ -28,11 +28,17 @@ public class SessioneGiocoDao implements OpSessioneGiocoDao {
     @Override
     public SessioneGioco creaSessione(SessioneGioco partita) {
         ObjectId objectId = new ObjectId();
+
+        // Gestione dell'inventario vuoto
+        List<String> inventarioOggetti = (partita.getInventario() != null) ? partita.getInventario().getOggetti()
+                : new ArrayList<>();
+
         Document document = new Document("_id", objectId)
                 .append("username", partita.getUsername())
                 .append("idStoria", partita.getIdStoria())
                 .append("idScenarioCorrente", partita.getIdScenarioCorrente())
-                .append("inventario", partita.getInventario().getOggetti());
+                .append("inventario", inventarioOggetti);
+
         sessioniCollection.insertOne(document);
         partita.setIdSessione(objectId.hashCode());
         return partita;
@@ -53,8 +59,7 @@ public class SessioneGiocoDao implements OpSessioneGiocoDao {
                     result.getString("username"),
                     result.getInteger("idStoria"),
                     result.getInteger("idScenarioCorrente"),
-                    new Inventario(result.getList("inventario", String.class))
-            );
+                    new Inventario(result.getList("inventario", String.class)));
             sessione.setIdSessione(result.getObjectId("_id").hashCode());
             sessioni.add(sessione);
         }
@@ -63,16 +68,18 @@ public class SessioneGiocoDao implements OpSessioneGiocoDao {
 
     @Override
     public SessioneGioco getSessioneConID(int idPartita) {
-        Document query = new Document("_id", new ObjectId(String.valueOf(idPartita)));
+        // Cerca usando "idSessione" come intero invece di "_id" come ObjectId
+        Document query = new Document("idSessione", idPartita);
         Document result = sessioniCollection.find(query).first();
+
         if (result != null) {
             SessioneGioco sessione = new SessioneGioco(
                     result.getString("username"),
                     result.getInteger("idStoria"),
                     result.getInteger("idScenarioCorrente"),
-                    new Inventario(result.getList("inventario", String.class))
-            );
-            sessione.setIdSessione(result.getObjectId("_id").hashCode());
+                    new Inventario(result.getList("inventario", String.class)));
+            sessione.setIdSessione(result.getInteger("idSessione")); // Imposta idSessione direttamente dall'attributo
+                                                                     // "idSessione" del documento
             return sessione;
         }
         return null;

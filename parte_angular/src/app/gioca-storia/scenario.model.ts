@@ -1,11 +1,13 @@
+// scenario.model.ts (o il file dove definisci il modello)
 export interface Indovinello {
-  id: number;
-  descrizione: string;
-  domanda: string;
-  rispostaCorretta: any;
-  scenarioId: number;  // ID dello scenario successivo
-  tipo: string;
+  idScenario: number;
+  idScenarioRispGiusta: number;       // ID dello scenario per la risposta corretta
+  testoIndovinello: string;           // Testo dell'indovinello
+  risposta: string;                   // Risposta corretta
+  rispostaSbagliata: string;          // Risposta errata
+  idScenarioRispSbagliata: number;    // ID dello scenario per la risposta errata
 }
+
 
 export interface Oggetto {
   id: number;
