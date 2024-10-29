@@ -11,6 +11,8 @@ import { Router } from '@angular/router';
 export class CreaStoriaComponent implements OnInit {
   storyForm: FormGroup;
   errorMessage: string = '';
+  private scenarioCounter = 1; // Contatore incrementale per gli ID degli scenari
+
 
   constructor(
     private fb: FormBuilder,
@@ -49,7 +51,7 @@ export class CreaStoriaComponent implements OnInit {
     this.scenarios.push(scenario);
     this.addAlternativeToScenario(this.scenarios.length - 1); // Aggiungi una prima alternativa
   }
-  
+
 
   addScenarioWithRiddle(): void {
     const scenario = this.fb.group({
@@ -64,8 +66,8 @@ export class CreaStoriaComponent implements OnInit {
     });
     this.scenarios.push(scenario);
   }
-  
-  
+
+
 
   addAlternativeToScenario(index: number): void {
     const alternatives = this.scenarios.at(index).get('alternatives') as FormArray;
@@ -75,8 +77,8 @@ export class CreaStoriaComponent implements OnInit {
     });
     alternatives.push(alternative);
   }
-  
-  
+
+
   getAlternatives(scenarioIndex: number): FormArray {
     return this.scenarios.at(scenarioIndex).get('alternatives') as FormArray;
   }
@@ -89,41 +91,46 @@ export class CreaStoriaComponent implements OnInit {
   }
 
   getScenarioOptions(): any[] {
-    const scenarioOptions = this.scenarios.controls.map((control, index) => ({
-      value: index,
+    const scenarioOptions = this.scenarios.controls.map((_, index) => ({
+      value: index, // Assicurati che `value` sia solo l'indice intero
       label: `Scenario ${index + 1}`
     }));
 
-    const endingOptions = this.endings.controls.map((control, index) => ({
-      value: {index},
+    const endingOptions = this.endings.controls.map((_, index) => ({
+      value: index + this.scenarios.length, // Evita conflitti aggiungendo offset per i finali
       label: `Finale ${index + 1}`
     }));
-
     return [...scenarioOptions, ...endingOptions];
   }
 
   onSubmit(): void {
-    
+
     console.log("FORMONE DATONE", this.storyForm); //LOGGONE FORMONE
     if (this.storyForm.valid) {
       const storyData = this.prepareStoryData();
       console.log("STORIONE DATONE", storyData); //LOGGONE
-     
 
 
-      // Invio della storia al backend come JSON
+
+      /// Invio della storia al backend come JSON
       this.apiService.inserisciStoria(storyData).subscribe(
         response => {
           const idStoria = response.id; // Supponendo che il backend restituisca l'id della storia creata
 
-          // Invia ogni scenario al backend come JSON
-          this.storyForm.value.scenarios.forEach((scenario: any, index: number) => {
-            const scenarioData = this.prepareScenarioData(idStoria, scenario, index);
-            console.log("indice attuale "+ index)
-            console.log(scenarioData)
+          // Combina scenari e finali in un unico array
+          const allItems = [
+            ...this.storyForm.value.scenarios.map((scenario: any) => ({ ...scenario, type: 'scenario' })),
+            ...this.storyForm.value.endings.map((ending: any) => ({ ...ending, type: 'ending' }))
+          ];
+
+          // Invia ogni scenario o finale al backend come JSON
+          allItems.forEach((item: any, index: number) => {
+            const scenarioData = this.prepareScenarioData(idStoria, item, index, item.type === 'ending');
+            console.log(`Indice attuale ${index}`, scenarioData);
+
             this.apiService.inserisciScenario(idStoria, scenarioData).subscribe(
-              () => console.log('Scenario aggiunto con successo!'),   
-              error => console.error('Errore durante l\'aggiunta dello scenario:', error)
+              () => console.log(`${item.type === 'ending' ? 'Finale' : 'Scenario'} aggiunto con successo!`),
+              error => console.error(`Errore durante l'aggiunta di ${item.type === 'ending' ? 'finale' : 'scenario'}:`, error)
             );
           });
 
@@ -135,8 +142,9 @@ export class CreaStoriaComponent implements OnInit {
           this.errorMessage = 'Si è verificato un errore durante la creazione della storia. Riprova più tardi.';
         }
       );
+
     }
-    else{ //PARTE DEDICATA AGLI ERRORI
+    else { //PARTE DEDICATA AGLI ERRORI
       console.log("FORMONE NON VALIDO")
       console.error("Form non valido, errori:", this.storyForm.errors);
       this.storyForm.markAllAsTouched(); // Evidenzia i campi non validi
@@ -147,7 +155,7 @@ export class CreaStoriaComponent implements OnInit {
           console.log(`Errore nel controllo '${key}':`, controlErrors);
         }
       });
-  
+
       this.scenarios.controls.forEach((scenario, index) => {
         if (scenario.invalid) {
           console.log(`Errore nello scenario ${index + 1}:`, scenario.errors);
@@ -165,60 +173,70 @@ export class CreaStoriaComponent implements OnInit {
   }
 
   // Prepara i dati della storia come JSON
-private prepareStoryData() {
-  const initialScenario = this.storyForm.value.scenarios[0];
+  private prepareStoryData() {
+    const initialScenario = this.storyForm.value.scenarios[0];
 
-  return {
-    titolo: this.storyForm.value.title,
-    inizio: initialScenario ? { // Struttura dello scenario iniziale
-      idStoria: 0,
-      idScenario: 1,
-      testoScenario: initialScenario.text,
-      oggetto: initialScenario.item || '',
-      alternative: initialScenario.alternatives.map((alt: any) => ({
-        idScenario: 1, // ID Arbitario
-        idScenarioSuccessivo: alt.leadsTo,
-        testoAlternativa: alt.text,
-        oggettoRichiesto: alt.oggettoRichiesto || ''
-      })),
-      
-      indovinello: initialScenario.isRiddle ? {
-        idScenario: 1,
-        idScenarioRispGiusta: initialScenario.correctLeadsTo, // Collegamento per risposta corretta
-        testoIndovinello: initialScenario.riddleQuestion,
-        risposta: initialScenario.correctAnswer,
-        idScenarioRispSbagliata: initialScenario.wrongLeadsTo, // Collegamento per risposta errata
-        tipo: initialScenario.riddleType 
-      } : null
-    } : null,
-    id: 0, // ID Arbitario
-    username: 'utenteCorrente' // Sostituisci con l'username attuale
-  };
-}
+    return {
+      titolo: this.storyForm.value.title,
+      inizio: initialScenario ? { // Struttura dello scenario iniziale
+        idStoria: 0,
+        idScenario: 0,
+        testoScenario: initialScenario.text,
+        oggetto: initialScenario.item || '',
+        alternative: initialScenario.alternatives.map((alt: any) => ({
+          idScenario: this.scenarioCounter++, // ID INCREMENTALE
+          idScenarioSuccessivo: typeof alt.leadsTo === 'object' && alt.leadsTo.index !== undefined ? alt.leadsTo.index : alt.leadsTo,
+          testoAlternativa: alt.text,
+          oggettoRichiesto: alt.oggettoRichiesto || ''
+        })),
 
-// Prepara i dati dello scenario come JSON
-private prepareScenarioData(idStoria: number, scenario: any, index: number) {
-  return {
-    idStoria,
-    idScenario: index + 1,
-    testoScenario: scenario.text,
-    oggetto: scenario.item || '',
-    alternative: scenario.alternatives.map((alt: any) => ({
-      testoAlternativa: alt.text,
-      idScenarioSuccessivo: alt.leadsTo,
-      oggettoRichiesto: alt.oggettoRichiesto || ''
-    })),
-    indovinello: scenario.isRiddle ? {
-      id: index + 1,
-      descrizione: 'Indovinello',
-      domanda: scenario.riddleQuestion,
-      rispostaCorretta: scenario.correctAnswer,
-      scenarioId: scenario.correctLeadsTo, // Collegamento per risposta corretta
-      scenarioIdErrato: scenario.wrongLeadsTo, // Collegamento per risposta errata
-      tipo: scenario.riddleType
-    } : null
-  };
-}
+        indovinello: initialScenario.isRiddle ? {
+          idScenario: this.scenarioCounter++,
+          idScenarioRispGiusta: initialScenario.correctLeadsTo, // Collegamento per risposta corretta
+          testoIndovinello: initialScenario.riddleQuestion,
+          risposta: initialScenario.correctAnswer,
+          idScenarioRispSbagliata: initialScenario.wrongLeadsTo, // Collegamento per risposta errata
+          tipo: initialScenario.riddleType
+        } : null
+      } : null,
+      id: 0, // ID Arbitario
+      username: 'utenteCorrente' // Sostituisci con l'username attuale
+    };
+  }
+
+  private prepareScenarioData(idStoria: number, item: any, index: number, isEnding: boolean) {
+    if (isEnding) {
+      return {
+        idStoria,
+        idScenario: index,
+        testoScenario: item.description // Usa il campo description per i finali
+      };
+    } else {
+      return {
+        idStoria,
+        idScenario: index,
+        testoScenario: item.text,
+        oggetto: item.item || '',
+        // Verifica che alternatives sia un array prima di usare .map()
+        alternative: Array.isArray(item.alternatives) ? item.alternatives.map((alt: any) => ({
+          testoAlternativa: alt.text,
+          idScenarioSuccessivo: typeof alt.leadsTo === 'object' && alt.leadsTo.index !== undefined ? alt.leadsTo.index : alt.leadsTo,
+          oggettoRichiesto: alt.oggettoRichiesto || ''
+        })) : [], // Se undefined, restituisce un array vuoto
+        indovinello: item.isRiddle ? {
+          idScenario: index,
+          idScenarioRispGiusta: item.correctLeadsTo,
+          testoIndovinello: item.riddleQuestion,
+          risposta: item.correctAnswer,
+          rispostaSbagliata: item.wrongAnswer, // Aggiungi risposta sbagliata
+          idScenarioRispSbagliata: item.wrongLeadsTo,
+          tipo: item.riddleType
+        } : null
+      };
+    }
+  }
+  
+
 
   resetForm(): void {
     this.storyForm.reset();

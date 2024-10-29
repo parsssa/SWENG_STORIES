@@ -160,7 +160,7 @@ public class StoriaDao implements OpStoriaDao {
     public boolean inserisciScenario(Scenario scenario) {
         ObjectId objectId = new ObjectId();
 
-        System.out.println(scenario);
+        System.out.println("\n"+ "\n"+"\n"+"\n"+scenario+"\n"+"\n"+"\n" +"\n"+"\n"+"\n");
 
         // Creazione del documento per l'oggetto `Scenario`
         Document scenarioDoc = new Document()
@@ -171,16 +171,20 @@ public class StoriaDao implements OpStoriaDao {
 
         // Creazione della lista di `Alternativa` come documenti
         List<Document> alternativeDocs = new ArrayList<>();
-        for (Alternativa alternativa : scenario.getAlternative()) {
-            Document alternativaDoc = new Document()
-                    .append("idScenario", alternativa.getIdScenario())
-                    .append("idScenarioSuccessivo", alternativa.getIdScenarioSuccessivo())
-                    .append("testoAlternativa", alternativa.getTestoAlternativa())
-                    .append("oggettoRichiesto", alternativa.getOggettoRichiesto());
-            alternativeDocs.add(alternativaDoc);
+        
+        if(scenario.getAlternative()!=null){
+            for (Alternativa alternativa : scenario.getAlternative()) {
+                Document alternativaDoc = new Document()
+                        .append("idScenario", alternativa.getIdScenario())
+                        .append("idScenarioSuccessivo", alternativa.getIdScenarioSuccessivo())
+                        .append("testoAlternativa", alternativa.getTestoAlternativa())
+                        .append("oggettoRichiesto", alternativa.getOggettoRichiesto());
+                alternativeDocs.add(alternativaDoc);
+            }
+            scenarioDoc.append("alternative", alternativeDocs);    
         }
-        scenarioDoc.append("alternative", alternativeDocs);
 
+        
         // Conversione di Indovinello in Document, se presente
         if (scenario.getIndovinello() != null) {
             Indovinello indovinello = scenario.getIndovinello();
