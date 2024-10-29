@@ -47,14 +47,61 @@ public class StoriaDao implements OpStoriaDao {
     public ArrayList<Storia> getAllStorie() {
         List<Document> results = storieCollection.find().into(new ArrayList<>());
         ArrayList<Storia> storie = new ArrayList<>();
+
         for (Document result : results) {
+            // Crea un oggetto Storia con titolo e username
             Storia storia = new Storia(
                     result.getString("titolo"),
                     result.getString("username"));
-            storia.setId(result.getObjectId("_id").hashCode());
-            storia.setInizio(result.get("inizio", Scenario.class));
+
+            // Imposta l'ID dal campo `id` nel documento
+            storia.setId(result.getInteger("id"));
+
+            // Conversione del campo "inizio" in un oggetto Scenario
+            Document inizioDoc = result.get("inizio", Document.class);
+            if (inizioDoc != null) {
+                Scenario inizioScenario = new Scenario();
+                inizioScenario.setIdStoria(inizioDoc.getInteger("idStoria"));
+                inizioScenario.setIdScenario(inizioDoc.getInteger("idScenario"));
+                inizioScenario.setTestoScenario(inizioDoc.getString("testoScenario"));
+                inizioScenario.setOggetto(inizioDoc.getString("oggetto"));
+
+                // Conversione della lista di alternative
+                List<Document> alternativeDocs = (List<Document>) inizioDoc.get("alternative");
+                List<Alternativa> alternative = new ArrayList<>();
+                if (alternativeDocs != null) {
+                    for (Document altDoc : alternativeDocs) {
+                        Alternativa alternativa = new Alternativa();
+                        alternativa.setIdScenario(altDoc.getInteger("idScenario"));
+                        alternativa.setIdScenarioSuccessivo(altDoc.getInteger("idScenarioSuccessivo"));
+                        alternativa.setTestoAlternativa(altDoc.getString("testoAlternativa"));
+                        alternativa.setOggettoRichiesto(altDoc.getString("oggettoRichiesto"));
+                        alternative.add(alternativa);
+                    }
+                }
+                inizioScenario.setAlternative(alternative);
+
+                // Conversione del campo indovinello
+                Document indovinelloDoc = inizioDoc.get("indovinello", Document.class);
+                if (indovinelloDoc != null) {
+                    Indovinello indovinello = new Indovinello();
+                    indovinello.setIdScenario(indovinelloDoc.getInteger("idScenario"));
+                    indovinello.setIdScenarioRispGiusta(indovinelloDoc.getInteger("idScenarioRispGiusta"));
+                    indovinello.setTestoIndovinello(indovinelloDoc.getString("testoIndovinello"));
+                    indovinello.setRisposta(indovinelloDoc.getString("risposta"));
+                    indovinello.setRispostaSbagliata(indovinelloDoc.getString("rispostaSbagliata"));
+                    indovinello.setIdScenarioRispSbagliata(indovinelloDoc.getInteger("idScenarioRispSbagliata"));
+                    inizioScenario.setIndovinello(indovinello);
+                }
+
+                // Imposta lo scenario iniziale nella storia
+                storia.setInizio(inizioScenario);
+            }
+
+            // Aggiungi la storia alla lista
             storie.add(storia);
         }
+
         return storie;
     }
 
@@ -160,7 +207,7 @@ public class StoriaDao implements OpStoriaDao {
     public boolean inserisciScenario(Scenario scenario) {
         ObjectId objectId = new ObjectId();
 
-        System.out.println("\n"+ "\n"+"\n"+"\n"+scenario+"\n"+"\n"+"\n" +"\n"+"\n"+"\n");
+        System.out.println("\n" + "\n" + "\n" + "\n" + scenario + "\n" + "\n" + "\n" + "\n" + "\n" + "\n");
 
         // Creazione del documento per l'oggetto `Scenario`
         Document scenarioDoc = new Document()
@@ -171,8 +218,8 @@ public class StoriaDao implements OpStoriaDao {
 
         // Creazione della lista di `Alternativa` come documenti
         List<Document> alternativeDocs = new ArrayList<>();
-        
-        if(scenario.getAlternative()!=null){
+
+        if (scenario.getAlternative() != null) {
             for (Alternativa alternativa : scenario.getAlternative()) {
                 Document alternativaDoc = new Document()
                         .append("idScenario", alternativa.getIdScenario())
@@ -181,10 +228,9 @@ public class StoriaDao implements OpStoriaDao {
                         .append("oggettoRichiesto", alternativa.getOggettoRichiesto());
                 alternativeDocs.add(alternativaDoc);
             }
-            scenarioDoc.append("alternative", alternativeDocs);    
+            scenarioDoc.append("alternative", alternativeDocs);
         }
 
-        
         // Conversione di Indovinello in Document, se presente
         if (scenario.getIndovinello() != null) {
             Indovinello indovinello = scenario.getIndovinello();

@@ -17,13 +17,13 @@ export class ApiService {
 
   // Metodi per interagire con le storie
   getAllStorie(): Observable<any> {
-    return this.http.get(`${this.baseUrl}/storie/storie`, this.httpOptions).pipe(
+    return this.http.get(`${this.baseUrl}/storie`, this.httpOptions).pipe(
       catchError(this.handleError('getAllStorie'))
     );
   }
 
   getStoriaById(id: number): Observable<any> {
-    return this.http.get<any>(`${this.baseUrl}/storie/storie/${id}`, this.httpOptions).pipe(
+    return this.http.get<any>(`${this.baseUrl}/storie/${id}`, this.httpOptions).pipe(
       catchError(this.handleError('getStoriaById'))
     );
   }
