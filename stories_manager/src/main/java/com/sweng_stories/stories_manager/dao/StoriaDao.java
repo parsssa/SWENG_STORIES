@@ -1,5 +1,6 @@
 package com.sweng_stories.stories_manager.dao;
 
+import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.sweng_stories.stories_manager.domain.Alternativa;
@@ -33,16 +34,16 @@ public class StoriaDao implements OpStoriaDao {
         // Esegui la query con il campo `id` come intero
         Document query = new Document("id", idStoria);
         Document result = storieCollection.find(query).first();
-        
+
         if (result != null) {
             // Crea un oggetto Storia con titolo e username
             Storia storia = new Storia(
                     result.getString("titolo"),
                     result.getString("username"));
-    
+
             // Imposta l'ID dal campo `id` nel documento
             storia.setId(result.getInteger("id"));
-    
+
             // Conversione del campo "inizio" in un oggetto Scenario
             Document inizioDoc = result.get("inizio", Document.class);
             if (inizioDoc != null) {
@@ -51,7 +52,7 @@ public class StoriaDao implements OpStoriaDao {
                 inizioScenario.setIdScenario(inizioDoc.getInteger("idScenario"));
                 inizioScenario.setTestoScenario(inizioDoc.getString("testoScenario"));
                 inizioScenario.setOggetto(inizioDoc.getString("oggetto"));
-    
+
                 // Conversione della lista di alternative
                 List<Document> alternativeDocs = (List<Document>) inizioDoc.get("alternative");
                 List<Alternativa> alternative = new ArrayList<>();
@@ -66,7 +67,7 @@ public class StoriaDao implements OpStoriaDao {
                     }
                 }
                 inizioScenario.setAlternative(alternative);
-    
+
                 // Conversione del campo indovinello
                 Document indovinelloDoc = inizioDoc.get("indovinello", Document.class);
                 if (indovinelloDoc != null) {
@@ -79,11 +80,11 @@ public class StoriaDao implements OpStoriaDao {
                     indovinello.setIdScenarioRispSbagliata(indovinelloDoc.getInteger("idScenarioRispSbagliata"));
                     inizioScenario.setIndovinello(indovinello);
                 }
-    
+
                 // Imposta lo scenario iniziale nella storia
                 storia.setInizio(inizioScenario);
             }
-    
+
             System.out.println(storia);
             return storia;
         }
@@ -170,6 +171,8 @@ public class StoriaDao implements OpStoriaDao {
     @Override
     public Storia inserisciStoria(Storia storia) {
         ObjectId objectId = new ObjectId();
+        storia.setId(objectId.hashCode());
+
 
         // Creazione del documento per l'oggetto `Scenario`
         Document scenarioDoc = new Document()
@@ -214,8 +217,9 @@ public class StoriaDao implements OpStoriaDao {
 
         storieCollection.insertOne(document);
 
-        // Imposta l'ID della storia a partire dall'ObjectId generato
-        storia.setId(objectId.hashCode());
+        // // Imposta l'ID della storia a partire dall'ObjectId generato
+        // storia.setId(objectId.hashCode());
+        System.out.println("ID finale della storia: " + storia.getId());
         return storia;
     }
 
@@ -229,32 +233,66 @@ public class StoriaDao implements OpStoriaDao {
     }
 
     @Override
-    public Scenario getScenario(int idScenario, int idStoria) {
-        Document query = new Document("_id", new ObjectId(String.valueOf(idStoria)))
-                .append("scenari.id", idScenario);
-        Document result = storieCollection.find(query).first();
-        if (result != null) {
-            List<Document> scenari = result.getList("scenari", Document.class);
-            for (Document scenarioDoc : scenari) {
-                if (scenarioDoc.getInteger("idScenario") == idScenario) {
-                    return new Scenario(
-                            result.getInteger("idStoria"),
-                            scenarioDoc.getInteger("idScenario"),
-                            scenarioDoc.getString("testoScenario"),
-                            scenarioDoc.getString("oggetto"),
-                            scenarioDoc.getList("alternative", Alternativa.class),
-                            scenarioDoc.get("indovinello", Indovinello.class));
+    public Scenario getScenario(int idStoria, int idScenario) {
+        System.out.println("Cercando scenario con idStoria: " + idStoria + ", idScenario: " + idScenario);
+    
+        Document query = new Document("idStoria", idStoria)
+                .append("idScenario", idScenario);
+        System.out.println("Query generata: " + query.toJson());
+    
+        Document scenarioDoc = scenariCollection.find(query).first();
+        System.out.println("Risultato della query: " + scenarioDoc);
+    
+        if (scenarioDoc != null) {
+            // Conversione della lista `alternative` da Document a Alternativa
+            List<Document> alternativeDocs = (List<Document>) scenarioDoc.get("alternative");
+            List<Alternativa> alternativeList = new ArrayList<>();
+            if (alternativeDocs != null) {
+                for (Document altDoc : alternativeDocs) {
+                    Alternativa alternativa = new Alternativa(
+                            altDoc.getInteger("idScenario"),
+                            altDoc.getInteger("idScenarioSuccessivo"),
+                            altDoc.getString("testoAlternativa"),
+                            altDoc.getString("oggettoRichiesto")
+                    );
+                    alternativeList.add(alternativa);
                 }
             }
+    
+            // Conversione dell’indovinello, se presente
+            Document indovinelloDoc = (Document) scenarioDoc.get("indovinello");
+            Indovinello indovinello = null;
+            if (indovinelloDoc != null) {
+                indovinello = new Indovinello(
+                        indovinelloDoc.getInteger("idScenario"),
+                        indovinelloDoc.getInteger("idScenarioRispGiusta"),
+                        indovinelloDoc.getString("testoIndovinello"),
+                        indovinelloDoc.getString("risposta"),
+                        indovinelloDoc.getString("rispostaSbagliata"),
+                        indovinelloDoc.getInteger("idScenarioRispSbagliata")
+                );
+            }
+    
+            Scenario scenario = new Scenario(
+                    scenarioDoc.getInteger("idStoria"),
+                    scenarioDoc.getInteger("idScenario"),
+                    scenarioDoc.getString("testoScenario"),
+                    scenarioDoc.getString("oggetto"),
+                    alternativeList,
+                    indovinello
+            );
+            
+            System.out.println("Scenario trovato: " + scenario);
+            return scenario;
         }
+    
+        System.out.println("Nessuno scenario trovato per la query specificata.");
         return null;
     }
-
+            
     @Override
     public boolean inserisciScenario(Scenario scenario) {
         ObjectId objectId = new ObjectId();
-
-        System.out.println("\n" + "\n" + "\n" + "\n" + scenario + "\n" + "\n" + "\n" + "\n" + "\n" + "\n");
 
         // Creazione del documento per l'oggetto `Scenario`
         Document scenarioDoc = new Document()
@@ -298,24 +336,28 @@ public class StoriaDao implements OpStoriaDao {
 
     @Override
     public ArrayList<Scenario> getScenariStoria(int idStoria) {
-        Document query = new Document("_id", new ObjectId(String.valueOf(idStoria)));
-        Document result = storieCollection.find(query).first();
-        if (result != null) {
-            List<Document> scenariDocs = result.getList("scenari", Document.class);
-            ArrayList<Scenario> scenari = new ArrayList<>();
-            for (Document scenarioDoc : scenariDocs) {
-                Scenario scenario = new Scenario(
-                        result.getInteger("idStoria"),
-                        scenarioDoc.getInteger("idScenario"),
-                        scenarioDoc.getString("testoScenario"),
-                        scenarioDoc.getString("oggetto"),
-                        scenarioDoc.getList("alternative", Alternativa.class),
-                        scenarioDoc.get("indovinello", Indovinello.class));
-                scenari.add(scenario);
-            }
-            return scenari;
+        // Creiamo la query per cercare gli scenari con il campo "idStoria" specificato
+        Document query = new Document("idStoria", idStoria);
+
+        // Eseguiamo la ricerca nella collezione "scenariocollection"
+        FindIterable<Document> scenariDocs = scenariCollection.find(query);
+
+        // Inizializziamo la lista degli scenari da restituire
+        ArrayList<Scenario> scenari = new ArrayList<>();
+
+        // Iteriamo sui documenti trovati e li convertiamo in oggetti Scenario
+        for (Document scenarioDoc : scenariDocs) {
+            Scenario scenario = new Scenario(
+                    scenarioDoc.getInteger("idStoria"),
+                    scenarioDoc.getInteger("idScenario"),
+                    scenarioDoc.getString("testoScenario"),
+                    scenarioDoc.getString("oggetto"),
+                    scenarioDoc.getList("alternative", Alternativa.class),
+                    scenarioDoc.get("indovinello", Indovinello.class));
+            scenari.add(scenario);
         }
-        return new ArrayList<>();
+
+        return scenari; // Restituiamo la lista di scenari trovati
     }
 
     public void updateStoria(Storia storia) {

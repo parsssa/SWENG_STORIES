@@ -33,7 +33,7 @@ public class StoriaController {
     public ArrayList<Storia> getStoriaConUsername(@PathVariable String username) {
         return serviceStoria.getStoriaConUsername(username);
     }
-
+    
 
     @PostMapping
     public ResponseEntity<Storia> inserisciStoria(@RequestBody Storia storia) {
@@ -58,6 +58,7 @@ public class StoriaController {
     public Scenario getScenario(
             @PathVariable int idScenario,
             @PathVariable int idStoria) {
+                System.out.println("id scenario da cercare "+idScenario + " id storia da cercare "+idStoria);
         return serviceStoria.getScenario(idScenario, idStoria);
     }
 

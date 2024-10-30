@@ -27,6 +27,7 @@ export class GiocaStoriaComponent implements OnInit {
         const id = params.get('id');
         if (id !== null) {
           this.storiaId = +id;
+          console.log("id storia giocaaaa" + this.storiaId)
           // Carichiamo la sessione esistente se disponibile
           return this.apiService.getSessioneConID(this.storiaId);
         } else {
@@ -140,11 +141,7 @@ export class GiocaStoriaComponent implements OnInit {
   }
 
   terminaSessione(): void {
-    if (this.sessioneId) {
-      this.apiService.eliminaSessione(this.sessioneId).subscribe(() => {
         console.log('Sessione terminata');
         this.router.navigate(['/dashboard']);
-      });
-    }
   }
 }
