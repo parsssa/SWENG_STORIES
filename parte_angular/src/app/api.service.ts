@@ -75,7 +75,7 @@ export class ApiService {
   }
 
   // Metodi per interagire con le sessioni di gioco
-  elaboraIndovinello(idPartita: number, idScenario: number, risposta: string): Observable<any> {
+  elaboraIndovinello(idPartita: String, idScenario: number, risposta: string): Observable<any> {
     return this.http.put(`${this.baseUrl}/sessioni/SessioneGioco/${idPartita}/scenari/${idScenario}/indovinello`, {}, {
       params: { risposta },
       ...this.httpOptions
@@ -84,16 +84,18 @@ export class ApiService {
     );
   }
 
-  elaboraAlternativa(idPartita: number, idScenario: number, idScelta: number): Observable<any> {
+  elaboraAlternativa(idPartita: string, testoAlternativa: string, idScenario: number): Observable<any> {
     return this.http.put(`${this.baseUrl}/sessioni/SessioneGioco/${idPartita}/scenari/${idScenario}/alternativa`, {}, {
-      params: { idScelta: idScelta.toString() },
+      params: { testoAlternativa: testoAlternativa },  // Parametro per il testo dell'alternativa
       ...this.httpOptions
     }).pipe(
       catchError(this.handleError('elaboraAlternativa'))
     );
   }
+  
+  
 
-  raccogliOggetto(idPartita: number, oggetto: string): Observable<any> {
+  raccogliOggetto(idPartita: String, oggetto: string): Observable<any> {
     return this.http.post(`${this.baseUrl}/sessioni/SessioneGioco/${idPartita}/inventario`, {}, {
       params: { oggetto },
       ...this.httpOptions

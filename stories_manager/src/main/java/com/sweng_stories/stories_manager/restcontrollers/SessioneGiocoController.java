@@ -28,9 +28,12 @@ public class SessioneGiocoController {
     @PutMapping("/SessioneGioco/{idPartita}/scenari/{idScenario}/alternativa")
     public Scenario elaboraAlternativa(
             @PathVariable int idScenario,
-            @RequestParam int idScelta,
+            @RequestParam String testoAlternativa,
             @PathVariable int idPartita) {
-        return serviceSessioneGioco.elaboraAlternativa(idScenario, idScelta, idPartita);
+                Scenario scenario = serviceSessioneGioco.elaboraAlternativa(idScenario, testoAlternativa, idPartita);
+                System.out.println(scenario);
+                System.out.println(idPartita);
+        return scenario;
     }
 
     @PostMapping("/SessioneGioco/{idPartita}/inventario")

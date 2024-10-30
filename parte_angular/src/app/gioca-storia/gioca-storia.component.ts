@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ApiService } from '../api.service';
-import { Scenario, Oggetto, Storia, Alternative } from './scenario.model';
+import { Scenario, Oggetto, Storia, Alternativa } from './scenario.model';
+import { response } from 'express';
 
 @Component({
   selector: 'app-gioca-storia',
@@ -14,7 +15,7 @@ export class GiocaStoriaComponent implements OnInit {
   userRiddleAnswer: string = '';
   storiaId: number = 0;
   storia: Storia | null = null;
-  sessioneId: number | null = null;
+  sessioneId: string | null = null;
 
   constructor(private route: ActivatedRoute, private apiService: ApiService, private router: Router) {}
 
@@ -24,6 +25,7 @@ export class GiocaStoriaComponent implements OnInit {
       this.storia = state.selectedStoria;
       this.storiaId = state.selectedStoria.id;
       this.sessioneId = state.sessioneId;
+      console.log(this.sessioneId);
       this.inventory = state.inventory || [];
       this.currentScenario = this.storia?.inizio || null;
       console.log('Alternative disponibili:', this.currentScenario?.alternative);
@@ -53,12 +55,12 @@ export class GiocaStoriaComponent implements OnInit {
     }
   }
 
-  makeChoice(alternative: Alternative): void {
+  makeChoice(alternative: Alternativa): void {
     if (this.sessioneId && this.currentScenario) {
-      this.apiService.elaboraAlternativa(this.sessioneId, this.currentScenario.idScenario, alternative.nextScenarioId).subscribe(() => {
-        this.apiService.getScenario(this.storiaId, alternative.nextScenarioId).subscribe(nextScenario => {
-          this.currentScenario = nextScenario;
-        });
+      console.log("ID MAKE CHOICE: ", alternative.idScenarioSuccessivo);
+      this.apiService.elaboraAlternativa(this.sessioneId, alternative.testoAlternativa, alternative.idScenarioSuccessivo).subscribe(response => {
+      
+      console.log(response);
       });
     }
   }

@@ -15,10 +15,10 @@ export interface Oggetto {
   descrizione: string;
 }
 
-export interface Alternative {
-  descrizione: string;
+export interface Alternativa {
+  testoAlternativa: string;
   type: string; // "with-items", "without-items", "indovinello"
-  nextScenarioId: number;  // ID dello scenario successivo associato a questa alternativa
+  idScenarioSuccessivo: number;  // ID dello scenario successivo associato a questa alternativa
 }
 
 export interface Scenario {
@@ -26,7 +26,7 @@ export interface Scenario {
   descrizione: string;
   indovinelli: Indovinello[];
   oggetti: Oggetto[];
-  alternative: Alternative[];  // Lista delle alternative per questo scenario
+  alternative: Alternativa[];  // Lista delle alternative per questo scenario
 }
 
 export interface Storia {

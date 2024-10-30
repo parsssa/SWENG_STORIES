@@ -20,13 +20,28 @@
       <button mat-raised-button color="primary" (click)="submitRiddle()">Invia Risposta</button>
     </div>
 
+  <!-- 
+    
+  <mat-card *ngFor="let alternativa of currentScenario.alternative" class="alternative-card">
+      <mat-card-content>
+        <p>{{ alternativa.testoAlternativa || 'Descrizione non trovata' }}</p>
+        <pre>{{ alternativa | json }}</pre> <!-- Questo mostrerà l'intero oggetto JSON di `alternativa` 
+      </mat-card-content>
+      <mat-card-actions>
+        <button mat-raised-button color="primary" (click)="makeChoice(alternativa)">
+          Scegli
+        </button>
+      </mat-card-actions>     //COMMENTO PER DEBUG FRONT END
+    </mat-card  -->
+    
+
     <!-- Sezione Alternative -->
     <div *ngIf="currentScenario.alternative && currentScenario.alternative.length > 0; else noAlternatives">
       <h3>Scegli una delle seguenti opzioni</h3>
       <div class="alternatives-container">
         <mat-card *ngFor="let alternativa of currentScenario.alternative" class="alternative-card">
           <mat-card-content>
-            <p>{{ alternativa.descrizione }}</p> <!-- Assicurati che "descrizione" sia la proprietà corretta -->
+            <p>{{ alternativa.testoAlternativa }}</p> <!-- Assicurati che "descrizione" sia la proprietà corretta -->
           </mat-card-content>
           <mat-card-actions>
             <button mat-raised-button color="primary" (click)="makeChoice(alternativa)">

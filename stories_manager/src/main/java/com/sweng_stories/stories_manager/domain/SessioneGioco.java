@@ -5,7 +5,7 @@ public class SessioneGioco {
     private Inventario inventario;
     private String username;
     private int idScenarioCorrente;
-    private int idSessione;
+    private String idSessione;
 
     public SessioneGioco() {
     }
@@ -62,11 +62,11 @@ public class SessioneGioco {
     private boolean aggiungiOggetto(String oggetto){
         return inventario.raccogliOggetto(oggetto);
     }
-    public int getIdSessione() {
+    public String getIdSessione() {
         return idSessione;
     }
 
-    public void setIdSessione(int idSessione) {
+    public void setIdSessione(String idSessione) {
         this.idSessione = idSessione;
     }
 

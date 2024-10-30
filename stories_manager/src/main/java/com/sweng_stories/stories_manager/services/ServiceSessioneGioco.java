@@ -52,8 +52,10 @@ public class ServiceSessioneGioco implements OpSessioneGioco {
 
     @Override
     public Scenario elaboraAlternativa(int idScenario,
-                                       int idScelta, int idPartita) {
+                                       String testoAlternativa, int idPartita) {
         SessioneGioco partita = sessioneGiocoDao.getSessioneConID(idPartita);
+
+       
 
         if(partita == null)
             return null;
@@ -62,16 +64,26 @@ public class ServiceSessioneGioco implements OpSessioneGioco {
 
         Scenario scenario = sessioneGiocoDao.getScenarioCorrente(idStoria,idScenario);
 
-        List<Alternativa> decisioni = scenario.getAlternative();
 
-        if(idScelta > decisioni.size()-1 || idScelta < 0){
-            return null;
+        Alternativa alternativa = null;
+
+        for(Alternativa alt : scenario.getAlternative()){
+            if(alt.getTestoAlternativa().equals(testoAlternativa)){
+                alternativa=alt;
+            }
         }
 
-        Alternativa alternativa = scenario.getAlternative().get(idScelta);
+        System.out.println("ALTTTTT BACKKK" + alternativa);
+        System.out.println(alternativa);
+        System.out.println(alternativa);
+
         String oggettoNecessario = alternativa.getOggettoRichiesto();
 
         if(!oggettoNecessario.isEmpty()){
+            System.out.println("CIAOOOOO" );
+            System.out.println("CIAOOOOO");
+            System.out.println("CIAOOOOO");
+    
             Inventario inventario = partita.getInventario();
             if(!inventario.getOggetti().contains(oggettoNecessario))
                 return null;
@@ -80,6 +92,11 @@ public class ServiceSessioneGioco implements OpSessioneGioco {
         int idScenarioSuccessivo = alternativa.getIdScenarioSuccessivo();
 
         Scenario scenarioSuccessivo = sessioneGiocoDao.getScenarioCorrente(idStoria,idScenarioSuccessivo);
+        System.out.println("SCENARIO SUCC" + scenarioSuccessivo);
+        System.out.println(scenarioSuccessivo);
+        System.out.println(scenarioSuccessivo);
+
+        
         partita.setIdScenarioCorrente(scenarioSuccessivo.getIdScenario());
         sessioneGiocoDao.aggiornaSessione(partita);
 

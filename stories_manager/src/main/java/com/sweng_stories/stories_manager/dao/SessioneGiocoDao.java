@@ -9,6 +9,7 @@ import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.bson.types.ObjectId;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,7 +41,7 @@ public class SessioneGiocoDao implements OpSessioneGiocoDao {
                 .append("inventario", inventarioOggetti);
 
         sessioniCollection.insertOne(document);
-        partita.setIdSessione(objectId.hashCode());
+        partita.setIdSessione(objectId.toString());
         return partita;
     }
 
@@ -60,16 +61,17 @@ public class SessioneGiocoDao implements OpSessioneGiocoDao {
                     result.getInteger("idStoria"),
                     result.getInteger("idScenarioCorrente"),
                     new Inventario(result.getList("inventario", String.class)));
-            sessione.setIdSessione(result.getObjectId("_id").hashCode());
+            sessione.setIdSessione(result.getObjectId("_id").toString());
             sessioni.add(sessione);
         }
         return sessioni;
     }
 
     @Override
-    public SessioneGioco getSessioneConID(int idPartita) {
-        // Cerca usando "idSessione" come intero invece di "_id" come ObjectId
-        Document query = new Document("idSessione", idPartita);
+    public SessioneGioco getSessioneConID(String idPartita) {
+        // Converti l'ID di sessione in un ObjectId
+        ObjectId objectId = new ObjectId(idPartita);
+        Document query = new Document("_id", objectId);
         Document result = sessioniCollection.find(query).first();
 
         if (result != null) {
@@ -78,8 +80,8 @@ public class SessioneGiocoDao implements OpSessioneGiocoDao {
                     result.getInteger("idStoria"),
                     result.getInteger("idScenarioCorrente"),
                     new Inventario(result.getList("inventario", String.class)));
-            sessione.setIdSessione(result.getInteger("idSessione")); // Imposta idSessione direttamente dall'attributo
-                                                                     // "idSessione" del documento
+            sessione.setIdSessione(result.getObjectId("_id").toString()); // Imposta idSessione come stringa usando
+                                                                          // l'_id
             return sessione;
         }
         return null;
