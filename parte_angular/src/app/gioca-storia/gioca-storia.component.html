@@ -8,8 +8,8 @@
 
     <!-- Sezione Indovinello -->
     <div *ngIf="currentScenario.indovinelli && currentScenario.indovinelli.length > 0">
-      <h3>{{ currentScenario.indovinelli[0].testoIndovinello }}</h3> <!-- Testo dell'indovinello -->
-      
+      <h3>{{ currentScenario.indovinelli[0].testoIndovinello }}</h3>
+
       <!-- Input per la risposta -->
       <mat-form-field appearance="fill" class="full-width">
         <mat-label>Rispondi all'indovinello</mat-label>
@@ -21,19 +21,26 @@
     </div>
 
     <!-- Sezione Alternative -->
-    <div *ngIf="currentScenario.alternatives && currentScenario.alternatives.length > 0; else noAlternatives">
+    <div *ngIf="currentScenario.alternative && currentScenario.alternative.length > 0; else noAlternatives">
       <h3>Scegli una delle seguenti opzioni</h3>
-      <div *ngFor="let alternative of currentScenario.alternatives">
-        <button mat-raised-button 
-                color="accent" 
-                (click)="makeChoice(alternative)">
-          {{ alternative.text }}
-        </button>
+      <div class="alternatives-container">
+        <mat-card *ngFor="let alternativa of currentScenario.alternative" class="alternative-card">
+          <mat-card-content>
+            <p>{{ alternativa.descrizione }}</p> <!-- Assicurati che "descrizione" sia la proprietà corretta -->
+          </mat-card-content>
+          <mat-card-actions>
+            <button mat-raised-button color="primary" (click)="makeChoice(alternativa)">
+              Scegli
+            </button>
+          </mat-card-actions>
+        </mat-card>
       </div>
     </div>
     <ng-template #noAlternatives>
-      <p>Nessuna alternativa disponibile per questo scenario.</p>
+      <p class="no-alternatives-text">Nessuna alternativa disponibile per questo scenario.</p>
     </ng-template>
+
+
 
     <!-- Oggetti da raccogliere -->
     <div *ngIf="currentScenario.oggetti && currentScenario.oggetti.length > 0; else noItems">

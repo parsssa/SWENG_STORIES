@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ApiService } from '../api.service';
-import { Router } from '@angular/router';
+import { Router, NavigationExtras } from '@angular/router';
 
 @Component({
   selector: 'app-selezione-storia',
@@ -10,7 +10,7 @@ import { Router } from '@angular/router';
 export class SelezioneStoriaComponent implements OnInit {
   storie: any[] = [];
 
-  constructor(private apiService: ApiService, private router: Router) { }
+  constructor(private apiService: ApiService, private router: Router) {}
 
   ngOnInit(): void {
     this.loadStorie();
@@ -25,12 +25,34 @@ export class SelezioneStoriaComponent implements OnInit {
       error => console.error('Errore nel caricamento delle storie', error)
     );
   }
-  
+
   selectStoria(id: number): void {
-    this.router.navigate(['/giocaStoria', id]);
+    const storiaTrovata = this.storie.find(storia => storia.id === id);
+    if (storiaTrovata) {
+      this.apiService.creaSessione({
+        idStoria: id,
+        username: 'utenteCorrente',
+        idScenarioCorrente: 0,
+        inventario: { oggetti: [] }
+      }).subscribe(newSessione => {
+        if (newSessione) {
+          console.log(storiaTrovata.inizio) //////
+          const navigationExtras: NavigationExtras = {
+            state: {
+              selectedStoria: storiaTrovata,
+              sessioneId: newSessione.idSessione,
+              inventory: newSessione.inventario.oggetti
+            }
+          };
+          this.router.navigate(['/giocaStoria', id], navigationExtras);
+        } else {
+          console.error('Errore nella creazione della nuova sessione');
+        }
+      });
+    }
   }
 
   editStoria(id: number): void {
-    this.router.navigate(['/modifica-storia', id]); // Nuovo metodo per la modifica
+    this.router.navigate(['/modifica-storia', id]);
   }
 }

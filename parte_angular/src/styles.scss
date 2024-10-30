@@ -18,6 +18,8 @@ $custom-theme: mat.define-light-theme((
   typography: $custom-typography,
 ));
 
+
+
 // Includi i temi di tutti i componenti
 @include mat.all-component-themes($custom-theme);
 

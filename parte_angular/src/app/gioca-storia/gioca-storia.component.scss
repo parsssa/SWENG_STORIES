@@ -1,6 +1,27 @@
-.play-story-card {
-  margin: 20px;
-  padding: 20px;
+.custom-alternative-button {
+  background-color: #9ebbdb;   // Blu di base per i pulsanti
+  color: white;                // Testo bianco
+  border: none;
+  padding: 10px 20px;
+  margin: 5px 0;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;              // Dimensione del testo
+  font-weight: bold;            // Grassetto per maggiore visibilità
+  text-align: center;           // Centrato nel pulsante
+  transition: background-color 0.3s ease;
+
+  &:hover {
+    background-color: #0056b3;   // Blu più scuro in hover
+  }
+
+  &:active {
+    background-color: #003d80;   // Blu ancora più scuro su click
+  }
+}
+
+.no-alternatives-text {
+  color: #666666;   // Grigio per il testo "nessuna alternativa disponibile"
 }
 
 .inventory-card {
