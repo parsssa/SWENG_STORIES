@@ -42,11 +42,15 @@ public class SessioneGiocoDao implements OpSessioneGiocoDao {
 
         sessioniCollection.insertOne(document);
         partita.setIdSessione(objectId.toString());
+        System.out.println(partita.getIdSessione());
+        System.out.println(partita.getIdSessione());
+        System.out.println(partita.getIdSessione());
+
         return partita;
     }
 
     @Override
-    public boolean eliminaSessione(int idPartita) {
+    public boolean eliminaSessione(String idPartita) {
         Document query = new Document("_id", new ObjectId(String.valueOf(idPartita)));
         return sessioniCollection.deleteOne(query).wasAcknowledged();
     }

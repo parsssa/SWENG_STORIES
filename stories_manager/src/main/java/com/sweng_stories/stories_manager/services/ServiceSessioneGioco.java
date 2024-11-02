@@ -1,6 +1,7 @@
 package com.sweng_stories.stories_manager.services;
 
 import com.sweng_stories.stories_manager.dao.OpSessioneGiocoDao;
+import com.sweng_stories.stories_manager.dao.OpStoriaDao;
 import com.sweng_stories.stories_manager.domain.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,8 +14,10 @@ import java.util.List;
 public class ServiceSessioneGioco implements OpSessioneGioco {
     @Autowired
     OpSessioneGiocoDao sessioneGiocoDao;
+    @Autowired
+    OpStoriaDao storiaDao;
     @Override
-    public Scenario elaboraIndovinello(int idScenario, String risposta, int idPartita) {
+    public Scenario elaboraIndovinello(int idScenario, String risposta, String idPartita) {
         SessioneGioco partita = sessioneGiocoDao.getSessioneConID(idPartita);
 
         if(partita == null){
@@ -52,7 +55,7 @@ public class ServiceSessioneGioco implements OpSessioneGioco {
 
     @Override
     public Scenario elaboraAlternativa(int idScenario,
-                                       String testoAlternativa, int idPartita) {
+                                       String testoAlternativa, String idPartita) {
         SessioneGioco partita = sessioneGiocoDao.getSessioneConID(idPartita);
 
        
@@ -62,7 +65,7 @@ public class ServiceSessioneGioco implements OpSessioneGioco {
 
         int idStoria = partita.getIdStoria();
 
-        Scenario scenario = sessioneGiocoDao.getScenarioCorrente(idStoria,idScenario);
+        Scenario scenario = storiaDao.getScenario(idStoria,idScenario);
 
 
         Alternativa alternativa = null;
@@ -104,7 +107,7 @@ public class ServiceSessioneGioco implements OpSessioneGioco {
     }
 
     @Override
-    public Inventario raccogliOggetto(int idPartita, String oggetto) {
+    public Inventario raccogliOggetto(String idPartita, String oggetto) {
         SessioneGioco partita = sessioneGiocoDao.getSessioneConID(idPartita);
 
         if(partita == null)
@@ -127,7 +130,7 @@ public class ServiceSessioneGioco implements OpSessioneGioco {
     }
 
     @Override
-    public boolean eliminaSessione(int idPartita) {
+    public boolean eliminaSessione(String idPartita) {
         return sessioneGiocoDao.eliminaSessione(idPartita);
     }
 
@@ -137,7 +140,7 @@ public class ServiceSessioneGioco implements OpSessioneGioco {
     }
 
     @Override
-    public SessioneGioco getSessioneConID(int idPartita) {
+    public SessioneGioco getSessioneConID(String idPartita) {
         return sessioneGiocoDao.getSessioneConID(idPartita);
     }
 }

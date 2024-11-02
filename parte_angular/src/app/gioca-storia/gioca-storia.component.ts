@@ -29,9 +29,7 @@ export class GiocaStoriaComponent implements OnInit {
       this.inventory = state.inventory || [];
       this.currentScenario = this.storia?.inizio || null;
       console.log('Alternative disponibili:', this.currentScenario?.alternative);
-
-
-
+      
       console.log('Storia e sessione ricevute:', this.storia, this.sessioneId, this.currentScenario);
     } else {
       console.error('Errore: nessuna storia o sessione passata allo stato.');
